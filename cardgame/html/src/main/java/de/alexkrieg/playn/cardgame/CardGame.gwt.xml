@@ -1,0 +1,10 @@
+<module rename-to='cardgame'>
+  <inherits name='playn.PlayN'/>
+
+  <source path='core'/>
+  <source path='html'/>
+
+  <public path="resources" />
+
+  <entry-point class='de.alexkrieg.playn.cardgame.html.CardGameHtml'/>
+</module>
