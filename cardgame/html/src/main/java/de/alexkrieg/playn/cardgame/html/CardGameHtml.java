@@ -12,7 +12,7 @@ public class CardGameHtml extends HtmlGame {
   @Override
   public void start() {
     HtmlPlatform platform = HtmlPlatform.register();
-    platform.assetManager().setPathPrefix("cardgame/");
+    platform.assets().setPathPrefix("cardgame/");
     PlayN.run(new MyCardGame());
   }
 }
