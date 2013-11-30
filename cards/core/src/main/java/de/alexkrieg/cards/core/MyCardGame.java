@@ -85,6 +85,11 @@ public class MyCardGame extends CardGame {
 		return new CardTable();
 	}
 
+	@Override
+	protected GameHUD createGameHUD() {
+		return new MyGameHUD(cardTable);
+	}
+
 	
 
 }

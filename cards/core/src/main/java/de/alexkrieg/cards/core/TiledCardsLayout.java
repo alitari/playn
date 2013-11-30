@@ -13,7 +13,7 @@ public class TiledCardsLayout extends Layout<Card> {
 
 	@Override
 	public void recalc(Card child,Object p) {
-		int cardCount = container.groupLayer.size() - 1;
+		int cardCount = container.childs().size() - 1;
 		x = cardCount * (child.layer.image().width() + gap);
 		y = 0;
 		rot = 0;

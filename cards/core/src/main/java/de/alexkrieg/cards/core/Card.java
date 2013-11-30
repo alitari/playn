@@ -58,7 +58,7 @@ public class Card implements LayerEntity, Debuggable {
 	
 	@Override
 	public String toString() {
-		return CardGame.logString(layer());
+		return CardGame.logString(this);
 	}
 	
 
