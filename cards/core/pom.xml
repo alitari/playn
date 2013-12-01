@@ -17,6 +17,12 @@
 			<artifactId>playn-core</artifactId>
 			<version>${playn.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.googlecode.playn</groupId>
+			<artifactId>playn-java</artifactId>
+			<version>${playn.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
@@ -34,6 +40,28 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.googlecode.mavennatives</groupId>
+				<artifactId>maven-nativedependencies-plugin</artifactId>
+				<version>0.0.6</version>
+				<executions>
+					<execution>
+						<id>unpacknatives</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<argLine>-Djava.library.path=${basedir}/target/natives</argLine>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
