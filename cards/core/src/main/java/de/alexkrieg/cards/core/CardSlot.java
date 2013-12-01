@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.alexkrieg.cards.core.layout.Layout;
 import de.alexkrieg.cards.core.layout.TiledCardsLayout;
+import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import playn.core.Canvas;
 import playn.core.CanvasImage;
 import playn.core.GroupLayer;
@@ -60,7 +61,7 @@ public class CardSlot extends CardContainer<Card> {
 
 	@Override
 	protected Layout<Card> createLayout() {
-		return new TiledCardsLayout(0, 10);
+		return new TiledCardsRotatedLayout(0, 10);
 	}
 
 }
