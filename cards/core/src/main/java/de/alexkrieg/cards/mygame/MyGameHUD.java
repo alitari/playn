@@ -1,11 +1,11 @@
 package de.alexkrieg.cards.mygame;
 
 import static playn.core.PlayN.graphics;
-import de.alexkrieg.cards.core.AbsolutLayout;
 import de.alexkrieg.cards.core.CardTable;
 import de.alexkrieg.cards.core.GameHUD;
 import de.alexkrieg.cards.core.HUDSegment;
-import de.alexkrieg.cards.core.AbsolutLayout.Attr;
+import de.alexkrieg.cards.core.layout.AbsolutLayout;
+import de.alexkrieg.cards.core.layout.AbsolutLayout.Attr;
 import playn.core.Canvas;
 import playn.core.CanvasImage;
 import playn.core.Font;

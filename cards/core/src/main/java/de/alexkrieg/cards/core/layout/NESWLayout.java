@@ -1,4 +1,6 @@
-package de.alexkrieg.cards.core;
+package de.alexkrieg.cards.core.layout;
+
+import de.alexkrieg.cards.core.CardSlot;
 
 
 public class NESWLayout extends Layout<CardSlot > {
@@ -26,22 +28,22 @@ public class NESWLayout extends Layout<CardSlot > {
 		switch (nesw) {
 		case N:
 			x = container.width() / 2 ;
-			y = child.height / 2+gap;
+			y = child.height() / 2+gap;
 			rot =0;
 			break;
 		case E:
-			x = container.width()  - child.height / 2 -gap;
+			x = container.width()  - child.height() / 2 -gap;
 			y = container.height() / 2;
 			rot =  0.5f * (float)Math.PI;
 			break;
 			
 		case S:
 			x = container.width() / 2;
-			y = container.height() -child.height/2-gap;
+			y = container.height() -child.height()/2-gap;
 			rot =0;
 			break;
 		case W:
-			x = child.height /2+gap;
+			x = child.height() /2+gap;
 			y = container.height()/2;
 			rot = 1.5f * (float)Math.PI;
 			break;

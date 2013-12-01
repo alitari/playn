@@ -1,18 +1,21 @@
-package de.alexkrieg.cards.core;
+package de.alexkrieg.cards.core.layout;
+
+import de.alexkrieg.cards.core.LayerEntity;
+import de.alexkrieg.cards.core.LayerEntityContainer;
 
 public abstract class Layout<T extends LayerEntity> {
 	enum Orientation {
 		horizontal, vertical;
 	}
 
-	LayerEntityContainer<T> container;
+	protected LayerEntityContainer<T> container;
 
 	protected float x;
 	protected float y;
 	protected float rot;
 	protected float scale;
 
-	void setCardContainer(LayerEntityContainer<T> cc) {
+	public void setCardContainer(LayerEntityContainer<T> cc) {
 		container = cc;
 	}
 

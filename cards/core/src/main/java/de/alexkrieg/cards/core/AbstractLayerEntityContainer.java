@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.alexkrieg.cards.core.layout.Layout;
 import playn.core.GroupLayer;
 import playn.core.Layer;
 import pythagoras.f.Transform;

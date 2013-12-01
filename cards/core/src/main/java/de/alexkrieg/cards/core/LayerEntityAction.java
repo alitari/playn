@@ -16,6 +16,7 @@
 package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.log;
+import de.alexkrieg.cards.core.layout.Layout;
 import pythagoras.f.Transform;
 
 public class LayerEntityAction<T extends LayerEntity> {

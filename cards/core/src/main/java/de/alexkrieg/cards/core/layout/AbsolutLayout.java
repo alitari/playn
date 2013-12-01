@@ -1,4 +1,6 @@
-package de.alexkrieg.cards.core;
+package de.alexkrieg.cards.core.layout;
+
+import de.alexkrieg.cards.core.HUDSegment;
 
 public class AbsolutLayout extends Layout<HUDSegment> {
 

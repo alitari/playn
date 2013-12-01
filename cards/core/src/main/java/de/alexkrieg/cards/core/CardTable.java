@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.alexkrieg.cards.core.layout.Layout;
+import de.alexkrieg.cards.core.layout.NESWLayout;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;

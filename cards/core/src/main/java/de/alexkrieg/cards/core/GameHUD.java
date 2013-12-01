@@ -1,5 +1,8 @@
 package de.alexkrieg.cards.core;
 
+import de.alexkrieg.cards.core.layout.AbsolutLayout;
+import de.alexkrieg.cards.core.layout.Layout;
+
 
 public abstract class GameHUD extends AbstractLayerEntityContainer<HUDSegment> {
 	

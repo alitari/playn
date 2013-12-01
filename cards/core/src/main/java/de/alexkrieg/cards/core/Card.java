@@ -7,7 +7,7 @@ import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 
-public class Card implements LayerEntity, Debuggable {
+public class Card implements LayerEntity{
 	public final Value value;
 
 	ImageLayer layer;
@@ -46,16 +46,6 @@ public class Card implements LayerEntity, Debuggable {
 		return layer.image().height();
 	}
 
-	@Override
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
-
-	@Override
-	public boolean debug() {
-		return debug;
-	}
-	
 	@Override
 	public String toString() {
 		return CardGame.logString(this);
