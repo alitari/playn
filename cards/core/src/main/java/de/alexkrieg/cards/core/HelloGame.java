@@ -27,7 +27,6 @@ import playn.core.ImageLayer;
 import playn.core.Pointer;
 
 public class HelloGame extends Game.Default {
-
   GroupLayer peaLayer;
   List<Pea> peas = new ArrayList<Pea>(0);
 
