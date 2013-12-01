@@ -15,7 +15,7 @@
  */
 package de.alexkrieg.cards.java;
 
-import de.alexkrieg.cards.core.MyCardGame;
+import de.alexkrieg.cards.mygame.MyCardGame;
 import playn.core.PlayN;
 import playn.java.JavaPlatform;
 

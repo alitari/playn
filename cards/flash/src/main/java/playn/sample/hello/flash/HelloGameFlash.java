@@ -15,7 +15,7 @@
  */
 package playn.sample.hello.flash;
 
-import de.alexkrieg.cards.core.MyCardGame;
+import de.alexkrieg.cards.mygame.MyCardGame;
 import playn.core.PlayN;
 import playn.flash.FlashGame;
 import playn.flash.FlashPlatform;

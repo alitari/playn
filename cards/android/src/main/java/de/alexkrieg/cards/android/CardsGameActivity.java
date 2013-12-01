@@ -15,7 +15,7 @@
  */
 package de.alexkrieg.cards.android;
 
-import de.alexkrieg.cards.core.MyCardGame;
+import de.alexkrieg.cards.mygame.MyCardGame;
 import playn.android.GameActivity;
 import playn.core.PlayN;
 

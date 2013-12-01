@@ -1,7 +1,17 @@
-package de.alexkrieg.cards.core;
+package de.alexkrieg.cards.mygame;
 
 import static playn.core.PlayN.*;
 
+import java.util.Iterator;
+
+import de.alexkrieg.cards.core.Card;
+import de.alexkrieg.cards.core.CardGame;
+import de.alexkrieg.cards.core.CardSlot;
+import de.alexkrieg.cards.core.CardTable;
+import de.alexkrieg.cards.core.GameHUD;
+import de.alexkrieg.cards.core.NESWLayout;
+import de.alexkrieg.cards.core.Card.Value;
+import de.alexkrieg.cards.core.NESWLayout.NESW;
 import playn.core.Game;
 import playn.core.GroupLayer;
 import playn.core.Image;
@@ -43,10 +53,11 @@ public class MyCardGame extends CardGame {
 				Card c2 = new Card(Card.Value.values()[mouseCount+2]);
 				Card c3 = new Card(Card.Value.values()[mouseCount+3]);
 				
-				CardSlot cardSlot0 = cardTable.childs.get(0);
-				CardSlot cardSlot1 = cardTable.childs.get(1);
-				CardSlot cardSlot2 = cardTable.childs.get(2);
-				CardSlot cardSlot3 = cardTable.childs.get(3);
+				Iterator<CardSlot> cardSlotIter = cardTable.childs().iterator();
+				CardSlot cardSlot0 = cardSlotIter.next();
+				CardSlot cardSlot1 = cardSlotIter.next();
+				CardSlot cardSlot2 = cardSlotIter.next();
+				CardSlot cardSlot3 = cardSlotIter.next();
 				cardSlot0.put(c0, null);
 				cardSlot1.put(c1, null);
 				cardSlot2.put(c2, null);
@@ -57,15 +68,15 @@ public class MyCardGame extends CardGame {
 //				cardTable.put(action);
 ////				cardTable.childs.get(0).put(c,nul
 
-				log().info("c0:"+c0);
-				log().info("c1:"+c1);
-				log().info("c2:"+c2);
-				log().info("c3:"+c3);
-				
-				log().info("cs0:"+cardSlot0);
-				log().info("cs1:"+cardSlot1);
-				log().info("cs2:"+cardSlot2);
-				log().info("cs3:"+cardSlot3);
+//				log().info("c0:"+c0);
+//				log().info("c1:"+c1);
+//				log().info("c2:"+c2);
+//				log().info("c3:"+c3);
+//				
+//				log().info("cs0:"+cardSlot0);
+//				log().info("cs1:"+cardSlot1);
+//				log().info("cs2:"+cardSlot2);
+//				log().info("cs3:"+cardSlot3);
 				
 
 				// Move move1 = new CardTableAction.Move(c, event.x(),

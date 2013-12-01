@@ -32,7 +32,7 @@ public class CardSlot extends CardContainer<Card> {
 
 	String name;
 	
-	protected CardSlot(String name) {
+	public CardSlot(String name) {
 		super();
 		this.name = name;
 	}

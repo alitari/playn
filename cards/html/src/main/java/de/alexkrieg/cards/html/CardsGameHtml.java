@@ -15,7 +15,7 @@
  */
 package de.alexkrieg.cards.html;
 
-import de.alexkrieg.cards.core.MyCardGame;
+import de.alexkrieg.cards.mygame.MyCardGame;
 import playn.core.PlayN;
 import playn.html.HtmlGame;
 import playn.html.HtmlPlatform;
