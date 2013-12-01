@@ -32,7 +32,7 @@ import playn.core.ImageLayer;
 import playn.core.Layer;
 import pythagoras.f.Transform;
 
-public class CardTable extends CardContainer<CardSlot,NESWLayout> {
+public class CardTable extends AbstractLayerEntityContainer<CardSlot,NESWLayout> {
 
 	private final Map<Card, CardTableAction> actions = new HashMap<Card, CardTableAction>();
 

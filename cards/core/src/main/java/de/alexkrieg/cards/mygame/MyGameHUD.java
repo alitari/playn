@@ -28,6 +28,7 @@ public class MyGameHUD extends GameHUD {
 
 		@Override
 		protected ImageLayer createImageLayer() {
+			
 			CanvasImage[] canvasImage = new CanvasImage[1];
 			ImageLayer imageLayer2 = createImageLayer(canvasImage, width(),
 					height(), 1, 0xFF660000, 0xFF660000, true);

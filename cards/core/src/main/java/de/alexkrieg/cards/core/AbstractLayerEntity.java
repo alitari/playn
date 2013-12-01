@@ -22,8 +22,6 @@ public abstract class AbstractLayerEntity
 
 	protected Layer layer;
 
-	protected float width = 0;
-	protected float height = 0;
 
 
 
@@ -41,15 +39,6 @@ public abstract class AbstractLayerEntity
 		return layer;
 	}
 
-	@Override
-	public float width() {
-		return width;
-	}
-
-	@Override
-	public float height() {
-		return height;
-	}
 
 	@Override
 	public void init() {

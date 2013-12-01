@@ -1,5 +1,6 @@
 package de.alexkrieg.cards.core.layout;
 
+import playn.core.Layer.HasSize;
 import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.LayerEntityContainer;
 
@@ -8,15 +9,15 @@ public abstract class Layout<T extends LayerEntity> {
 		horizontal, vertical;
 	}
 
-	protected LayerEntityContainer<T,?> container;
-
+	protected LayerEntityContainer<?, ?>  container;
+	
 	protected float x;
 	protected float y;
 	protected float rot;
 	protected float scale;
 
-	public void setContainer(LayerEntityContainer<T,?> cc) {
-		container = cc;
+	public void setContainer( LayerEntityContainer<?, ?> container) {
+		this.container = container;
 	}
 
 	public float x(T child) {

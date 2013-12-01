@@ -23,13 +23,18 @@ import java.util.List;
 
 import de.alexkrieg.cards.core.layout.Layout;
 import playn.core.GroupLayer;
+import playn.core.ImageLayer;
 import playn.core.Layer;
+import playn.core.Layer.HasSize;
 import pythagoras.f.Transform;
 
 public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L extends Layout<T>>
 		extends AbstractLayerEntity implements LayerEntityContainer<T,L> {
 
 
+	
+	private float width = 0;
+	private float height = 0;
 
 	protected L cl;
 
@@ -38,6 +43,18 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 	protected AbstractLayerEntityContainer() {
 		childs = new ArrayList<T>();
 	}
+	
+	@Override
+	public float height() {
+		return height;
+	}
+	
+	@Override
+	public float width() {
+		return width;
+	}
+	
+	
 
 	@Override
 	public String toString() {
@@ -60,8 +77,26 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 	public void init() {
 		super.init();
 		this.cl = createLayout();
+		
+		List<Layer> layers = new ArrayList<Layer>();
+		fillWithLayers(layers);
+		for (Layer l : layers) {
+			if (!(l instanceof ImageLayer)) {
+				((GroupLayer)layer()).add(l);
+			}
+			if (l instanceof HasSize) {
+				HasSize si = (HasSize) l;
+				width = Math.max(width, si.width());
+				height = Math.max(height, si.height());
+
+			}
+		}
 		this.cl.setContainer(this);
+		((GroupLayer)layer()).setOrigin(width / 2, height / 2);
+
 	}
+	
+	protected abstract void fillWithLayers(List<Layer> layers);
 	
 	protected Layer createLayer() {
 		return graphics().createGroupLayer();

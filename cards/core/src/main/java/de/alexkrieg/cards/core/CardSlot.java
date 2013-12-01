@@ -23,7 +23,7 @@ import playn.core.ImageLayer;
 import playn.core.Layer;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 
-public class CardSlot extends CardContainer<Card,TiledCardsRotatedLayout> {
+public class CardSlot extends AbstractLayerEntityContainer<Card,TiledCardsRotatedLayout> {
 
 	String name;
 	

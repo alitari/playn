@@ -5,11 +5,16 @@ import static playn.core.PlayN.graphics;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
+import playn.core.Layer.HasSize;
 
-public class Card extends AbstractLayerEntity implements LayerEntity {
+public class Card extends AbstractLayerEntity implements HasSizeEntity {
 	public final Value value;
 
 
+	@Override
+	public HasSize hasSize() {
+		return (HasSize) layer();
+	}
 
 	public Card(String cardstr) {
 		this(Value.cardEnum(cardstr));
@@ -32,16 +37,6 @@ public class Card extends AbstractLayerEntity implements LayerEntity {
 		return imagelayer;
 	}
 
-
-	@Override
-	public float width() {
-		return ((ImageLayer) layer).image().width();
-	}
-
-	@Override
-	public float height() {
-		return ((ImageLayer) layer).image().height();
-	}
 
 	@Override
 	public String toString() {

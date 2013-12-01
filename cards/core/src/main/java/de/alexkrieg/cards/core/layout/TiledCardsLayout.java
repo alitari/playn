@@ -16,7 +16,7 @@ public class TiledCardsLayout extends Layout<Card> {
 	@Override
 	public void recalc(Card child,Object p) {
 		int cardCount = container.childs().size() - 1;
-		x = cardCount * (child.width() + gap);
+		x = cardCount * (child.hasSize().width() + gap);
 		y = 0;
 		rot = 0;
 		scale = 1;

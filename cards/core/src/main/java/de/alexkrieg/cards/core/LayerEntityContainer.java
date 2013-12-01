@@ -8,6 +8,10 @@ public interface LayerEntityContainer<T extends LayerEntity, L extends Layout<T>
 	
 	Collection<T> childs();
 	
+	float height() ;
+	
+	float width() ;
+	
 	L layout();
 	
 	void put(T child, Object param);

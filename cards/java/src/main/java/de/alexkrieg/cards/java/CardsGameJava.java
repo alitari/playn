@@ -17,12 +17,23 @@ package de.alexkrieg.cards.java;
 
 import de.alexkrieg.cards.mygame.MyCardGame;
 import playn.core.PlayN;
+import playn.java.JavaGraphics;
 import playn.java.JavaPlatform;
 
 public class CardsGameJava {
 
-  public static void main(String[] args) {
-    JavaPlatform platform = JavaPlatform.register();
-    PlayN.run(new MyCardGame());
-  }
+	public static void main(String[] args) {
+		JavaPlatform platform = JavaPlatform.register();
+		JavaGraphics graphics = (JavaGraphics) PlayN.graphics();
+		int width = 1024;
+		int height = 768;
+		if ( args != null && args.length == 2) {
+			width = Integer.parseInt(args[0]);
+			height = Integer.parseInt(args[1]);
+		}
+		
+		graphics.setSize(width, height);
+		PlayN.run(new MyCardGame());
+
+	}
 }

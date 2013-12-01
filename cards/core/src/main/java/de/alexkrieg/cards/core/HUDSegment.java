@@ -5,47 +5,35 @@ import playn.core.Canvas;
 import playn.core.CanvasImage;
 import playn.core.ImageLayer;
 import playn.core.Layer;
+import playn.core.Layer.HasSize;
 import playn.core.TextLayout;
 
-public abstract class HUDSegment implements LayerEntity {
+public abstract class HUDSegment extends AbstractLayerEntity implements HasSizeEntity {
 
-	private ImageLayer imageLayer;
 	
 	private float width;
 	private float height;
-	
-	
-	
+
 	public HUDSegment(float width, float height) {
 		super();
 		this.width = width;
 		this.height = height;
 	}
 
+	
 	@Override
-	public Layer layer() {
-		return imageLayer;
+	public HasSize hasSize() {
+		return (HasSize) layer();
 	}
 
 	@Override
-	public float width() {
-		return width;
+	protected Layer createLayer() {
+		return createImageLayer();
 	}
 
-	@Override
-	public float height() {
-		return height;
-	}
 
-	@Override
-	public void init() {
-		imageLayer = createImageLayer();
-		
-
-	}
-
-	abstract protected ImageLayer createImageLayer();
-
+	protected abstract ImageLayer createImageLayer();
+	
 	protected ImageLayer createTextLayer(TextLayout layout, int color) {
 		CanvasImage canvasImage = graphics().createImage(
 				(int) Math.ceil(layout.width()),
