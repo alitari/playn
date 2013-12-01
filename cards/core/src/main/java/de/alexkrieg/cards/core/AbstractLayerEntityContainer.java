@@ -27,12 +27,9 @@ import playn.core.Layer;
 import pythagoras.f.Transform;
 
 public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L extends Layout<T>>
-		implements LayerEntityContainer<T,L> {
+		extends AbstractLayerEntity implements LayerEntityContainer<T,L> {
 
-	protected GroupLayer groupLayer;
 
-	protected float width = 0;
-	protected float height = 0;
 
 	protected L cl;
 
@@ -40,7 +37,6 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
 	protected AbstractLayerEntityContainer() {
 		childs = new ArrayList<T>();
-		groupLayer = graphics().createGroupLayer();
 	}
 
 	@Override
@@ -58,25 +54,17 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 		return this.cl;
 	}
 
-	@Override
-	public Layer layer() {
-		return groupLayer;
-	}
 
-	@Override
-	public float width() {
-		return width;
-	}
-
-	@Override
-	public float height() {
-		return height;
-	}
 
 	@Override
 	public void init() {
+		super.init();
 		this.cl = createLayout();
 		this.cl.setContainer(this);
+	}
+	
+	protected Layer createLayer() {
+		return graphics().createGroupLayer();
 	}
 
 	protected abstract L createLayout();
@@ -96,7 +84,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 		t.setRotation(rot);
 		t.setUniformScale(scale);
 
-		groupLayer.add(l);
+		((GroupLayer)layer()).add(l);
 	}
 
 }

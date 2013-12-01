@@ -1,18 +1,15 @@
 package de.alexkrieg.cards.core;
 
-
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 
-public class Card implements LayerEntity{
+public class Card extends AbstractLayerEntity implements LayerEntity {
 	public final Value value;
 
-	ImageLayer layer;
 
-	boolean debug;
 
 	public Card(String cardstr) {
 		this(Value.cardEnum(cardstr));
@@ -25,36 +22,31 @@ public class Card implements LayerEntity{
 
 	@Override
 	public void init() {
-		if (this.layer == null) {
-			this.layer = value.createImageLayer();
-			this.layer.setOrigin(this.layer.width()/2, this.layer.height()/2);
-		}
+		super.init();
 	}
 
 	@Override
-	public Layer layer() {
-		return layer;
+	protected Layer createLayer() {
+		ImageLayer imagelayer = value.createImageLayer();
+		imagelayer.setOrigin(imagelayer.width() / 2, imagelayer.height() / 2);
+		return imagelayer;
 	}
+
 
 	@Override
 	public float width() {
-		return layer.image().width();
+		return ((ImageLayer) layer).image().width();
 	}
 
 	@Override
 	public float height() {
-		return layer.image().height();
+		return ((ImageLayer) layer).image().height();
 	}
 
 	@Override
 	public String toString() {
 		return CardGame.logString(this);
 	}
-	
-
-	
-
-
 
 	public static enum Value {
 		_ad, _ah, _as, _ac, _kd, _kh, _ks, _kc, _qd, _qh, _qs, _qc, _jd, _jh, _js, _jc, _td, _th, _ts, _tc, _9d, _9h, _9s, _9c, _8d, _8h, _8s, _8c, _7d, _7h, _7s, _7c, _6d, _6h, _6s, _6c, _5d, _5h, _5s, _5c, _4d, _4h, _4s, _4c, _3d, _3h, _3s, _3c, _2d, _2h, _2s, _2c;
@@ -96,7 +88,7 @@ public class Card implements LayerEntity{
 
 		public Image createImage() {
 			Image bgImage = assets().getImage(DIR_CARDS + filename());
-			return  bgImage;
+			return bgImage;
 		}
 
 	}

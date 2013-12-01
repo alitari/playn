@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.alexkrieg.cards.core.layout.Layout;
+import playn.core.GroupLayer;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 import playn.core.Layer.HasSize;
@@ -43,7 +44,7 @@ public abstract class CardContainer<T extends LayerEntity,L extends Layout<T>> e
 		fillWithLayers(layers);
 		for (Layer l : layers) {
 			if (!(l instanceof ImageLayer)) {
-				groupLayer.add(l);
+				((GroupLayer)layer()).add(l);
 			}
 			if (l instanceof HasSize) {
 				HasSize si = (HasSize) l;
@@ -52,7 +53,7 @@ public abstract class CardContainer<T extends LayerEntity,L extends Layout<T>> e
 
 			}
 		}
-		groupLayer.setOrigin(width / 2, height / 2);
+		((GroupLayer)layer()).setOrigin(width / 2, height / 2);
 
 	}
 
