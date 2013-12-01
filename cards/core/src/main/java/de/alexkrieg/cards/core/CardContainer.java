@@ -18,13 +18,14 @@ package de.alexkrieg.cards.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.alexkrieg.cards.core.layout.Layout;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 import playn.core.Layer.HasSize;
 import playn.core.SurfaceLayer;
 
-public abstract class CardContainer<T extends LayerEntity> extends
-		AbstractLayerEntityContainer<T> {
+public abstract class CardContainer<T extends LayerEntity,L extends Layout<T>> extends
+		AbstractLayerEntityContainer<T, L> {
 
 	protected ImageLayer imageLayer;
 	protected SurfaceLayer surfaceLayer;

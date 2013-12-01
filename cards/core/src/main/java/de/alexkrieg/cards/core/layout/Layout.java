@@ -8,14 +8,14 @@ public abstract class Layout<T extends LayerEntity> {
 		horizontal, vertical;
 	}
 
-	protected LayerEntityContainer<T> container;
+	protected LayerEntityContainer<T,?> container;
 
 	protected float x;
 	protected float y;
 	protected float rot;
 	protected float scale;
 
-	public void setCardContainer(LayerEntityContainer<T> cc) {
+	public void setContainer(LayerEntityContainer<T,?> cc) {
 		container = cc;
 	}
 

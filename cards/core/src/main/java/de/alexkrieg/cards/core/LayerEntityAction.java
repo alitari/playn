@@ -19,11 +19,11 @@ import static playn.core.PlayN.log;
 import de.alexkrieg.cards.core.layout.Layout;
 import pythagoras.f.Transform;
 
-public class LayerEntityAction<T extends LayerEntity> {
+public class LayerEntityAction<T extends LayerEntity, L extends Layout<T>> {
 	
 	
   final T le;
-  final LayerEntityContainer<T> dest;
+  final LayerEntityContainer<T,L> dest;
   final int duration;
   
   
@@ -54,7 +54,7 @@ public class LayerEntityAction<T extends LayerEntity> {
   
   
   
-  public LayerEntityAction(T obj,LayerEntityContainer<T> dest , int duration, Object param) {
+  public LayerEntityAction(T obj,LayerEntityContainer<T,L> dest , int duration, Object param) {
 	super();
 	this.le = obj;
 	this.dest = dest;

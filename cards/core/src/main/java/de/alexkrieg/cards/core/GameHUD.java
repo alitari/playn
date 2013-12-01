@@ -1,22 +1,17 @@
 package de.alexkrieg.cards.core;
 
 import de.alexkrieg.cards.core.layout.AbsolutLayout;
-import de.alexkrieg.cards.core.layout.Layout;
 
 
-public abstract class GameHUD extends AbstractLayerEntityContainer<HUDSegment> {
+public abstract class GameHUD extends AbstractLayerEntityContainer<HUDSegment,AbsolutLayout> {
 	
 	final protected CardTable cardTable;
 
 	public GameHUD(CardTable cardTable) {
 		super();
 		this.cardTable = cardTable;
-		
-		
 	}
 	
-	
-
 	@Override
 	public void init() {
 		super.init();
@@ -25,7 +20,7 @@ public abstract class GameHUD extends AbstractLayerEntityContainer<HUDSegment> {
 	}
 
 	@Override
-	protected Layout<HUDSegment> createLayout() {
+	protected AbsolutLayout createLayout() {
 		return new AbsolutLayout();
 	} 
 

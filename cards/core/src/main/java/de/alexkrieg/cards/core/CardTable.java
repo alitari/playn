@@ -26,17 +26,18 @@ import java.util.Map;
 
 import de.alexkrieg.cards.core.layout.Layout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
+import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 import pythagoras.f.Transform;
 
-public class CardTable extends CardContainer<CardSlot> {
+public class CardTable extends CardContainer<CardSlot,NESWLayout> {
 
 	private final Map<Card, CardTableAction> actions = new HashMap<Card, CardTableAction>();
 
 
-	private final Map<LayerEntity, LayerEntityAction<Card>> actions2 = new HashMap<LayerEntity, LayerEntityAction<Card>>();
+	private final Map<LayerEntity, LayerEntityAction<Card,TiledCardsRotatedLayout>> actions2 = new HashMap<LayerEntity, LayerEntityAction<Card,TiledCardsRotatedLayout>>();
 
 	
 	public CardTable() {
@@ -71,7 +72,7 @@ public class CardTable extends CardContainer<CardSlot> {
 	}
 
 	@Override
-	protected Layout<CardSlot> createLayout() {
+	protected NESWLayout createLayout() {
 		return new NESWLayout(10);
 	}
 
@@ -79,12 +80,12 @@ public class CardTable extends CardContainer<CardSlot> {
 		actions.put(cta.card, cta);
 	}
 	
-	public void put(LayerEntityAction<Card> cta) {
+	public void put(LayerEntityAction<Card,TiledCardsRotatedLayout> cta) {
 		actions2.put(cta.le, cta);
 	}
 	
 	public void paint(float alpha) {
-		for (LayerEntityAction<Card> lea : actions2.values()) {
+		for (LayerEntityAction<Card,TiledCardsRotatedLayout> lea : actions2.values()) {
 			Transform t = lea.le.layer().transform();	
 			float x = lea.origX + alpha *( lea.x-lea.origX);
 			float y = lea.origY+ alpha *( lea.y-lea.origY);
@@ -108,7 +109,7 @@ public class CardTable extends CardContainer<CardSlot> {
 			}
 		}
 		
-		for (LayerEntityAction<Card> lea : new ArrayList<LayerEntityAction<Card>>(actions2.values())) {
+		for (LayerEntityAction<Card,TiledCardsRotatedLayout> lea : new ArrayList<LayerEntityAction<Card,TiledCardsRotatedLayout>>(actions2.values())) {
 			if (lea.isEnd) {
 				actions2.remove(lea);
 			} else {

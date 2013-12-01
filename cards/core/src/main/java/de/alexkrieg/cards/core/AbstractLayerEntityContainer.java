@@ -26,15 +26,15 @@ import playn.core.GroupLayer;
 import playn.core.Layer;
 import pythagoras.f.Transform;
 
-public abstract class AbstractLayerEntityContainer<T extends LayerEntity>
-		implements LayerEntityContainer<T> {
+public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L extends Layout<T>>
+		implements LayerEntityContainer<T,L> {
 
 	protected GroupLayer groupLayer;
 
 	protected float width = 0;
 	protected float height = 0;
 
-	protected Layout<T> cl;
+	protected L cl;
 
 	protected List<T> childs;
 
@@ -54,7 +54,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity>
 	}
 
 	@Override
-	public Layout<T> layout() {
+	public L layout() {
 		return this.cl;
 	}
 
@@ -76,10 +76,10 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity>
 	@Override
 	public void init() {
 		this.cl = createLayout();
-		this.cl.setCardContainer(this);
+		this.cl.setContainer(this);
 	}
 
-	protected abstract Layout<T> createLayout();
+	protected abstract L createLayout();
 
 	public void put(T child, Object param) {
 		child.init();

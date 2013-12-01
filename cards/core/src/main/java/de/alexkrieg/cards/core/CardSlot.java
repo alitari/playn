@@ -17,21 +17,13 @@ package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.graphics;
 
-import java.awt.Color;
 import java.util.List;
 
-import de.alexkrieg.cards.core.layout.Layout;
-import de.alexkrieg.cards.core.layout.TiledCardsLayout;
-import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
-import playn.core.Canvas;
-import playn.core.CanvasImage;
-import playn.core.GroupLayer;
 import playn.core.ImageLayer;
 import playn.core.Layer;
-import playn.core.canvas.GroupLayerCanvas;
-import playn.core.canvas.ImageLayerCanvas;
+import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 
-public class CardSlot extends CardContainer<Card> {
+public class CardSlot extends CardContainer<Card,TiledCardsRotatedLayout> {
 
 	String name;
 	
@@ -60,7 +52,7 @@ public class CardSlot extends CardContainer<Card> {
 	}
 
 	@Override
-	protected Layout<Card> createLayout() {
+	protected TiledCardsRotatedLayout createLayout() {
 		return new TiledCardsRotatedLayout(0, 10);
 	}
 
