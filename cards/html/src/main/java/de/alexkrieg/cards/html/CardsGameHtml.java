@@ -15,7 +15,7 @@
  */
 package de.alexkrieg.cards.html;
 
-import de.alexkrieg.cards.core.CardsGame;
+import de.alexkrieg.cards.core.MyCardGame;
 import playn.core.PlayN;
 import playn.html.HtmlGame;
 import playn.html.HtmlPlatform;
@@ -26,6 +26,6 @@ public class CardsGameHtml extends HtmlGame {
   public void start() {
     HtmlPlatform platform = HtmlPlatform.register();
     platform.assets().setPathPrefix("hellogame/");
-    PlayN.run(new CardsGame());
+    PlayN.run(new MyCardGame());
   }
 }

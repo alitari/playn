@@ -54,7 +54,7 @@ public class Pea {
   }
 
   public void paint(float alpha) {
-    float now = elapsed + alpha * CardsGame.UPDATE_RATE;
+    float now = elapsed + alpha * HelloGame.UPDATE_RATE;
     layer.setRotation(now * angVel);
   }
 }

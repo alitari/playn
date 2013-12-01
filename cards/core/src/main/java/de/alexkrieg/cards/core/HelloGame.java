@@ -26,14 +26,14 @@ import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Pointer;
 
-public class CardsGame extends Game.Default {
+public class HelloGame extends Game.Default {
 
   GroupLayer peaLayer;
   List<Pea> peas = new ArrayList<Pea>(0);
 
   public static final int UPDATE_RATE = 25;
 
-  public CardsGame() {
+  public HelloGame() {
     super(UPDATE_RATE);
   }
 
