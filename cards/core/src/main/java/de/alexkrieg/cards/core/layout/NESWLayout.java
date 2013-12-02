@@ -29,12 +29,12 @@ public class NESWLayout extends Layout<CardSlot > {
 		case N:
 			x = container.width()/ 2 ;
 			y = child.height() / 2+gap;
-			rot =0;
+			rot =(float)Math.PI;
 			break;
 		case E:
 			x = container.width() - child.height() / 2 -gap;
 			y = container.height() / 2;
-			rot =  0.5f * (float)Math.PI;
+			rot =  1.5f * (float)Math.PI;
 			break;
 			
 		case S:
@@ -45,7 +45,7 @@ public class NESWLayout extends Layout<CardSlot > {
 		case W:
 			x = child.height() /2+gap;
 			y = container.height()/2;
-			rot = 1.5f * (float)Math.PI;
+			rot = 0.5f * (float)Math.PI;
 			break;
 		case C:
 			x = container.width()/2;

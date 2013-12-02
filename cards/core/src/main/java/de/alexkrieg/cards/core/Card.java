@@ -2,6 +2,9 @@ package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
+
+import java.awt.image.ImagingOpException;
+
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
@@ -9,7 +12,6 @@ import playn.core.Layer.HasSize;
 
 public class Card extends AbstractLayerEntity implements HasSizeEntity {
 	public final Value value;
-
 
 	@Override
 	public HasSize hasSize() {
@@ -36,7 +38,6 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
 		imagelayer.setOrigin(imagelayer.width() / 2, imagelayer.height() / 2);
 		return imagelayer;
 	}
-
 
 	@Override
 	public String toString() {
@@ -77,12 +78,17 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
 		}
 
 		public ImageLayer createImageLayer() {
-			return graphics().createImageLayer(createImage());
+			ImageLayer imageLayer = graphics().createImageLayer(createImage());
+			imageLayer.setWidth(72);
+			imageLayer.setHeight(96);
+			float width = imageLayer.width();
+			return imageLayer;
 
 		}
 
 		public Image createImage() {
 			Image bgImage = assets().getImage(DIR_CARDS + filename());
+			float width = bgImage.width();
 			return bgImage;
 		}
 

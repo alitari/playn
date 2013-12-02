@@ -1,6 +1,5 @@
 package de.alexkrieg.cards.core.layout;
 
-import playn.core.Layer.HasSize;
 import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.LayerEntityContainer;
 

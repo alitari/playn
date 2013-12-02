@@ -64,10 +64,9 @@ public class CardTable extends AbstractLayerEntityContainer<CardSlot,NESWLayout>
 
 	protected ImageLayer createImageLayer() {
 		Image image = assets().getImage("images/cardtable.png");
-
 		final ImageLayer imageLayer = graphics().createImageLayer(image);
-		imageLayer.setWidth(500L);
-		imageLayer.setHeight(300L);
+		imageLayer.setWidth(graphics().width());
+		imageLayer.setHeight(graphics().height());
 		return imageLayer;
 	}
 
