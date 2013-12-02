@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.alexkrieg.cards.core.action.CardTableAction;
+import de.alexkrieg.cards.core.action.LayerEntityAction;
 import de.alexkrieg.cards.core.layout.Layout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
@@ -34,11 +36,7 @@ import pythagoras.f.Transform;
 
 public class CardTable extends AbstractLayerEntityContainer<CardSlot,NESWLayout> {
 
-	private final Map<Card, CardTableAction> actions = new HashMap<Card, CardTableAction>();
-
-
-	private final Map<LayerEntity, LayerEntityAction<Card,TiledCardsRotatedLayout>> actions2 = new HashMap<LayerEntity, LayerEntityAction<Card,TiledCardsRotatedLayout>>();
-
+	
 	
 	public CardTable() {
 		super();
@@ -75,47 +73,41 @@ public class CardTable extends AbstractLayerEntityContainer<CardSlot,NESWLayout>
 		return new NESWLayout(10);
 	}
 
-	public void put(CardTableAction cta) {
-		actions.put(cta.card, cta);
-	}
 	
-	public void put(LayerEntityAction<Card,TiledCardsRotatedLayout> cta) {
-		actions2.put(cta.le, cta);
-	}
 	
-	public void paint(float alpha) {
-		for (LayerEntityAction<Card,TiledCardsRotatedLayout> lea : actions2.values()) {
-			Transform t = lea.le.layer().transform();	
-			float x = lea.origX + alpha *( lea.x-lea.origX);
-			float y = lea.origY+ alpha *( lea.y-lea.origY);
-			float rot = lea.origRot + alpha *( lea.rot-lea.origRot);
-			float scale = lea.origScale + alpha *( lea.scale-lea.origScale);
-			
-			t.setTx( x);
-			t.setTy( y);
-			t.setRotation(rot);
-			t.setUniformScale(scale);
-			
-		}
-	}
+//	public void paint(float alpha) {
+//		for (LayerEntityAction<Card,TiledCardsRotatedLayout> lea : actions2.values()) {
+//			Transform t = lea.le.layer().transform();	
+//			float x = lea.origX + alpha *( lea.x-lea.origX);
+//			float y = lea.origY+ alpha *( lea.y-lea.origY);
+//			float rot = lea.origRot + alpha *( lea.rot-lea.origRot);
+//			float scale = lea.origScale + alpha *( lea.scale-lea.origScale);
+//			
+//			t.setTx( x);
+//			t.setTy( y);
+//			t.setRotation(rot);
+//			t.setUniformScale(scale);
+//			
+//		}
+//	}
 
-	public void update(float delta) {
-		for (CardTableAction cta : new ArrayList<CardTableAction>(
-				actions.values())) {
-			cta.update();
-			if (cta.isEnd) {
-				actions.remove(cta);
-			}
-		}
-		
-		for (LayerEntityAction<Card,TiledCardsRotatedLayout> lea : new ArrayList<LayerEntityAction<Card,TiledCardsRotatedLayout>>(actions2.values())) {
-			if (lea.isEnd) {
-				actions2.remove(lea);
-			} else {
-				lea.update();
-			}
-		}
-	}
+//	public void update(float delta) {
+//		for (CardTableAction cta : new ArrayList<CardTableAction>(
+//				actions.values())) {
+//			cta.update();
+//			if (cta.isEnd) {
+//				actions.remove(cta);
+//			}
+//		}
+//		
+//		for (LayerEntityAction<Card,TiledCardsRotatedLayout> lea : new ArrayList<LayerEntityAction<Card,TiledCardsRotatedLayout>>(actions2.values())) {
+//			if (lea.isEnd) {
+//				actions2.remove(lea);
+//			} else {
+//				lea.update();
+//			}
+//		}
+//	}
 	
 
 	

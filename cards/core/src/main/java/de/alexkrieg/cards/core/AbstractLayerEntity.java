@@ -17,15 +17,18 @@ package de.alexkrieg.cards.core;
 
 import playn.core.Layer;
 
-public abstract class AbstractLayerEntity 
-		implements LayerEntity {
+public abstract class AbstractLayerEntity implements LayerEntity {
 
 	protected Layer layer;
 
-
-
+	LayerEntityContainer<?, ?> container;
 
 	protected AbstractLayerEntity() {
+	}
+
+	@Override
+	public void setContainer(LayerEntityContainer<?, ?> container) {
+		this.container = container;
 	}
 
 	@Override
@@ -33,19 +36,18 @@ public abstract class AbstractLayerEntity
 		return CardGame.logString(this);
 	}
 
-
 	@Override
 	public Layer layer() {
 		return layer;
 	}
 
-
 	@Override
 	public void init() {
-		this.layer = createLayer();
+		if (this.layer == null) {
+			this.layer = createLayer();
+		}
 	}
-	
-	protected abstract Layer createLayer();
 
+	protected abstract Layer createLayer();
 
 }

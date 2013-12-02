@@ -13,11 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package de.alexkrieg.cards.core;
+package de.alexkrieg.cards.core.action;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.alexkrieg.cards.core.Card;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 import pythagoras.f.Transform;

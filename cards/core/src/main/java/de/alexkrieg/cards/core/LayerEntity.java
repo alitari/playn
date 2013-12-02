@@ -6,5 +6,7 @@ public interface LayerEntity {
 	Layer layer();
 	
     void init();
+    
+    void setContainer( LayerEntityContainer<?, ?> container);
 
 }

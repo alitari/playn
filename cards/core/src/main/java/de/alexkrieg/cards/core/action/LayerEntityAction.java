@@ -13,9 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package de.alexkrieg.cards.core;
+package de.alexkrieg.cards.core.action;
 
 import static playn.core.PlayN.log;
+import de.alexkrieg.cards.core.LayerEntity;
+import de.alexkrieg.cards.core.LayerEntityContainer;
 import de.alexkrieg.cards.core.layout.Layout;
 import pythagoras.f.Transform;
 

@@ -106,6 +106,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
 	public void put(T child, Object param) {
 		child.init();
+		child.setContainer(this);
 		cl.recalc(child, param);
 		put(child, cl.x(child), cl.y(child), cl.rot(child), cl.scale(child));
 		childs.add(child);
