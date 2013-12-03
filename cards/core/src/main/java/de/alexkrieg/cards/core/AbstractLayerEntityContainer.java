@@ -33,6 +33,8 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
 
 	
+	
+
 	private float width = 0;
 	private float height = 0;
 
@@ -104,9 +106,23 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
 	protected abstract L createLayout();
 
+	
+	@Override
+	public void remove(T child) {
+		child.setContainer(null);
+		childs.remove(child);
+	}
+	
+	
+	@Override
 	public void put(T child, Object param) {
 		child.init();
+		LayerEntityContainer<T, ? > childContainer = (LayerEntityContainer<T, ?>) child.getContainer();
+		if ( childContainer != null) {
+			childContainer.remove(child);
+		}
 		child.setContainer(this);
+		
 		cl.recalc(child, param);
 		put(child, cl.x(child), cl.y(child), cl.rot(child), cl.scale(child));
 		childs.add(child);

@@ -28,7 +28,7 @@ public abstract class CardGame extends Game.Default {
 	protected CardTable cardTable;
 	protected GameHUD gameHUD;
 
-	public static final int UPDATE_RATE = 25;
+	public static final int UPDATE_RATE = 500;
 
 	public CardGame() {
 		super(UPDATE_RATE);
@@ -57,10 +57,9 @@ public abstract class CardGame extends Game.Default {
 
 	@Override
 	public void paint(float alpha) {
-		//cardTable.paint(alpha);
-
-		// the background automatically paints itself, so no need to do anything
-		// here!
+	if ( currentAction != null) {
+		currentAction.paint(alpha);
+	}
 	}
 
 	@Override

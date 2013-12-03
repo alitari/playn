@@ -15,5 +15,7 @@ public interface LayerEntityContainer<T extends LayerEntity, L extends Layout<T>
 	L layout();
 	
 	void put(T child, Object param);
+	
+	void remove( T child);
 
 }

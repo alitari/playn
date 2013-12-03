@@ -25,6 +25,13 @@ public abstract class AbstractLayerEntity implements LayerEntity {
 
 	protected AbstractLayerEntity() {
 	}
+	
+	
+	@Override
+	public LayerEntityContainer<?, ?> getContainer() {
+		return container;
+	}
+
 
 	@Override
 	public void setContainer(LayerEntityContainer<?, ?> container) {

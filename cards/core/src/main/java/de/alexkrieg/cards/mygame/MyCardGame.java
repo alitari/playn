@@ -34,29 +34,36 @@ public class MyCardGame extends CardGame {
 	public void init() {
 		super.init();
 		// graphics().setSize((int)cardTable.width, (int)cardTable.height);
-		cardTable.put(new CardSlot("North "), NESWLayout.NESW.N);
-		cardTable.put(new CardSlot("East"), NESWLayout.NESW.E);
-		cardTable.put(new CardSlot("South"), NESWLayout.NESW.S);
-		cardTable.put(new CardSlot("West"), NESWLayout.NESW.W);
-		cardTable.put(new CardSlot("Center"), NESWLayout.NESW.C);
+		final CardSlot csNorth = new CardSlot("North ");
+		cardTable.put(csNorth, NESWLayout.NESW.N);
+		CardSlot csEast = new CardSlot("East");
+		cardTable.put(csEast, NESWLayout.NESW.E);
+		CardSlot csSouth = new CardSlot("South");
+		cardTable.put(csSouth, NESWLayout.NESW.S);
+		CardSlot csWest = new CardSlot("West");
+		cardTable.put(csWest, NESWLayout.NESW.W);
+		CardSlot csCenter = new CardSlot("Center");
+		cardTable.put(csCenter, NESWLayout.NESW.C);
 
 		// add a listener for pointer (mouse, touch) input
 		pointer().setListener(new Pointer.Adapter() {
 			@Override
 			public void onPointerEnd(Pointer.Event event) {
-
-				Iterator<CardSlot> cardSlotIter = cardTable.childs().iterator();
-				int sloNr = mouseCount % 4;
-				CardSlot cardSlot0 = cardSlotIter.next();
-				for (int i = 0; i < sloNr; i++) {
-					cardSlot0 = cardSlotIter.next();
-				}
-				Card c0 = new Card(Card.Value.values()[mouseCount]);
-				CardMoveAction cardMoveAction = new CardMoveAction(c0,
-						cardSlot0);
-				schedule(cardMoveAction);
-				mouseCount++;
-
+				
+					Iterator<CardSlot> cardSlotIter = cardTable.childs()
+							.iterator();
+					int sloNr = mouseCount % 4;
+					CardSlot cardSlot0 = cardSlotIter.next();
+					for ( int i = 0; i < sloNr;i++) {
+					  cardSlot0 = cardSlotIter.next();
+					}
+					Card c0 = new Card(Card.Value.values()[mouseCount]);
+					csNorth.put(c0 ,null);
+					CardMoveAction cardMoveAction = new CardMoveAction(c0, cardSlot0);
+					schedule(cardMoveAction);
+					mouseCount++;
+				
+				
 				// LayerEntityAction<Card> action = new
 				// LayerEntityAction<Card>(c,cardSlot,1,null);
 

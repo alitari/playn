@@ -1,5 +1,6 @@
 package de.alexkrieg.cards.core.layout;
 
+import static playn.core.PlayN.*;
 import de.alexkrieg.cards.core.Card;
 
 public class TiledCardsRotatedLayout extends TiledCardsLayout {
@@ -18,6 +19,8 @@ public class TiledCardsRotatedLayout extends TiledCardsLayout {
 		y = container.height();
 		rot = calcRotation(cardCount);
 		scale = 1;
+//		log().info("recalc: x="+x+",y="+y);
+		
 
 	}
 
