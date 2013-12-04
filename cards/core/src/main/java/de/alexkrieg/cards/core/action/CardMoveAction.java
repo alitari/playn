@@ -1,8 +1,8 @@
 package de.alexkrieg.cards.core.action;
 
 
-import static playn.core.PlayN.*;
 import playn.core.Layer;
+import pythagoras.f.Point;
 import pythagoras.f.Transform;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
@@ -16,17 +16,18 @@ public class CardMoveAction implements Action {
 	final float rotationtimes = 5;
 
 	
-	final float originX;
-	final float originy;
+	final Point originPoint;
 	final float originRotation;
 	final float originScale;
 
-	final float destX;
-	final float desty;
+	final Point destPoint = new Point();
+	
 	final float destRotation;
 	final float destScale;
 	final  float dx;
 	final float dy;
+	final private float dRotation;
+	final private float dScale;
 	
 	int paintTimes = 0;
 	
@@ -42,22 +43,25 @@ public class CardMoveAction implements Action {
 		originRotation = t.rotation();
 		originScale = t.uniformScale();
 		
-		originX = card.getContainer().layer().tx()+ t.tx();
-		originy = card.getContainer().layer().ty()+t.ty();
-		
+		originPoint = new Point(t.tx(),t.ty());
 		
 		TiledCardsRotatedLayout layout = destination.layout();
 		layout.recalc(card, null);
+		Layer destLayer = destination.layer();
+		Point destScreen = Layer.Util.layerToScreen(destLayer, layout.x(card), layout.y(card));
+		Layer.Util.screenToLayer(card.getContainer().layer(), destScreen,destPoint);
 		
-		destX = destination.layer().tx()+ layout.x(card);
-		desty = destination.layer().ty()+layout.y(card);
-		destRotation = layout.rot(card);
-		destScale = layout.scale(card);
+		destRotation = destLayer.rotation()+ layout.rot(card);
+		destScale = destLayer.transform().uniformScale();
 		
-		dx = destX- originX;
-		dy = desty- originy;
-		log().info("ox,oy---destx,desty:"+originX+","+originy+"---"+destX+","+desty);
-		log().info("dx,dy:"+dx+","+dy);
+		dx = destPoint.x - originPoint.x;
+		dy = destPoint.y- originPoint.y;
+		
+		dRotation = destRotation -  originRotation;
+		dScale = destScale - originScale;
+		
+//		log().info("ox,oy---destPoint:"+originX+","+originy+"---"+destPoint);
+//		log().info("dx,dy:"+dx+","+dy);
 	}
 
 	@Override
@@ -68,13 +72,13 @@ public class CardMoveAction implements Action {
 
 	@Override
 	public void paint(float alpha) {
-		Transform t = card.layer().transform();
-		float x = originX +dx*alpha;
-		float y = originy+ dy*alpha;
-		t.setTx( x);
-		t.setTy( y);
-		paintTimes++;
-		log().info(paintTimes+": alpha,x,y:"+alpha+","+x+","+y);
+		Layer layer = card.layer();
+		Transform t = layer.transform();
+		t.setTranslation(originPoint.x +dx*alpha, originPoint.y+ dy*alpha);
+//		layer.setRotation((float)(2*Math.PI*alpha));
+//		t.uniformScale(originScale +dScale*alpha);
+//		paintTimes++;
+//		log().info(paintTimes+": alpha,x,y:"+alpha+","+x+","+y);
 	}
 
 }
