@@ -2,6 +2,7 @@ package de.alexkrieg.cards.core.action;
 
 
 import playn.core.Layer;
+import static playn.core.PlayN.*;
 import pythagoras.f.Point;
 import pythagoras.f.Transform;
 import de.alexkrieg.cards.core.Card;
@@ -40,6 +41,7 @@ public class CardMoveAction implements Action {
 		this.destination = destination;
 		Layer cl = card.layer();
 		Transform t = cl.transform();
+		
 		originRotation = t.rotation();
 		originScale = t.uniformScale();
 		
@@ -51,7 +53,7 @@ public class CardMoveAction implements Action {
 		Point destScreen = Layer.Util.layerToScreen(destLayer, layout.x(card), layout.y(card));
 		Layer.Util.screenToLayer(card.getContainer().layer(), destScreen,destPoint);
 		
-		destRotation = destLayer.rotation()+ layout.rot(card);
+		destRotation = layout.rot(card);
 		destScale = destLayer.transform().uniformScale();
 		
 		dx = destPoint.x - originPoint.x;
@@ -61,24 +63,32 @@ public class CardMoveAction implements Action {
 		dScale = destScale - originScale;
 		
 //		log().info("ox,oy---destPoint:"+originX+","+originy+"---"+destPoint);
-//		log().info("dx,dy:"+dx+","+dy);
+		log().info("dx,dy:"+dx+","+dy);
 	}
 
 	@Override
 	public void execute() {
 		destination.put(card, null);
-
 	}
 
 	@Override
-	public void paint(float alpha) {
+	public void paint(int tick,float alpha) {
 		Layer layer = card.layer();
 		Transform t = layer.transform();
-		t.setTranslation(originPoint.x +dx*alpha, originPoint.y+ dy*alpha);
-//		layer.setRotation((float)(2*Math.PI*alpha));
+		int duration = getDuration();
+		float factor = tick == 0 ? 0 :(float)((float)tick/(duration+1)) +(float)((float)alpha/(duration+1));
+		t.setTranslation(originPoint.x +dx   *factor, originPoint.y+ dy*factor);
+		layer.setRotation(originRotation+ dRotation *factor);
 //		t.uniformScale(originScale +dScale*alpha);
 //		paintTimes++;
-//		log().info(paintTimes+": alpha,x,y:"+alpha+","+x+","+y);
+//		log().info("tick,alpha,factor"+tick+","+alpha+","+factor);
 	}
+
+	@Override
+	public int getDuration() {
+		return 5;
+	}
+	
+	
 
 }

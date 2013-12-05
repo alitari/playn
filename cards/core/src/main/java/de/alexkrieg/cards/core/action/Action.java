@@ -4,7 +4,9 @@ public interface Action {
 	
 	void execute();
 
-	void paint(float alpha);
+	int getDuration();
+
+	void paint(int tick, float alpha);
 	
 	
 

@@ -57,7 +57,7 @@ public class MyCardGame extends CardGame {
 					for ( int i = 0; i < sloNr;i++) {
 					  cardSlot0 = cardSlotIter.next();
 					}
-					Card c0 = new Card(Card.Value.values()[mouseCount]);
+					Card c0 = new Card(Card.Value.values()[mouseCount%52]);
 					csNorth.put(c0 ,null);
 					CardMoveAction cardMoveAction = new CardMoveAction(c0, cardSlot0);
 					schedule(cardMoveAction);
