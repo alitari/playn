@@ -43,6 +43,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 	  super();
 		childs = new ArrayList<T>();
 		this.layout = layout;
+		this.layout.setContainer(this);
 	}
 	
 	@Override
@@ -89,7 +90,6 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
 			}
 		}
-		this.layout.setContainer(this);
 		((GroupLayer)layer()).setOrigin(width / 2, height / 2);
 
 	}

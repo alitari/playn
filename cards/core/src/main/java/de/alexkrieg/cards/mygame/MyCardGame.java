@@ -15,7 +15,7 @@ import de.alexkrieg.cards.core.action.CardMoveAction2;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 
-public class MyCardGame extends CardGame {
+public class MyCardGame extends CardGame<NESWLayout,MyPlayer> {
 
 	ImageLayer clayer;
 
@@ -25,20 +25,18 @@ public class MyCardGame extends CardGame {
 
 	public static final int UPDATE_RATE = 25;
 
+	
+	final CardSlot<TiledCardsRotatedLayout> csNorth = new CardSlot<TiledCardsRotatedLayout>("North ",new TiledCardsRotatedLayout(0, 10));
+  final CardSlot<TiledCardsRotatedLayout> csEast = new CardSlot<TiledCardsRotatedLayout>("East",new TiledCardsRotatedLayout(0, 10));
+  final CardSlot<TiledCardsRotatedLayout> csSouth = new CardSlot<TiledCardsRotatedLayout>("South",new TiledCardsRotatedLayout(0, 10));
+  final CardSlot<TiledCardsRotatedLayout> csWest = new CardSlot<TiledCardsRotatedLayout>("West",new TiledCardsRotatedLayout(0, 10));
+  final CardSlot<TiledCardsRotatedLayout> csCenter = new CardSlot<TiledCardsRotatedLayout>("Center",new TiledCardsRotatedLayout(0, 10));
+	
+	
 	@Override
 	public void init() {
-		super.init();
-		// graphics().setSize((int)cardTable.width, (int)cardTable.height);
-		final CardSlot<TiledCardsRotatedLayout> csNorth = new CardSlot<TiledCardsRotatedLayout>("North ",new TiledCardsRotatedLayout(0, 10));
-		cardTable.put(csNorth, NESWLayout.NESW.N);
-		CardSlot<TiledCardsRotatedLayout> csEast = new CardSlot<TiledCardsRotatedLayout>("East",new TiledCardsRotatedLayout(0, 10));
-		cardTable.put(csEast, NESWLayout.NESW.E);
-		CardSlot<TiledCardsRotatedLayout> csSouth = new CardSlot<TiledCardsRotatedLayout>("South",new TiledCardsRotatedLayout(0, 10));
-		cardTable.put(csSouth, NESWLayout.NESW.S);
-		CardSlot<TiledCardsRotatedLayout> csWest = new CardSlot<TiledCardsRotatedLayout>("West",new TiledCardsRotatedLayout(0, 10));
-		cardTable.put(csWest, NESWLayout.NESW.W);
-		CardSlot<TiledCardsRotatedLayout> csCenter = new CardSlot<TiledCardsRotatedLayout>("Center",new TiledCardsRotatedLayout(0, 10));
-		cardTable.put(csCenter, NESWLayout.NESW.C);
+	  super.init();
+		
 
 		// add a listener for pointer (mouse, touch) input
 		pointer().setListener(new Pointer.Adapter() {
@@ -49,6 +47,7 @@ public class MyCardGame extends CardGame {
 							.iterator();
 					int sloNr = mouseCount % 4;
 					CardSlot<?> cardSlot0 = cardSlotIter.next();
+					CardSlot<?> csNorth = cardSlot0; 
 					for ( int i = 0; i < sloNr;i++) {
 					  cardSlot0 = cardSlotIter.next();
 					}
@@ -58,43 +57,41 @@ public class MyCardGame extends CardGame {
 					schedule(cardMoveAction);
 					mouseCount++;
 				
-				
-				// LayerEntityAction<Card> action = new
-				// LayerEntityAction<Card>(c,cardSlot,1,null);
-
-				// cardTable.put(action);
-				// // cardTable.childs.get(0).put(c,nul
-
-				// log().info("c0:"+c0);
-				// log().info("c1:"+c1);
-				// log().info("c2:"+c2);
-				// log().info("c3:"+c3);
-				//
-				// log().info("cs0:"+cardSlot0);
-				// log().info("cs1:"+cardSlot1);
-				// log().info("cs2:"+cardSlot2);
-				// log().info("cs3:"+cardSlot3);
-
-				// Move move1 = new CardTableAction.Move(c, event.x(),
-				// event.y(), 50,2f,2f);
-				// Move move2 = new CardTableAction.Move(c, 100, 100,
-				// 50,2f,-2f);
-				// Move move3 = new CardTableAction.Move(c, event.x(),
-				// event.y(), 50,2f,0);
-				// cardTable.put(new CardTableAction.Sequence(new
-				// CardTableAction[]{move1,move2,move3}));
 			}
 		});
 
 	}
-
-	protected CardTable<NESWLayout> createCardTable() {
-		return new CardTable<NESWLayout>(new NESWLayout(10));
+	
+	
+  @Override
+  protected CardTable<NESWLayout> createCardTable() {
+	  CardTable<NESWLayout> table = new CardTable<NESWLayout>(new NESWLayout(10));
+	  table.init();
+    table.put(csNorth, NESWLayout.NESW.N);
+    table.put(csEast, NESWLayout.NESW.E);
+    table.put(csSouth, NESWLayout.NESW.S);
+    table.put(csWest, NESWLayout.NESW.W);
+    table.put(csCenter, NESWLayout.NESW.C);
+    return table;
+	  
 	}
 
 	@Override
 	protected GameHUD createGameHUD() {
-		return new MyGameHUD(cardTable);
+		MyGameHUD myGameHUD = new MyGameHUD(cardTable);
+		myGameHUD.init();
+    return myGameHUD;
 	}
+
+
+
+
+  @Override
+  protected PlayerRegistry<MyPlayer> createPlayerRegistry() {
+    PlayerRegistry<MyPlayer> playerRegistry2 = new PlayerRegistry<MyPlayer>();
+    MyPlayer myPlayer = new MyPlayer("Alex");
+    playerRegistry2.register(myPlayer);
+    return playerRegistry2;
+  }
 
 }
