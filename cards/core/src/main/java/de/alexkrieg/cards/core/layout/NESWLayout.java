@@ -3,7 +3,7 @@ package de.alexkrieg.cards.core.layout;
 import de.alexkrieg.cards.core.CardSlot;
 
 
-public class NESWLayout extends Layout<CardSlot > {
+public class NESWLayout extends Layout<CardSlot<?> > {
 
 	public static enum NESW {
 		N,E,S,W,C;
@@ -17,7 +17,7 @@ public class NESWLayout extends Layout<CardSlot > {
 	}
 
 	@Override
-	public void recalc(CardSlot child, Object p) {
+	public void recalc(CardSlot<?> child, Object p) {
 		scale = 1;
 		if ( p == null) {
 			//TODO: find next free

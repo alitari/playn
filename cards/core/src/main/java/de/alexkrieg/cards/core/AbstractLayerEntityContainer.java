@@ -32,18 +32,17 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 		extends AbstractLayerEntity implements LayerEntityContainer<T,L> {
 
 
-	
-	
-
 	private float width = 0;
 	private float height = 0;
 
-	protected L cl;
+	protected final L layout;
 
 	protected List<T> childs;
 
-	protected AbstractLayerEntityContainer() {
+	protected AbstractLayerEntityContainer(L layout) {
+	  super();
 		childs = new ArrayList<T>();
+		this.layout = layout;
 	}
 	
 	@Override
@@ -56,8 +55,6 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 		return width;
 	}
 	
-	
-
 	@Override
 	public String toString() {
 		return CardGame.logString(this);
@@ -70,7 +67,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
 	@Override
 	public L layout() {
-		return this.cl;
+		return this.layout;
 	}
 
 
@@ -78,7 +75,6 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 	@Override
 	public void init() {
 		super.init();
-		this.cl = createLayout();
 		
 		List<Layer> layers = new ArrayList<Layer>();
 		fillWithLayers(layers);
@@ -93,7 +89,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
 			}
 		}
-		this.cl.setContainer(this);
+		this.layout.setContainer(this);
 		((GroupLayer)layer()).setOrigin(width / 2, height / 2);
 
 	}
@@ -103,8 +99,6 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 	protected Layer createLayer() {
 		return graphics().createGroupLayer();
 	}
-
-	protected abstract L createLayout();
 
 	
 	@Override
@@ -123,8 +117,8 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 		}
 		child.setContainer(this);
 		
-		cl.recalc(child, param);
-		put(child, cl.x(child), cl.y(child), cl.rot(child), cl.scale(child));
+		layout.recalc(child, param);
+		put(child, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
 		childs.add(child);
 	}
 

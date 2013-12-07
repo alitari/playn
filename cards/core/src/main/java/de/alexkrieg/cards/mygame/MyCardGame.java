@@ -13,6 +13,7 @@ import de.alexkrieg.cards.core.CardTable;
 import de.alexkrieg.cards.core.GameHUD;
 import de.alexkrieg.cards.core.action.CardMoveAction2;
 import de.alexkrieg.cards.core.layout.NESWLayout;
+import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 
 public class MyCardGame extends CardGame {
 
@@ -28,15 +29,15 @@ public class MyCardGame extends CardGame {
 	public void init() {
 		super.init();
 		// graphics().setSize((int)cardTable.width, (int)cardTable.height);
-		final CardSlot csNorth = new CardSlot("North ");
+		final CardSlot<TiledCardsRotatedLayout> csNorth = new CardSlot<TiledCardsRotatedLayout>("North ",new TiledCardsRotatedLayout(0, 10));
 		cardTable.put(csNorth, NESWLayout.NESW.N);
-		CardSlot csEast = new CardSlot("East");
+		CardSlot<TiledCardsRotatedLayout> csEast = new CardSlot<TiledCardsRotatedLayout>("East",new TiledCardsRotatedLayout(0, 10));
 		cardTable.put(csEast, NESWLayout.NESW.E);
-		CardSlot csSouth = new CardSlot("South");
+		CardSlot<TiledCardsRotatedLayout> csSouth = new CardSlot<TiledCardsRotatedLayout>("South",new TiledCardsRotatedLayout(0, 10));
 		cardTable.put(csSouth, NESWLayout.NESW.S);
-		CardSlot csWest = new CardSlot("West");
+		CardSlot<TiledCardsRotatedLayout> csWest = new CardSlot<TiledCardsRotatedLayout>("West",new TiledCardsRotatedLayout(0, 10));
 		cardTable.put(csWest, NESWLayout.NESW.W);
-		CardSlot csCenter = new CardSlot("Center");
+		CardSlot<TiledCardsRotatedLayout> csCenter = new CardSlot<TiledCardsRotatedLayout>("Center",new TiledCardsRotatedLayout(0, 10));
 		cardTable.put(csCenter, NESWLayout.NESW.C);
 
 		// add a listener for pointer (mouse, touch) input
@@ -87,8 +88,8 @@ public class MyCardGame extends CardGame {
 
 	}
 
-	protected CardTable createCardTable() {
-		return new CardTable();
+	protected CardTable<NESWLayout> createCardTable() {
+		return new CardTable<NESWLayout>(new NESWLayout(10));
 	}
 
 	@Override
