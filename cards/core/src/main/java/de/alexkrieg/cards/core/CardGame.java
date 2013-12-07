@@ -28,7 +28,7 @@ public abstract class CardGame extends Game.Default {
 		return str;
 	}
 
-	protected ActionManager actionManager = new ActionManager(10);
+	protected ActionManager actionManager = new ActionManager(50);
 
 	protected Action[] currentActions = new Action[5];
 

@@ -17,22 +17,13 @@ package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
-import static playn.core.PlayN.log;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import de.alexkrieg.cards.core.action.CardTableAction;
-import de.alexkrieg.cards.core.action.LayerEntityAction;
-import de.alexkrieg.cards.core.layout.Layout;
-import de.alexkrieg.cards.core.layout.NESWLayout;
-import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
-import pythagoras.f.Transform;
+import de.alexkrieg.cards.core.layout.NESWLayout;
 
 public class CardTable extends AbstractLayerEntityContainer<CardSlot,NESWLayout> {
 

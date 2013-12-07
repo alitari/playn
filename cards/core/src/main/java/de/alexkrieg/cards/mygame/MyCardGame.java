@@ -1,24 +1,18 @@
 package de.alexkrieg.cards.mygame;
 
-import static playn.core.PlayN.*;
+import static playn.core.PlayN.pointer;
 
 import java.util.Iterator;
 
+import playn.core.ImageLayer;
+import playn.core.Pointer;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.CardTable;
 import de.alexkrieg.cards.core.GameHUD;
-import de.alexkrieg.cards.core.Card.Value;
-import de.alexkrieg.cards.core.action.CardMoveAction;
+import de.alexkrieg.cards.core.action.CardMoveAction2;
 import de.alexkrieg.cards.core.layout.NESWLayout;
-import de.alexkrieg.cards.core.layout.NESWLayout.NESW;
-import playn.core.Game;
-import playn.core.GroupLayer;
-import playn.core.Image;
-import playn.core.ImageLayer;
-import playn.core.Layer;
-import playn.core.Pointer;
 
 public class MyCardGame extends CardGame {
 
@@ -59,7 +53,7 @@ public class MyCardGame extends CardGame {
 					}
 					Card c0 = new Card(Card.Value.values()[mouseCount%52]);
 					csNorth.put(c0 ,null);
-					CardMoveAction cardMoveAction = new CardMoveAction(c0, cardSlot0);
+					CardMoveAction2 cardMoveAction = new CardMoveAction2(c0,25, cardSlot0);
 					schedule(cardMoveAction);
 					mouseCount++;
 				
