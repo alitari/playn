@@ -12,9 +12,9 @@ import de.alexkrieg.cards.core.layout.AbsolutLayout;
 
 public abstract class GameHUD extends AbstractLayerEntityContainer<HUDSegment,AbsolutLayout> {
 	
-	final protected CardTable cardTable;
+	final protected CardTable<?> cardTable;
 
-	public GameHUD(CardTable cardTable) {
+	public GameHUD(CardTable<?> cardTable) {
 		super(new AbsolutLayout());
 		this.cardTable = cardTable;
 	}

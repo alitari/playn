@@ -9,8 +9,8 @@ import de.alexkrieg.cards.core.layout.Layout;
 
 public class MoveAction<T extends LayerEntity, L extends Layout<T>> extends TransformAction {
 
-  private final T layerEntity;
-  private final LayerEntityContainer<T, L> destination;
+  protected final T layerEntity;
+  protected  final LayerEntityContainer<T, L> destination;
 
   public MoveAction(T layerEntity, int duration, LayerEntityContainer<T, L> destination) {
     super(layerEntity.layer(), duration);

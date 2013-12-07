@@ -10,4 +10,12 @@ public class CardMoveAction2 extends MoveAction<Card, TiledCardsRotatedLayout> {
     super(card, duration, destination);
   }
 
+  @Override
+  public void execute() {
+    super.execute();
+    layerEntity.setSide(Card.Side.Image);
+  }
+  
+  
+
 }

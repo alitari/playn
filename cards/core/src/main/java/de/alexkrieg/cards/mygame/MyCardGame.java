@@ -21,7 +21,7 @@ public class MyCardGame extends CardGame {
 
 	int mouseCount = 0;
 
-	protected CardSlot slot;
+	protected CardSlot<?> slot;
 
 	public static final int UPDATE_RATE = 25;
 
@@ -45,10 +45,10 @@ public class MyCardGame extends CardGame {
 			@Override
 			public void onPointerEnd(Pointer.Event event) {
 				
-					Iterator<CardSlot> cardSlotIter = cardTable.childs()
+					Iterator<CardSlot<?>> cardSlotIter = cardTable.childs()
 							.iterator();
 					int sloNr = mouseCount % 4;
-					CardSlot cardSlot0 = cardSlotIter.next();
+					CardSlot<?> cardSlot0 = cardSlotIter.next();
 					for ( int i = 0; i < sloNr;i++) {
 					  cardSlot0 = cardSlotIter.next();
 					}
