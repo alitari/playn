@@ -50,9 +50,12 @@ public abstract class AbstractLayerEntity implements LayerEntity {
 
 	@Override
 	public void init() {
-		if (this.layer == null) {
+		if (isInitialized()) return;
 			this.layer = createLayer();
-		}
+	}
+	
+	public boolean isInitialized() {
+	  return this.layer != null;
 	}
 
 	protected abstract Layer createLayer();

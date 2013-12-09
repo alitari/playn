@@ -18,35 +18,66 @@ import static playn.core.PlayN.graphics;
 
 import java.util.List;
 
+import playn.core.GroupLayer;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
+import tripleplay.ui.Background;
+import tripleplay.ui.Group;
+import tripleplay.ui.Interface;
+import tripleplay.ui.Label;
+import tripleplay.ui.Root;
+import tripleplay.ui.SimpleStyles;
+import tripleplay.ui.Style;
+import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.layout.Layout;
 
 public class CardTable<L extends Layout<CardSlot<?>>> extends
     AbstractLayerEntityContainer<CardSlot<?>, L> {
 
+  private Interface iface;
+
   public CardTable(L layout) {
-    super(layout);
+    super(layout,graphics().width(),graphics().height());
+  }
+  
+  public Interface iface() {
+    return iface;
   }
 
   @Override
   public void init() {
+    if (isInitialized()) return;
+    iface = new Interface();
     super.init();
     layer().setOrigin(0, 0);
   }
 
   @Override
   protected void fillWithLayers(List<Layer> layers) {
-    layers.add(createImageLayer());
-
+    layers.add(createTableLayer());
+    layers.add(createHUDLayer());
   }
 
-  protected ImageLayer createImageLayer() {
+  private Layer createHUDLayer() {
+    // create our demo interface
+    Root root = iface.createRoot(AxisLayout.vertical().gap(15), SimpleStyles.newSheet());
+    root.setSize(width(), height());
+    root.addStyles(Style.BACKGROUND.is(Background.blank().inset(5)));
+
+    Group buttons;
+    root.add(new Label("Card Table"),
+             buttons = new Group(AxisLayout.vertical().offStretch())).addStyles(
+               Style.TEXT_WRAP.is(true));
+
+    return root.layer;
+  }
+
+  protected Layer createTableLayer() {
     Image image = assets().getImage("images/cardtable.png");
     final ImageLayer imageLayer = graphics().createImageLayer(image);
-    imageLayer.setWidth(graphics().width());
-    imageLayer.setHeight(graphics().height());
+    imageLayer.setWidth(width());
+    imageLayer.setHeight(height());
     return imageLayer;
   }
 

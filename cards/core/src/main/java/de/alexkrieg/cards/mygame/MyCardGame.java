@@ -10,7 +10,6 @@ import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.CardTable;
-import de.alexkrieg.cards.core.GameHUD;
 import de.alexkrieg.cards.core.action.CardMoveAction2;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
@@ -75,15 +74,6 @@ public class MyCardGame extends CardGame<NESWLayout,MyPlayer> {
     return table;
 	  
 	}
-
-	@Override
-	protected GameHUD createGameHUD() {
-		MyGameHUD myGameHUD = new MyGameHUD(cardTable);
-		myGameHUD.init();
-    return myGameHUD;
-	}
-
-
 
 
   @Override

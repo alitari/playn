@@ -27,7 +27,7 @@ public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContain
 
 
   public CardSlot(String name, L layout) {
-    super(layout);
+    super(layout,100,100);
     this.name = name;
   }
 
@@ -39,7 +39,7 @@ public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContain
 
   protected Layer createCanvasLayer() {
     ImageLayer layer = graphics().createImageLayer();
-    layer.setSize(100, 100);
+    layer.setSize(width(), height());
     return layer;
   }
 

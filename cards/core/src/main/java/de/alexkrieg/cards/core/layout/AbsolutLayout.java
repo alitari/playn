@@ -1,14 +1,16 @@
 package de.alexkrieg.cards.core.layout;
 
-import de.alexkrieg.cards.core.HUDSegment;
+import de.alexkrieg.cards.core.LayerEntity;
 
-public class AbsolutLayout extends Layout<HUDSegment> {
+public class AbsolutLayout<T extends LayerEntity> extends Layout<T> {
 
 	public static class Attr {
 		public final float x;
 		public final float y;
 		public final float rot;
 		public final float scale;
+		
+		
 		public Attr(float x, float y, float rot, float scale) {
 			super();
 			this.x = x;
@@ -24,7 +26,7 @@ public class AbsolutLayout extends Layout<HUDSegment> {
 	}
 
 	@Override
-	public void recalc(HUDSegment child,Object p) {
+	public void recalc(T child,Object p) {
 		Attr attr = (Attr) p;
 		x = attr.x;
 		y = attr.y;

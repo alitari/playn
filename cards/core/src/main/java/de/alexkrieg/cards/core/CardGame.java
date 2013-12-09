@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import playn.core.Game;
 import playn.core.GroupLayer;
 import playn.core.Layer;
+import playn.core.util.Clock;
 import de.alexkrieg.cards.core.action.Action;
 import de.alexkrieg.cards.core.layout.Layout;
 
@@ -30,7 +31,6 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
   protected ActionManager actionManager = new ActionManager(50);
 
   protected CardTable<L> cardTable;
-  protected GameHUD gameHUD;
   protected PlayerRegistry<P> playerRegistry;
 
   public static final int UPDATE_RATE = 50;
@@ -61,18 +61,14 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
   @Override
   public void init() {
     cardTable = createCardTable();
-    gameHUD = createGameHUD();
     playerRegistry = createPlayerRegistry();
-
     GroupLayer rootLayer = graphics().rootLayer();
     rootLayer.add(cardTable.layer());
-    rootLayer.add(gameHUD.layer());
+    
   }
 
   protected abstract PlayerRegistry<P> createPlayerRegistry();
 
-
-  protected abstract GameHUD createGameHUD();
 
   protected abstract CardTable<L> createCardTable();
 
@@ -83,12 +79,21 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
   @Override
   public void paint(float alpha) {
     actionManager.paintActions(alpha);
+    if (cardTable.iface() != null) {
+      cardTable.iface().paint(_clock);
+    }
   }
 
   @Override
   public void update(int delta) {
     actionManager.executeActions();
     playerRegistry.updatePlayers();
+    if (cardTable.iface()!= null) {
+      cardTable.iface().update(delta);
+    }
+    
   }
+  
+  protected final Clock.Source _clock = new Clock.Source(UPDATE_RATE);
 
 }
