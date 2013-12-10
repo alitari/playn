@@ -18,11 +18,18 @@ import static playn.core.PlayN.graphics;
 
 import java.util.List;
 
-import playn.core.GroupLayer;
+import playn.core.CanvasImage;
+import playn.core.Font;
 import playn.core.Image;
 import playn.core.ImageLayer;
+import playn.core.ImmediateLayer;
 import playn.core.Layer;
+import playn.core.Surface;
+import playn.core.TextFormat;
+import playn.core.TextLayout;
+import react.UnitSlot;
 import tripleplay.ui.Background;
+import tripleplay.ui.Button;
 import tripleplay.ui.Group;
 import tripleplay.ui.Interface;
 import tripleplay.ui.Label;
@@ -34,20 +41,30 @@ import de.alexkrieg.cards.core.layout.Layout;
 
 public class CardTable<L extends Layout<CardSlot<?>>> extends
     AbstractLayerEntityContainer<CardSlot<?>, L> {
+  
+  
+  public static final Font TITLE_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 36);
+  
+
+  protected final CardGame cardGame;
+  
+  
 
   private Interface iface;
 
-  public CardTable(L layout) {
-    super(layout,graphics().width(),graphics().height());
+  public CardTable(CardGame<?,?> cardGame, L layout) {
+    super(layout, graphics().width(), graphics().height());
+    this.cardGame = cardGame;
   }
-  
+
   public Interface iface() {
     return iface;
   }
 
   @Override
   public void init() {
-    if (isInitialized()) return;
+    if (isInitialized())
+      return;
     iface = new Interface();
     super.init();
     layer().setOrigin(0, 0);
@@ -59,16 +76,27 @@ public class CardTable<L extends Layout<CardSlot<?>>> extends
     layers.add(createHUDLayer());
   }
 
+    
+
   private Layer createHUDLayer() {
     // create our demo interface
-    Root root = iface.createRoot(AxisLayout.vertical().gap(15), SimpleStyles.newSheet());
+    final Root root = iface.createRoot(AxisLayout.vertical().gap(15), SimpleStyles.newSheet());
     root.setSize(width(), height());
     root.addStyles(Style.BACKGROUND.is(Background.blank().inset(5)));
 
     Group buttons;
-    root.add(new Label("Card Table"),
-             buttons = new Group(AxisLayout.vertical().offStretch())).addStyles(
-               Style.TEXT_WRAP.is(true));
+    root.add(new Label("Card Table"), buttons = new Group(AxisLayout.vertical().offStretch())).addStyles(
+        Style.TEXT_WRAP.is(true));
+
+    Button button = new Button("Start");
+    buttons.add(button);
+    button.clicked().connect(new UnitSlot() {
+      @Override
+      public void onEmit() {
+        root.add(new Label("Game started"));
+
+      }
+    });
 
     return root.layer;
   }

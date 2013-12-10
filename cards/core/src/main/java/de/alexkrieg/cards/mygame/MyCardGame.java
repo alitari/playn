@@ -64,7 +64,7 @@ public class MyCardGame extends CardGame<NESWLayout,MyPlayer> {
 	
   @Override
   protected CardTable<NESWLayout> createCardTable() {
-	  CardTable<NESWLayout> table = new CardTable<NESWLayout>(new NESWLayout(10));
+	  CardTable<NESWLayout> table = new CardTable<NESWLayout>(this,new NESWLayout(10));
 	  table.init();
     table.put(csNorth, NESWLayout.NESW.N);
     table.put(csEast, NESWLayout.NESW.E);
