@@ -15,7 +15,7 @@
  */
 package de.alexkrieg.cards.android;
 
-import de.alexkrieg.cards.mygame.MyCardGame;
+import de.alexkrieg.cards.maumau.MaumauCardGame;
 import playn.android.GameActivity;
 import playn.core.PlayN;
 
@@ -23,6 +23,6 @@ public class CardsGameActivity extends GameActivity {
 
   @Override
   public void main(){
-    PlayN.run(new MyCardGame());
+    PlayN.run(new MaumauCardGame());
   }
 }

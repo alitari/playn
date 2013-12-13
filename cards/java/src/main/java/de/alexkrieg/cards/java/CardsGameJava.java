@@ -15,7 +15,7 @@
  */
 package de.alexkrieg.cards.java;
 
-import de.alexkrieg.cards.mygame.MyCardGame;
+import de.alexkrieg.cards.maumau.MaumauCardGame;
 import playn.core.PlayN;
 import playn.java.JavaGraphics;
 import playn.java.JavaPlatform;
@@ -33,7 +33,7 @@ public class CardsGameJava {
 		}
 		
 		graphics.setSize(width, height);
-		PlayN.run(new MyCardGame());
+		PlayN.run(new MaumauCardGame());
 
 	}
 }

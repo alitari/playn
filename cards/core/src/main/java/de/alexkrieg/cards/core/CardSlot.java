@@ -24,6 +24,8 @@ import de.alexkrieg.cards.core.layout.Layout;
 public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContainer<Card, L> {
 
   String name;
+  
+  
 
 
   public CardSlot(String name, L layout) {

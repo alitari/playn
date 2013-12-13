@@ -17,14 +17,14 @@ import static playn.core.PlayN.graphics;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import de.alexkrieg.cards.core.layout.Layout;
 import playn.core.GroupLayer;
-import playn.core.ImageLayer;
 import playn.core.Layer;
-import playn.core.Layer.HasSize;
 import pythagoras.f.Transform;
+import de.alexkrieg.cards.core.layout.Layout;
 
 public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L extends Layout<T>>
     extends AbstractLayerEntity implements LayerEntityContainer<T, L> {
@@ -34,11 +34,11 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
   protected final L layout;
 
-  protected List<T> childs;
+  protected Set<T> childs;
 
   protected AbstractLayerEntityContainer(L layout, float width, float height) {
     super();
-    childs = new ArrayList<T>();
+    childs = new HashSet<T>();
     this.layout = layout;
     this.layout.setContainer(this);
     this.width = width;
@@ -61,7 +61,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
   }
 
   @Override
-  public Collection<T> childs() {
+  public Set<T> childs() {
     return childs;
   }
 

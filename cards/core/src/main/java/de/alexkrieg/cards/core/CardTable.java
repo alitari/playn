@@ -39,20 +39,20 @@ import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public class CardTable<L extends Layout<CardSlot<?>>> extends
+public abstract class CardTable< G extends CardGame<?,?>,  L extends Layout<CardSlot<?>>> extends
     AbstractLayerEntityContainer<CardSlot<?>, L> {
   
   
   public static final Font TITLE_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 36);
   
 
-  protected final CardGame cardGame;
+  protected final G cardGame;
   
   
 
   private Interface iface;
 
-  public CardTable(CardGame<?,?> cardGame, L layout) {
+  public CardTable(G cardGame, L layout) {
     super(layout, graphics().width(), graphics().height());
     this.cardGame = cardGame;
   }
@@ -78,29 +78,19 @@ public class CardTable<L extends Layout<CardSlot<?>>> extends
 
     
 
-  private Layer createHUDLayer() {
+  protected Layer createHUDLayer() {
     // create our demo interface
     final Root root = iface.createRoot(AxisLayout.vertical().gap(15), SimpleStyles.newSheet());
     root.setSize(width(), height());
     root.addStyles(Style.BACKGROUND.is(Background.blank().inset(5)));
 
-    Group buttons;
-    root.add(new Label("Card Table"), buttons = new Group(AxisLayout.vertical().offStretch())).addStyles(
-        Style.TEXT_WRAP.is(true));
-
-    Button button = new Button("Start");
-    buttons.add(button);
-    button.clicked().connect(new UnitSlot() {
-      @Override
-      public void onEmit() {
-        root.add(new Label("Game started"));
-
-      }
-    });
-
+    fillHUDRoot(root);
+//    root.layer.setDepth(10000);
     return root.layer;
   }
 
+  protected abstract void fillHUDRoot(final Root root);
+    
   protected Layer createTableLayer() {
     Image image = assets().getImage("images/cardtable.png");
     final ImageLayer imageLayer = graphics().createImageLayer(image);

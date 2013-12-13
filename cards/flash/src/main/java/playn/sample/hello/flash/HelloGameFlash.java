@@ -15,7 +15,7 @@
  */
 package playn.sample.hello.flash;
 
-import de.alexkrieg.cards.mygame.MyCardGame;
+import de.alexkrieg.cards.maumau.MaumauCardGame;
 import playn.core.PlayN;
 import playn.flash.FlashGame;
 import playn.flash.FlashPlatform;
@@ -26,6 +26,6 @@ public class HelloGameFlash extends FlashGame {
   public void start() {
     FlashPlatform platform = FlashPlatform.register();
     platform.assets().setPathPrefix("hellogameflash/");
-    PlayN.run(new MyCardGame());
+    PlayN.run(new MaumauCardGame());
   }
 }

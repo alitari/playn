@@ -1,9 +1,9 @@
 package de.alexkrieg.cards.core;
 
-public interface Player<G extends CardGame<?,?>> {
+public interface Player {
   
   String id();
 
-  void update(G cardGame);
+  void update();
 
 }

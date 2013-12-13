@@ -3,11 +3,11 @@ package de.alexkrieg.cards.core;
 import static playn.core.PlayN.invokeLater;
 import de.alexkrieg.cards.core.action.Action;
 
-public abstract class AbstractPlayer<G extends CardGame<?,?>> implements Player<G> {
+public abstract class AbstractPlayer<G extends CardGame<?,?>> implements Player {
   
   final protected String id;
   
-  
+  protected final G game;
   
 
   @Override
@@ -16,13 +16,14 @@ public abstract class AbstractPlayer<G extends CardGame<?,?>> implements Player<
   }
 
 
-  public AbstractPlayer(String name) {
+  public AbstractPlayer(String name, G game) {
     super();
     this.id = name;
+    this.game = game;
   }
 
 
-  protected void act(final G cardGame ,final Action action) {
+  protected void act(final CardGame<?,?> cardGame ,final Action action) {
     invokeLater(new Runnable() {
       @Override
       public void run() {

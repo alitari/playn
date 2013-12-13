@@ -2,11 +2,6 @@ package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.graphics;
 import static playn.core.PlayN.keyboard;
-import static playn.core.PlayN.pointer;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import playn.core.Canvas;
 import playn.core.CanvasImage;
 import playn.core.Font;
@@ -17,7 +12,6 @@ import playn.core.Key;
 import playn.core.Keyboard;
 import playn.core.Keyboard.Event;
 import playn.core.Layer;
-import playn.core.Pointer;
 import playn.core.TextFormat;
 import playn.core.TextLayout;
 import playn.core.util.Clock;
@@ -46,31 +40,14 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
 
   protected ActionManager actionManager = new ActionManager(50);
 
-  protected CardTable<L> cardTable;
+  protected CardTable<?,L> cardTable;
   protected PlayerRegistry<P> playerRegistry;
 
   private Layer debugLayer;
 
   public static final int UPDATE_RATE = 50;
 
-  public class PlayerRegistry<P extends Player> {
-    private final Map<String, P> players = new HashMap<String, P>();
-
-    public void register(P player) {
-      players.put(player.id(), player);
-    }
-
-    public P getPlayer(String id) {
-      return players.get(id);
-    }
-
-    public void updatePlayers() {
-      for (Player p : players.values()) {
-        p.update(CardGame.this);
-      }
-    }
-
-  }
+  
 
   public CardGame() {
     super(UPDATE_RATE);
@@ -134,7 +111,7 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
 
   protected abstract PlayerRegistry<P> createPlayerRegistry();
 
-  protected abstract CardTable<L> createCardTable();
+  protected abstract CardTable<?,L> createCardTable();
 
   public void schedule(Action action) {
     actionManager.schedule(action);

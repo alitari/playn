@@ -2,6 +2,10 @@ package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import playn.core.GroupLayer;
 import playn.core.Image;
 import playn.core.ImageLayer;
@@ -13,6 +17,53 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
   static private String DIR_CARDS = "images/cs2/";
   
 	public final Value value;
+	
+	public static interface Filter {
+	   boolean apply(Card candidate, Set<Card> cardSet );
+	}
+	
+	public static class SuitFilter implements Filter {
+	  
+	  final char suit;
+
+    public SuitFilter(char suit) {
+      super();
+      this.suit = suit;
+    }
+
+    @Override
+    public boolean apply(Card candidate, Set<Card> cardSet) {
+      return candidate.value.suit() == this.suit;
+    }
+	  
+	}
+	
+	
+public static class RankFilter implements Filter {
+    
+    final int rank;
+
+    public RankFilter(int rank) {
+      super();
+      this.rank = rank;
+    }
+
+    @Override
+    public boolean apply(Card candidate, Set<Card> cardSet) {
+      return candidate.value.rank() == this.rank;
+    }
+    
+  }
+
+	public static Set<Card> applyFilter( Filter f, Set<Card> cards) {
+	  Set<Card> result = new HashSet<Card>();
+	  for ( Card c:cards) {
+	    if ( f.apply(c, result)) {
+	      result.add(c);
+	    }
+	  }
+	  return result;
+	}
 	
 	public static enum Side {
 	  Image,Back;
@@ -88,8 +139,7 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
 		_ad, _ah, _as, _ac, _kd, _kh, _ks, _kc, _qd, _qh, _qs, _qc, _jd, _jh, _js, _jc, _td, _th, _ts, _tc, _9d, _9h, _9s, _9c, _8d, _8h, _8s, _8c, _7d, _7h, _7s, _7c, _6d, _6h, _6s, _6c, _5d, _5h, _5s, _5c, _4d, _4h, _4s, _4c, _3d, _3h, _3s, _3c, _2d, _2h, _2s, _2c;
 
 		
-
-		public int rank() {
+    public int rank() {
 			char c = name().charAt(1);
 			if (c == 't')
 				return 10;
@@ -112,8 +162,11 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
 		public static Value cardEnum(String s) {
 			return valueOf(s.substring(1));
 		}
+		
+		
 
 		public String filename() {
+		  Value v = null;
 			return name().substring(1) + ".png";
 		}
 
