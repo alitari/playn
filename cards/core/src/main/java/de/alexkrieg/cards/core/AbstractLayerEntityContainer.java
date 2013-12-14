@@ -16,10 +16,7 @@ package de.alexkrieg.cards.core;
 import static playn.core.PlayN.graphics;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import playn.core.GroupLayer;
 import playn.core.Layer;
@@ -34,16 +31,27 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
   protected final L layout;
 
-  protected Set<T> childs;
+  protected List<T> childs;
 
   protected AbstractLayerEntityContainer(L layout, float width, float height) {
     super();
-    childs = new HashSet<T>();
+    childs = new ArrayList<T>();
     this.layout = layout;
     this.layout.setContainer(this);
     this.width = width;
     this.height = height;
   }
+  
+  
+  
+
+  @Override
+  public String toString() {
+    return "(layout="+layout+","+super.toString()+")";
+  }
+
+
+
 
   @Override
   public float height() {
@@ -55,13 +63,10 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
     return width;
   }
 
-  @Override
-  public String toString() {
-    return CardGame.logString(this);
-  }
+  
 
   @Override
-  public Set<T> childs() {
+  public List<T> childs() {
     return childs;
   }
 

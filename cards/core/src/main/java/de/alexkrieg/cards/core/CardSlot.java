@@ -25,9 +25,6 @@ public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContain
 
   String name;
   
-  
-
-
   public CardSlot(String name, L layout) {
     super(layout,100,100);
     this.name = name;
@@ -44,6 +41,13 @@ public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContain
     layer.setSize(width(), height());
     return layer;
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()+"(name="+name+","+super.toString()+")";
+  }
+  
+  
 
 
 }

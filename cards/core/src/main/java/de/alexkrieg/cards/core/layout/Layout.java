@@ -37,4 +37,12 @@ public abstract class Layout<T extends LayerEntity> {
 
 	public abstract void recalc(T child, Object param );
 
+  @Override
+  public String toString() {
+    
+    return getClass().getSimpleName()+"(x="+x+",y="+y+",rot="+rot+"scale="+scale+")";
+  }
+	
+	
+
 }

@@ -22,7 +22,8 @@ public abstract class AbstractAction implements Action {
 	
 	}
 
-	protected abstract void paintWithActionAlpha(float actionAlpha);
+  protected void paintWithActionAlpha(float actionAlpha) {
+  }
 
 
 	@Override

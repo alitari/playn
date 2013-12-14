@@ -27,7 +27,17 @@ public abstract class AbstractLayerEntity implements LayerEntity {
 	}
 	
 	
+	
+	
 	@Override
+  public String toString() {
+    return String.valueOf(System.identityHashCode(this));
+  }
+
+
+
+
+  @Override
 	public LayerEntityContainer<?, ?> getContainer() {
 		return container;
 	}
@@ -38,10 +48,6 @@ public abstract class AbstractLayerEntity implements LayerEntity {
 		this.container = container;
 	}
 
-	@Override
-	public String toString() {
-		return CardGame.logString(this);
-	}
 
 	@Override
 	public Layer layer() {

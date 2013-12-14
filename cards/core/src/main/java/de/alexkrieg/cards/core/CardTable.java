@@ -27,6 +27,7 @@ import playn.core.Layer;
 import playn.core.Surface;
 import playn.core.TextFormat;
 import playn.core.TextLayout;
+import playn.core.util.Clock;
 import react.UnitSlot;
 import tripleplay.ui.Background;
 import tripleplay.ui.Button;
@@ -39,26 +40,23 @@ import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public abstract class CardTable< G extends CardGame<?,?>,  L extends Layout<CardSlot<?>>> extends
+public abstract class CardTable<G extends CardGame<?, ?>, L extends Layout<CardSlot<?>>> extends
     AbstractLayerEntityContainer<CardSlot<?>, L> {
-  
-  
+
   public static final Font TITLE_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 36);
-  
 
   protected final G cardGame;
-  
-  
 
-  private Interface iface;
+  protected Interface iface;
 
   public CardTable(G cardGame, L layout) {
     super(layout, graphics().width(), graphics().height());
     this.cardGame = cardGame;
   }
 
-  public Interface iface() {
-    return iface;
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + super.toString() + ")";
   }
 
   @Override
@@ -70,13 +68,23 @@ public abstract class CardTable< G extends CardGame<?,?>,  L extends Layout<Card
     layer().setOrigin(0, 0);
   }
 
+  public void paint(Clock.Source _clock) {
+    if (iface != null) {
+      iface.paint(_clock);
+    }
+  }
+
+  public void update(int delta) {
+    if (iface != null) {
+      iface.update(delta);
+    }
+  }
+
   @Override
   protected void fillWithLayers(List<Layer> layers) {
     layers.add(createTableLayer());
     layers.add(createHUDLayer());
   }
-
-    
 
   protected Layer createHUDLayer() {
     // create our demo interface
@@ -85,12 +93,12 @@ public abstract class CardTable< G extends CardGame<?,?>,  L extends Layout<Card
     root.addStyles(Style.BACKGROUND.is(Background.blank().inset(5)));
 
     fillHUDRoot(root);
-//    root.layer.setDepth(10000);
+    // root.layer.setDepth(10000);
     return root.layer;
   }
 
   protected abstract void fillHUDRoot(final Root root);
-    
+
   protected Layer createTableLayer() {
     Image image = assets().getImage("images/cardtable.png");
     final ImageLayer imageLayer = graphics().createImageLayer(image);
@@ -98,10 +106,5 @@ public abstract class CardTable< G extends CardGame<?,?>,  L extends Layout<Card
     imageLayer.setHeight(height());
     return imageLayer;
   }
-
-  // @Override
-  // protected NESWLayout createLayout() {
-  // return new NESWLayout(10);
-  // }
 
 }

@@ -23,13 +23,25 @@ public abstract class AbstractPlayer<G extends CardGame<?,?>> implements Player 
   }
 
 
-  protected void act(final CardGame<?,?> cardGame ,final Action action) {
+  protected void shedule(final Action action) {
     invokeLater(new Runnable() {
       @Override
       public void run() {
-        cardGame.schedule(action);
+        game.schedule(action);
       }
     });
   }
+
+
+  
+
+
+  @Override
+  public String toString() {
+    
+    return getClass().getSimpleName()+"(id="+id+")";
+  }
+  
+  
 
 }

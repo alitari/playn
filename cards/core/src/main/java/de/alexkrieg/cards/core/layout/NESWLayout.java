@@ -6,7 +6,7 @@ import de.alexkrieg.cards.core.CardSlot;
 public class NESWLayout extends Layout<CardSlot<?> > {
 
 	public static enum NESW {
-		N,E,S,W,C;
+		N,E,S,W,C,NE;
 	}
 	
 	final float gap;
@@ -31,6 +31,12 @@ public class NESWLayout extends Layout<CardSlot<?> > {
 			y = child.height() / 2+gap;
 			rot =(float)Math.PI;
 			break;
+			
+		case NE:
+      x = container.width() ;
+      y = child.height() / 2+gap;
+      rot =(float)Math.PI;
+      break;
 		case E:
 			x = container.width() - child.height() / 2 -gap;
 			y = container.height() / 2;
