@@ -4,7 +4,7 @@ import java.util.List;
 
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
-import de.alexkrieg.cards.core.action.Action;
+import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.action.CardMoveAction2;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 
@@ -22,7 +22,7 @@ public class MaumauRobotPlayer extends MaumauPlayer {
   @Override
   public void update() {
     if (mustDeal()) {
-      Action dealAction=null;
+      GameAction dealAction=null;
       if ( dealingFinished() ) {
         dealAction = new PlayCardAction(this, game.takeCardFromTalon(), game) {
 
@@ -42,7 +42,7 @@ public class MaumauRobotPlayer extends MaumauPlayer {
     }
   }
 
-  private Action nextDealingAction() {
+  private GameAction nextDealingAction() {
     if (game.talon.childs().isEmpty()) {
       return fillTalonAction;
     }

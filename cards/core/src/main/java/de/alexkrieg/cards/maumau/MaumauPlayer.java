@@ -8,7 +8,7 @@ import de.alexkrieg.cards.core.AbstractPlayer;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.action.AbstractAction;
-import de.alexkrieg.cards.core.action.Action;
+import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauCardGame.State;
 
@@ -16,7 +16,7 @@ public abstract class MaumauPlayer extends AbstractPlayer<MaumauCardGame> {
 
   final protected CardSlot<TiledCardsRotatedLayout> myCards;
 
-  protected final Action fillTalonAction = new AbstractAction(null, 0) {
+  protected final GameAction fillTalonAction = new AbstractAction(null, 0) {
     @Override
     public void execute() {
       List<Card> cardSet = Card.createSet();

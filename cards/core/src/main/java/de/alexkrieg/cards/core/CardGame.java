@@ -15,7 +15,7 @@ import playn.core.Layer;
 import playn.core.TextFormat;
 import playn.core.TextLayout;
 import playn.core.util.Clock;
-import de.alexkrieg.cards.core.action.Action;
+import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.Layout;
 
 public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> extends
@@ -107,7 +107,7 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
 
   protected abstract CardTable<?, L> createCardTable();
 
-  public void schedule(Action action) {
+  public void schedule(GameAction action) {
     actionManager.schedule(action);
   }
 

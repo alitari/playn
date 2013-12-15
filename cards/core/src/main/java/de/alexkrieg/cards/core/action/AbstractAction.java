@@ -3,7 +3,7 @@ package de.alexkrieg.cards.core.action;
 
 import playn.core.Layer;
 
-public abstract class AbstractAction implements Action {
+public abstract class AbstractAction implements GameAction {
 
 	protected final Layer layer;
 	protected final int duration;	

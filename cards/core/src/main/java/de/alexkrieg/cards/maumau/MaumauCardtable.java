@@ -9,14 +9,14 @@ import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.CardTable;
 import de.alexkrieg.cards.core.action.AbstractAction;
-import de.alexkrieg.cards.core.action.Action;
+import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 
 
 public class MaumauCardtable extends CardTable<MaumauCardGame,NESWLayout> {
   
   
-  final Action startDialing = new AbstractAction(null,0) {
+  final GameAction startDialing = new AbstractAction(null,0) {
 
     @Override
     public void execute() {

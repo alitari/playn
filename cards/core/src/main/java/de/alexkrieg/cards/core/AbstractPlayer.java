@@ -1,7 +1,7 @@
 package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.invokeLater;
-import de.alexkrieg.cards.core.action.Action;
+import de.alexkrieg.cards.core.action.GameAction;
 
 public abstract class AbstractPlayer<G extends CardGame<?,?>> implements Player {
   
@@ -23,7 +23,7 @@ public abstract class AbstractPlayer<G extends CardGame<?,?>> implements Player 
   }
 
 
-  protected void shedule(final Action action) {
+  protected void shedule(final GameAction action) {
     invokeLater(new Runnable() {
       @Override
       public void run() {

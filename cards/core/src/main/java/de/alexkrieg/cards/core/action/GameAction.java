@@ -1,6 +1,6 @@
 package de.alexkrieg.cards.core.action;
 
-public interface Action {
+public interface GameAction {
 	
 	void execute();
 
