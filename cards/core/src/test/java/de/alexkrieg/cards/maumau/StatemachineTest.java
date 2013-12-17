@@ -11,6 +11,10 @@ import org.junit.Test;
 import playn.java.JavaPlatform;
 
 import com.googlecode.stateless4j.StateMachine;
+import com.googlecode.stateless4j.delegates.Action;
+import com.googlecode.stateless4j.delegates.Action1;
+import com.googlecode.stateless4j.delegates.Func;
+import com.googlecode.stateless4j.triggers.TriggerWithParameters1;
 
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.action.GameAction;
@@ -74,28 +78,28 @@ public class StatemachineTest {
 
   }
 
+  static enum Direction {
+    Clock, AgainstClock;
+  }
   
 
+  Card currentCard;
+  MaumauPlayer waitingForPlayer;
+  Direction direction;
+  private TriggerWithParameters1<CardPlayedAction,State,Class<? extends GameAction>> triggerWithParameters1;
   
 
   public static enum State {
 
     Init, Attracting, Dealing, Playing, Refilling,Finishing;
 
-    static enum Direction {
-      Clock, AgainstClock;
-    }
 
-    Card currentCard;
-    MaumauPlayer waitingForPlayer;
-    Direction direction;
 
-    @Override
-    public String toString() {
-      return "State [ currentCard=" + currentCard + ", waitingForPlayer=" + waitingForPlayer
-          + ", direction=" + direction + "]";
-    }
 
+  }
+  public String gameinfo() {
+    return "State [ currentCard=" + currentCard + ", waitingForPlayer=" + waitingForPlayer
+        + ", direction=" + direction + "]";
   }
 
   @Before
@@ -120,18 +124,18 @@ public class StatemachineTest {
     assertThat(stateMachine.getState(),is(State.Playing));
     
     
-    stateMachine.Fire(CardPlayedAction.class);
+    stateMachine.Fire( triggerWithParameters1,new CardPlayedAction());
     assertThat(stateMachine.getState(),is(State.Playing));
     
     
-    stateMachine.Fire(CardPlayedAction.class);
+    stateMachine.Fire( triggerWithParameters1,new CardPlayedAction());
     assertThat(stateMachine.getState(),is(State.Playing));
     
     
     stateMachine.Fire(RefillTalonAction.class);
     assertThat(stateMachine.getState(),is(State.Refilling));
     
-    stateMachine.Fire(CardPlayedAction.class);
+    stateMachine.Fire(triggerWithParameters1,new CardPlayedAction());
     assertThat(stateMachine.getState(),is(State.Refilling));
     
     
@@ -167,7 +171,36 @@ public class StatemachineTest {
     maumauFSM.Configure(State.Init).Permit(SystemReadyAction.class, State.Attracting);
     maumauFSM.Configure(State.Attracting).Permit(StartGameAction.class, State.Dealing);
     maumauFSM.Configure(State.Dealing).Permit(PlaynAction.class, State.Playing);
-    maumauFSM.Configure(State.Playing).PermitReentry(CardPlayedAction.class).Permit(RefillTalonAction.class, State.Refilling).Permit(PlayerFinishedAction.class, State.Finishing);
+    maumauFSM.Configure(State.Playing).Permit(RefillTalonAction.class, State.Refilling).Permit(PlayerFinishedAction.class, State.Finishing);
+    
+    Func<Boolean> guard = new Func<Boolean>() {
+
+      @Override
+      public Boolean call() {
+        // TODO Auto-generated method stub
+        return true;
+      }
+      
+    };
+    
+    
+    Action1<CardPlayedAction> entryAction= new Action1<CardPlayedAction>() {
+
+      @Override
+      public void doIt(CardPlayedAction arg1) {
+        System.out.println("On Entry:"+arg1);
+        
+      }
+      
+    };
+    
+
+    triggerWithParameters1 = new TriggerWithParameters1<CardPlayedAction,State,Class<? extends GameAction>>(CardPlayedAction.class, CardPlayedAction.class);
+    maumauFSM.SetTriggerParameters(CardPlayedAction.class, CardPlayedAction.class);
+    maumauFSM.Configure(State.Playing).PermitReentryIf(CardPlayedAction.class, guard);
+    maumauFSM.Configure(State.Playing).OnEntryFrom(triggerWithParameters1,entryAction,CardPlayedAction.class);
+    
+    
     
     maumauFSM.Configure(State.Finishing).Permit(LeaveResultsAction.class, State.Attracting);
     maumauFSM.Configure(State.Refilling).PermitReentry(CardPlayedAction.class).Permit(TalonFilledAction.class, State.Playing);
