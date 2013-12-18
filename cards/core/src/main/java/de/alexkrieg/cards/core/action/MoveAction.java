@@ -13,10 +13,12 @@ public class MoveAction<T extends LayerEntity, L extends Layout<T>> extends Tran
   protected  final LayerEntityContainer<T, L> destination;
 
   public MoveAction(T layerEntity, int duration, LayerEntityContainer<T, L> destination) {
-    super(layerEntity.layer(), duration);
+    super(layerEntity == null ? null:layerEntity.layer(), duration);
     this.layerEntity = layerEntity;
     this.destination = destination;
-    setDestTransform(calcTransform());
+    if ( layerEntity !=  null && destination != null ) {
+      setDestTransform(calcTransform());
+    }
   }
 
   private Transform calcTransform() {
@@ -36,5 +38,7 @@ public class MoveAction<T extends LayerEntity, L extends Layout<T>> extends Tran
   public void execute() {
     destination.put(layerEntity, null);
   }
+  
+  
 
 }

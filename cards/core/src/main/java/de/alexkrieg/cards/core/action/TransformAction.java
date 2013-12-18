@@ -10,7 +10,7 @@ public abstract class TransformAction extends AbstractAction {
 
 	public TransformAction(Layer layer, int duration) {
 		super(layer, duration);
-		origTransform = layer.transform();
+		origTransform = layer != null ?layer.transform(): null;
 	}
 	
 	public Transform getDestTransform() {
@@ -24,6 +24,7 @@ public abstract class TransformAction extends AbstractAction {
 
 	@Override
 	protected void paintWithActionAlpha(float actionAlpha) {
+	  if ( origTransform == null) return;
 		Transform transform = origTransform.lerp(destTransform, actionAlpha);
 		float[] matrix = new float[6];
 		transform.get(matrix);

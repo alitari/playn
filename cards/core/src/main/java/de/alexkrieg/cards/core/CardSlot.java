@@ -47,6 +47,10 @@ public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContain
     return getClass().getSimpleName()+"(name="+name+","+super.toString()+")";
   }
   
+  public Card firstCard() {
+    return childs().get(0);
+  }
+  
   
 
 

@@ -15,10 +15,9 @@ import playn.core.Layer;
 import playn.core.TextFormat;
 import playn.core.TextLayout;
 import playn.core.util.Clock;
-import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> extends
+public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, G extends GameLogic> extends
     Game.Default {
 
   private static final Font DEBUG_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 11);
@@ -33,6 +32,8 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
 
   protected CardTable<?, L> cardTable;
   protected PlayerRegistry<P> playerRegistry;
+  
+  public G gameLogic;
 
   private Layer debugLayer;
 
@@ -50,7 +51,9 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
   @Override
   public void init() {
     cardTable = createCardTable();
+    gameLogic = createGameLogic();
     playerRegistry = createPlayerRegistry();
+    
     GroupLayer rootLayer = graphics().rootLayer();
     rootLayer.add(cardTable.layer());
     if (debug) {
@@ -78,6 +81,8 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
 
   }
 
+
+
   private Layer createDebugLayer() {
     GroupLayer debugGroupLayer = graphics().createGroupLayer();
     CanvasImage debugCanvasImage = graphics().createImage((int) Math.ceil(graphics().width()),
@@ -103,13 +108,12 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player> 
     return graphics().layoutText(text, textFormat);
   }
 
+  protected abstract G createGameLogic();
   protected abstract PlayerRegistry<P> createPlayerRegistry();
 
   protected abstract CardTable<?, L> createCardTable();
 
-  public void schedule(GameAction action) {
-    actionManager.schedule(action);
-  }
+  
 
   @Override
   public void paint(float alpha) {

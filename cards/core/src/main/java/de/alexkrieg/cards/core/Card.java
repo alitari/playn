@@ -1,5 +1,6 @@
 package de.alexkrieg.cards.core;
 
+import static de.alexkrieg.cards.core.Card.applyFilter;
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 
@@ -39,7 +40,46 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
     }
 
   }
-  
+
+  public static class AndFilter implements Filter {
+    final Filter f1;
+    final Filter f2;
+    final boolean and;
+
+    public AndFilter(Filter f1, Filter f2, boolean and) {
+      super();
+      this.f1 = f1;
+      this.f2 = f2;
+      this.and = and;
+    }
+
+    @Override
+    public boolean apply(Card candidate, List<Card> cardSet) {
+      boolean apply1 = f1.apply(candidate, cardSet);
+      boolean apply2 = f2.apply(candidate, cardSet);
+      return (!and && (apply1 || apply2)) || (and && apply1 && apply2);
+    }
+  }
+
+  public static class NotFilter implements Filter {
+    final Filter f;
+
+    public NotFilter(Filter f) {
+      super();
+      this.f = f;
+    }
+
+    @Override
+    public boolean apply(Card candidate, List<Card> cardSet) {
+      return !f.apply(candidate, cardSet);
+    }
+  }
+
+  public static class MatchFilter extends AndFilter {
+    public MatchFilter(Card card) {
+      super(new SuitFilter(card.value.suit()), new RankFilter(card.value.rank()), false);
+    }
+  }
 
   public static class RankFilter implements Filter {
 
@@ -74,6 +114,16 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
     };
     return result;
   }
+
+  public static List<Card> matches(Card matchCard, List<Card> cards) {
+    return applyFilter(new MatchFilter(matchCard), cards);
+  }
+  
+  public static List<Card> matchesNot(Card matchCard, List<Card> cards) {
+    return applyFilter(new NotFilter(new MatchFilter(matchCard)), cards);
+  }
+  
+  
 
   public static enum Side {
     Image, Back;

@@ -19,8 +19,8 @@ public class FillTalonAction extends CardMoveAction2<StackLayout> {
   @Override
   public void execute() {
     super.execute();
-    game.state.mode = game.playSlot.childs().size() == 1 ? MaumauCardGame.State.Mode.Playn
-        : MaumauCardGame.State.Mode.Refill;
+//    game.gameLogic.mode = game.playSlot.childs().size() == 1 ? MaumauCardGame.State.Mode.Playn
+//        : MaumauCardGame.State.Mode.Refill;
   }
 
 }

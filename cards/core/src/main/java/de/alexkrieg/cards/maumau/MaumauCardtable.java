@@ -7,20 +7,21 @@ import tripleplay.ui.Label;
 import tripleplay.ui.Root;
 import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
+import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.CardTable;
 import de.alexkrieg.cards.core.action.AbstractAction;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 
 
-public class MaumauCardtable extends CardTable<MaumauCardGame,NESWLayout> {
+public class MaumauCardtable extends CardTable<MaumauGameLogic,NESWLayout> {
   
   
-  final GameAction startDialing = new AbstractAction(null,0) {
+  final GameAction startDealing = new AbstractAction(null,0) {
 
     @Override
     public void execute() {
-      cardGame.state.mode = MaumauCardGame.State.Mode.Dealing;
+//      cardGame.gameLogic.getMode() = MaumauGameLogic.Mode.Dealing;
     }
 
     @Override
@@ -32,8 +33,8 @@ public class MaumauCardtable extends CardTable<MaumauCardGame,NESWLayout> {
 
   
   
-  public MaumauCardtable(MaumauCardGame cardGame, NESWLayout layout) {
-    super(cardGame, layout);
+  public MaumauCardtable(MaumauGameLogic gameLogic, ActionManager actionManager, NESWLayout layout) {
+    super(gameLogic, actionManager,layout);
   }
   
   
@@ -41,18 +42,11 @@ public class MaumauCardtable extends CardTable<MaumauCardGame,NESWLayout> {
   @Override
   public void update(int delta) {
     if ( iface != null) {
-      boolean startScreen =  cardGame.state.mode == MaumauCardGame.State.Mode.Attract;
+      boolean startScreen =  gameLogic.getMode()== MaumauGameLogic.Mode.Attracting;
       iface.roots().iterator().next().setVisible(startScreen);
       super.update(delta);
     }
   }
-
-
-
-
-
-
-
 
 
   @Override
@@ -66,7 +60,7 @@ public class MaumauCardtable extends CardTable<MaumauCardGame,NESWLayout> {
     button.clicked().connect(new UnitSlot() {
       @Override
       public void onEmit() {
-        cardGame.schedule(startDialing);
+        actionManager.schedule(startDealing);
       }
     });
   }

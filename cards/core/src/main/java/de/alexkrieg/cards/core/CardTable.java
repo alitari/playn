@@ -18,40 +18,34 @@ import static playn.core.PlayN.graphics;
 
 import java.util.List;
 
-import playn.core.CanvasImage;
 import playn.core.Font;
 import playn.core.Image;
 import playn.core.ImageLayer;
-import playn.core.ImmediateLayer;
 import playn.core.Layer;
-import playn.core.Surface;
-import playn.core.TextFormat;
-import playn.core.TextLayout;
 import playn.core.util.Clock;
-import react.UnitSlot;
 import tripleplay.ui.Background;
-import tripleplay.ui.Button;
-import tripleplay.ui.Group;
 import tripleplay.ui.Interface;
-import tripleplay.ui.Label;
 import tripleplay.ui.Root;
 import tripleplay.ui.SimpleStyles;
 import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public abstract class CardTable<G extends CardGame<?, ?>, L extends Layout<CardSlot<?>>> extends
+public abstract class CardTable<G extends GameLogic, L extends Layout<CardSlot<?>>> extends
     AbstractLayerEntityContainer<CardSlot<?>, L> {
 
   public static final Font TITLE_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 36);
 
-  protected final G cardGame;
+  protected final G gameLogic;
 
   protected Interface iface;
+  
+  protected final ActionManager actionManager;
 
-  public CardTable(G cardGame, L layout) {
+  public CardTable(G gameLogic, ActionManager actionManager, L layout) {
     super(layout, graphics().width(), graphics().height());
-    this.cardGame = cardGame;
+    this.gameLogic = gameLogic;
+    this.actionManager = actionManager;
   }
 
   @Override

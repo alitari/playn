@@ -35,7 +35,7 @@ public class LogUtil {
   
   
 //  
-  public static String logString(CardGame<?,?> game) {
+  public static String logString(CardGame<?,?,?> game) {
     StringBuffer strb = new StringBuffer(game.toString());
     strb.append("(\n-- actionManager:").append(logString(game.actionManager)).append("\n");
     strb.append("-- table:").append(logString(2,game.cardTable)).append("\n");
