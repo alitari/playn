@@ -69,6 +69,23 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
   public List<T> childs() {
     return childs;
   }
+  
+  
+  
+
+  @Override
+  public T getLastUnusedChild() {
+    for ( int i = childs.size()-1; i >= 0;i--) {
+      T child = childs.get(i); 
+      if ( child.getInUseAction() == null) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+
+
 
   @Override
   public L layout() {
@@ -86,6 +103,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
       groupLayer.add(l);
     }
     groupLayer.setOrigin(width / 2, height / 2);
+    
 
   }
 

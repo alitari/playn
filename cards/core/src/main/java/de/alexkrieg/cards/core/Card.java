@@ -193,7 +193,7 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
   @Override
   public String toString() {
 
-    return getClass().getSimpleName() + "(value=" + value + "," + super.toString() + ")";
+    return getClass().getSimpleName() + "(value=" + value +  ")";
   }
 
   public static enum Value {

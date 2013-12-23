@@ -12,7 +12,7 @@ public class PlayCardAction extends CardMoveAction2<StackLayout> {
 
   
   public PlayCardAction(MaumauPlayer player, Card card, MaumauCardGame game) {
-    super(card, 10, game.playSlot);
+    super(card,  null);
     card.setSide(Card.Side.Image);
     this.player = player;
     this.game = game;

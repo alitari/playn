@@ -7,7 +7,7 @@ class ActionAdapter implements GameAction {
 
   @Override
   public void execute() {
-    log().info("execute "+this);
+    //log().info("execute "+this);
   }
 
   @Override

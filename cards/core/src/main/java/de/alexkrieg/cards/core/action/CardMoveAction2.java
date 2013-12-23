@@ -6,8 +6,11 @@ import de.alexkrieg.cards.core.layout.Layout;
 
 public class CardMoveAction2<L extends Layout<Card>> extends MoveAction<Card, L > {
 
-  public CardMoveAction2(Card card, int duration, CardSlot<L> destination) {
-    super(card, duration, destination);
+  public static int DURATION = 20;
+  
+  public CardMoveAction2(Card card,  CardSlot<L> destination) {
+    super(card, DURATION, destination);
+    card.layer().parent().setDepth( destination.layer().depth()+1);
   }
 
   @Override

@@ -36,15 +36,14 @@ public abstract class CardTable<G extends GameLogic, L extends Layout<CardSlot<?
 
   public static final Font TITLE_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 36);
 
-  protected final G gameLogic;
+  protected G gameLogic;
 
   protected Interface iface;
   
   protected final ActionManager actionManager;
 
-  public CardTable(G gameLogic, ActionManager actionManager, L layout) {
+  public CardTable( ActionManager actionManager, L layout) {
     super(layout, graphics().width(), graphics().height());
-    this.gameLogic = gameLogic;
     this.actionManager = actionManager;
   }
 
@@ -73,6 +72,8 @@ public abstract class CardTable<G extends GameLogic, L extends Layout<CardSlot<?
       iface.update(delta);
     }
   }
+  
+  public abstract void connect(G gameLogic); 
 
   @Override
   protected void fillWithLayers(List<Layer> layers) {
@@ -100,5 +101,5 @@ public abstract class CardTable<G extends GameLogic, L extends Layout<CardSlot<?
     imageLayer.setHeight(height());
     return imageLayer;
   }
-
+  
 }

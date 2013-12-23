@@ -35,5 +35,14 @@ public class PlayerRegistry< P extends Player> {
       p.update();
     }
   }
+  
+  public P getDealer() {
+    for ( P p:players) {
+      if ( p.isDealer()) return p;
+    }
+    return null;
+  }
+  
+  
 
 }

@@ -1,5 +1,7 @@
 package de.alexkrieg.cards.core;
 
+import static playn.core.PlayN.log;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import de.alexkrieg.cards.core.action.GameAction;
 public class ActionManager {
 
   final int capacity;
+  
+  private GameLogic gameLogic;
 
   public ActionManager(int capacity) {
     this.capacity = capacity;
@@ -36,7 +40,7 @@ public class ActionManager {
     LinkedList<GameAction> actionsToExecute = actions.get(0);
     if (actionsToExecute != null) {
       while (!actionsToExecute.isEmpty()) {
-        actionsToExecute.removeFirst().execute();
+        execute(actionsToExecute.removeFirst());
       }
     }
 
@@ -58,6 +62,19 @@ public class ActionManager {
       }
     }
   }
+  
+  private void execute(GameAction action) {
+    try {
+      gameLogic.executeAction(action);
+    } catch (Exception e) {
+      log().error("Exception during execution of  "+action,e);
+    }
+  }
+  
+  public void setGameLogic(GameLogic gameLogic) {
+    this.gameLogic = gameLogic;
+  }
+  
 
   public static List<Class<?>> allActionsClasses(String pckgname) {
 
@@ -87,5 +104,8 @@ public class ActionManager {
     }
     return actionClasses;
   }
+
+  
+
 
 }

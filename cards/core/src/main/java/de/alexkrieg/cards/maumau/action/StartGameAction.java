@@ -20,6 +20,11 @@ public class StartGameAction extends ActionAdapter {
     super();
     this.talon = talon;
   }
+  
+  @Override
+  public int getDuration() {
+    return 5;
+  }
 
   @Override
   public void execute() {

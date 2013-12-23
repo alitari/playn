@@ -1,5 +1,7 @@
 package de.alexkrieg.cards.core;
 
+import java.util.List;
+
 import playn.core.Layer;
 import pythagoras.f.Point;
 
@@ -54,6 +56,14 @@ public class LogUtil {
   public static String logString(ActionManager actionManager) {
     StringBuffer strb = new StringBuffer(actionManager.getClass().getSimpleName());
     return strb.toString();
+  }
+  
+  public static String logString(List<Card> cards) {
+    StringBuffer strb = new StringBuffer("[");
+    for ( Card c:cards) {
+      strb.append(c).append(",");
+    }
+    return strb.append("]").toString();
   }
 
 }

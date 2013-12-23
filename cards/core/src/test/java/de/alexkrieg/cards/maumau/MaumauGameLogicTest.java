@@ -18,13 +18,16 @@ import playn.java.JavaPlatform;
 import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
+import de.alexkrieg.cards.core.PlayerRegistry;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.Layout;
 import de.alexkrieg.cards.core.layout.StackLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauGameLogic.Mode;
+import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
 import de.alexkrieg.cards.maumau.action.LeaveResultsAction;
+import de.alexkrieg.cards.maumau.action.PickupAction;
 import de.alexkrieg.cards.maumau.action.PlayerFinishedAction;
 import de.alexkrieg.cards.maumau.action.PlaynAction;
 import de.alexkrieg.cards.maumau.action.RefillTalonAction;
@@ -79,24 +82,47 @@ public class MaumauGameLogicTest {
         10));
     playerslot4.init();
     gameLogic.slotPlayer4 = playerslot4.childs();
+    
+    PlayerRegistry<MaumauPlayer> playerRegistry = new PlayerRegistry<MaumauPlayer>();
+    gameLogic.setPlayerRegistry(playerRegistry);
 
-    player1 = new MaumauPlayer("testPlayer1", gameLogic, null, playerslot1) {
+    player1 = new MaumauPlayer("testPlayer1", gameLogic, null, null, playerslot1) {
+
+      
 
       @Override
-      protected Card cardDecision() {
+      public boolean isDealer() {
         // TODO Auto-generated method stub
-        return null;
+        return true;
+      }
+
+      @Override
+      public void update() {
+        // TODO Auto-generated method stub
+        
       }
     };
 
-    player2 = new MaumauPlayer("testPlayer2", gameLogic, null, playerslot2) {
+    player2 = new MaumauPlayer("testPlayer2", gameLogic, null,null, playerslot2) {
+
+      
 
       @Override
-      protected Card cardDecision() {
+      public boolean isDealer() {
         // TODO Auto-generated method stub
-        return null;
+        return false;
+      }
+
+      @Override
+      public void update() {
+        // TODO Auto-generated method stub
+        
       }
     };
+    
+    playerRegistry.register(player1);
+    playerRegistry.register(player2); 
+    
 
   }
 
@@ -111,20 +137,46 @@ public class MaumauGameLogicTest {
     gotoDealing();
   }
   
+  @Test
+  public void dealing() throws Exception {
+    gotoDealing();
+    gameLogic.executeAction(new CardDealedAction(player1,talon.childs().get(0),playerslot1));
+    assertThat(gameLogic.getMode(),is(Mode.Dealing));
+  }
+  
+  @Test
+  public void dealingButPlayerHaveEnoughCards() throws Exception {
+    gotoDealing();
+    fillPlayerSlots();
+    expectLogicErrorOnAction(new CardDealedAction(), Mode.Dealing, "Dealing with full playerSlots  ");
+  }
 
   @Test
-  public void playnNotReady() throws Exception {
+  public void playnNotReadyCardsNotDealed() throws Exception {
     gameLogic.executeAction(new SystemReadyAction());
     gameLogic.executeAction(new StartGameAction(talon));
     assertThat(gameLogic.slotPlayer1.isEmpty(), is(true));
     expectLogicErrorOnAction(new PlaynAction(), Mode.Dealing,
         "Expect error because player has no cards");
   }
+  
+
 
   @Test
   public void playn() throws Exception {
     gotoPlayn();
   }
+  
+  @Test
+  public void pickupFromTalon() throws Exception {
+    gotoPlayn();
+    playSlot.put(talon.childs().get(0), null);
+    Card card = talon.childs().get(1);
+    gameLogic.executeAction(new PickupAction(player1, card, playerslot1));
+    assertThat(gameLogic.getMode(),is(Mode.Playing));
+  }
+  
+  
 
   @Test
   public void cardPlayedSlotEmpty() throws Exception {
@@ -150,7 +202,7 @@ public class MaumauGameLogicTest {
   @Test
   public void cardPlaynSuccess() throws Exception {
     Card playersCard = findMatchingCardForPlayer1();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Playing, CardPlayedAction.class,PlayerFinishedAction.class,RefillTalonAction.class);
+    expectLogicErrorOnAllActionsExceptOf(Mode.Playing, CardPlayedAction.class, PickupAction.class, PlayerFinishedAction.class,RefillTalonAction.class);
     gameLogic.executeAction(new CardPlayedAction(player1, playersCard, playSlot));
     assertThat(gameLogic.currentPlayCard(), is(playersCard));
   }
@@ -252,14 +304,18 @@ public class MaumauGameLogicTest {
   @SuppressWarnings("unchecked")
   private void gotoPlayn() throws Exception {
     gotoDealing();
-    moveCards(talon, playerslot1, 6);
-    moveCards(talon, playerslot2, 6);
-    moveCards(talon, playerslot3, 6);
-    moveCards(talon, playerslot4, 6);
-    
-    expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, PlaynAction.class);
+    fillPlayerSlots();
+    expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, PlaynAction.class,CardDealedAction.class);
     gameLogic.executeAction(new PlaynAction());
     assertThat(gameLogic.getMode(), is(Mode.Playing));
+  }
+
+
+  private void fillPlayerSlots() {
+    moveCards(talon, playerslot1, MaumauGameLogic.dialedCardsCount);
+    moveCards(talon, playerslot2, MaumauGameLogic.dialedCardsCount);
+    moveCards(talon, playerslot3, MaumauGameLogic.dialedCardsCount);
+    moveCards(talon, playerslot4, MaumauGameLogic.dialedCardsCount);
   }
 
   private Card findMatchingCardForPlayer1() throws Exception {

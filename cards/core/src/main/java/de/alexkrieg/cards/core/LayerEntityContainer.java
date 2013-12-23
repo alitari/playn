@@ -1,12 +1,12 @@
 package de.alexkrieg.cards.core;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.alexkrieg.cards.core.layout.Layout;
 
 public interface LayerEntityContainer<T extends LayerEntity, L extends Layout<T>> extends LayerEntity {
 	
-	Collection<T> childs();
+	List<T> childs();
 	
 	float height() ;
 	
@@ -17,5 +17,7 @@ public interface LayerEntityContainer<T extends LayerEntity, L extends Layout<T>
 	void put(T child, Object param);
 	
 	void remove( T child);
+	
+	T getLastUnusedChild();
 
 }

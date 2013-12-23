@@ -11,7 +11,7 @@ public class TakeCardAction extends CardMoveAction2<TiledCardsRotatedLayout> {
   final MaumauCardGame game;
 
   public TakeCardAction(MaumauPlayer player, Card card, MaumauCardGame game) {
-    super(card, 10, player.ownedCards);
+    super(card,  player.ownedCards);
     card.setSide(Card.Side.Back);
     this.player = player;
     this.game = game;

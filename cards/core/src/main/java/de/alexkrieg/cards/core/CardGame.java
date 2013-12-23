@@ -30,7 +30,7 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, 
 
   protected ActionManager actionManager = new ActionManager(50);
 
-  protected CardTable<?, L> cardTable;
+  protected CardTable<G, L> cardTable;
   protected PlayerRegistry<P> playerRegistry;
   
   public G gameLogic;
@@ -52,7 +52,10 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, 
   public void init() {
     cardTable = createCardTable();
     gameLogic = createGameLogic();
+    actionManager.setGameLogic(gameLogic);
+    cardTable.connect(gameLogic);
     playerRegistry = createPlayerRegistry();
+    gameLogic.setPlayerRegistry(playerRegistry);
     
     GroupLayer rootLayer = graphics().rootLayer();
     rootLayer.add(cardTable.layer());
@@ -111,7 +114,7 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, 
   protected abstract G createGameLogic();
   protected abstract PlayerRegistry<P> createPlayerRegistry();
 
-  protected abstract CardTable<?, L> createCardTable();
+  protected abstract CardTable<G, L> createCardTable();
 
   
 

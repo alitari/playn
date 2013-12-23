@@ -14,12 +14,12 @@ public class CardPlayedAction extends CardMoveAction2<StackLayout> {
   
   public CardPlayedAction() {
     // default constructor needed for framework
-    super(null,0,null);
+    super(null,null);
     this.player = null;
   }
 
   public CardPlayedAction(MaumauPlayer player, Card card, CardSlot<StackLayout> playSlot) {
-    super(card, 10, playSlot);
+    super(card,  playSlot);
     this.player = player;
     card.setSide(Card.Side.Image);
   }

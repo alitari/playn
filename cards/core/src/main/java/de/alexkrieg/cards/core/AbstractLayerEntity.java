@@ -15,6 +15,7 @@
  */
 package de.alexkrieg.cards.core;
 
+import de.alexkrieg.cards.core.action.GameAction;
 import playn.core.Layer;
 
 public abstract class AbstractLayerEntity implements LayerEntity {
@@ -22,6 +23,8 @@ public abstract class AbstractLayerEntity implements LayerEntity {
 	protected Layer layer;
 
 	LayerEntityContainer<?, ?> container;
+
+  private GameAction inUseAction;
 
 	protected AbstractLayerEntity() {
 	}
@@ -65,5 +68,20 @@ public abstract class AbstractLayerEntity implements LayerEntity {
 	}
 
 	protected abstract Layer createLayer();
+
+
+  @Override
+  public void setInUseOfAction(GameAction action) {
+    this.inUseAction = action;
+    
+  }
+
+
+  @Override
+  public GameAction getInUseAction() {
+    return inUseAction;
+  }
+	
+	
 
 }

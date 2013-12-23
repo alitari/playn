@@ -14,6 +14,7 @@ public abstract class Layout<T extends LayerEntity> {
 	protected float y;
 	protected float rot;
 	protected float scale;
+	protected int depth;
 
 	public void setContainer( LayerEntityContainer<?, ?> container) {
 		this.container = container;
