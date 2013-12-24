@@ -33,7 +33,6 @@ public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContain
   @Override
   protected void fillWithLayers(List<Layer> layers) {
     layers.add(createCanvasLayer());
-
   }
 
   protected Layer createCanvasLayer() {

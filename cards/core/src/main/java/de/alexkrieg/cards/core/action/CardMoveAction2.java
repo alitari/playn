@@ -24,5 +24,4 @@ public class CardMoveAction2<L extends Layout<Card>> extends MoveAction<Card, L 
   }
   
   
-
 }
