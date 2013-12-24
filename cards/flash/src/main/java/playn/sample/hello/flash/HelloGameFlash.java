@@ -15,10 +15,10 @@
  */
 package playn.sample.hello.flash;
 
-import de.alexkrieg.cards.maumau.MaumauCardGame;
 import playn.core.PlayN;
 import playn.flash.FlashGame;
 import playn.flash.FlashPlatform;
+import de.alexkrieg.cards.core.CardGame;
 
 public class HelloGameFlash extends FlashGame {
 
@@ -26,6 +26,7 @@ public class HelloGameFlash extends FlashGame {
   public void start() {
     FlashPlatform platform = FlashPlatform.register();
     platform.assets().setPathPrefix("hellogameflash/");
-    PlayN.run(new MaumauCardGame());
+    PlayN.run(new CardGame() {
+    });
   }
 }

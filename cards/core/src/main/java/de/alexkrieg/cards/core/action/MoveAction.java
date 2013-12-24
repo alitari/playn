@@ -19,6 +19,7 @@ public class MoveAction<T extends LayerEntity, L extends Layout<T>> extends Tran
     if (layerEntity != null && destination != null) {
       layerEntity.setInUseOfAction(this);
       setDestTransform(calcTransform());
+      layerEntity.layer().parent().setDepth( destination.layer().depth()+1);
     }
   }
 

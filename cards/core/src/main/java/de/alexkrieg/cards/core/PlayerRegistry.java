@@ -1,48 +1,20 @@
 package de.alexkrieg.cards.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.alexkrieg.cards.core.layout.Layout;
 
-public class PlayerRegistry< P extends Player> {
-  private final List<P> players = new ArrayList<P>();
-  
-  
+public interface PlayerRegistry<L extends Layout<CardSlot<?>>, P extends Player<L, P, G>, G extends GameLogic<L, P, G>>
+    extends Updateable<L, P, G> {
 
-  public void register(P player) {
-    players.add(player);
-  }
+  void register(P player);
 
-  public int getIndexOfPlayer(P player) {
-    return players.indexOf(player);
-  }
-  
-  public P getNextPlayerOf(P player) {
-    return getNeighbourPlayerOf(player, true);
-  }
-  
-  public P getPreviousPlayerOf(P player) {
-    return getNeighbourPlayerOf(player, false);
-  }
-  
-  private P getNeighbourPlayerOf(P player, boolean next) {
-    int current = players.indexOf(player);
-    int neighbourIndex =  next ? ( current == players.size()-1 ?  0: current+1) : ( current== 0 ? players.size()-1: current-1);
-    return players.get(neighbourIndex);
-  }
-  
-  public void updatePlayers() {
-    for (P p : players) {
-      p.update();
-    }
-  }
-  
-  public P getDealer() {
-    for ( P p:players) {
-      if ( p.isDealer()) return p;
-    }
-    return null;
-  }
-  
-  
+  int getIndexOfPlayer(P player);
+
+  P getNextPlayerOf(P player);
+
+  P getPreviousPlayerOf(P player);
+
+  P getNeighbourPlayerOf(P player, boolean next);
+
+  P getDealer();
 
 }

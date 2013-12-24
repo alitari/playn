@@ -4,29 +4,22 @@ import static playn.core.PlayN.invokeLater;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public abstract class AbstractPlayer<G extends GameLogic, L extends Layout<CardSlot<?>>> implements
-    Player {
+public abstract class AbstractPlayer<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G extends GameLogic<L,P,G>>implements
+    Player<L,P,G> {
 
-  final protected String id;
-  final protected G gameLogic;
-  final protected ActionManager actionManager;
-  final protected CardTable<G, L> cardTable;
+  public final String id;
 
   @Override
   public String id() {
     return id;
   }
 
-  public AbstractPlayer(String name, G gameLogic, ActionManager actionManager,
-      CardTable<G, L> cardTable) {
+  public AbstractPlayer(String id) {
     super();
-    this.id = name;
-    this.gameLogic = gameLogic;
-    this.actionManager = actionManager;
-    this.cardTable = cardTable;
+    this.id = id;
   }
 
-  protected void shedule(final GameAction action) {
+  protected void shedule(final ActionManager actionManager, final GameAction action) {
     invokeLater(new Runnable() {
       @Override
       public void run() {

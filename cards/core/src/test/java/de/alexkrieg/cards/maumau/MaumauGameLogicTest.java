@@ -2,9 +2,18 @@ package de.alexkrieg.cards.maumau;
 
 import static de.alexkrieg.cards.core.Card.matches;
 import static de.alexkrieg.cards.core.Card.matchesNot;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static playn.core.PlayN.log;
 
 import java.util.Arrays;
@@ -18,11 +27,11 @@ import playn.java.JavaPlatform;
 import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
-import de.alexkrieg.cards.core.PlayerRegistry;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.Layout;
 import de.alexkrieg.cards.core.layout.StackLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
+import de.alexkrieg.cards.maumau.MaumauGameLogic.Direction;
 import de.alexkrieg.cards.maumau.MaumauGameLogic.Mode;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
@@ -42,20 +51,44 @@ public class MaumauGameLogicTest {
   }
 
   private MaumauGameLogic gameLogic;
-  private CardSlot<StackLayout> talon;
+  private MaumauPlayerRegistry playerRegistry;
+
+  private GameAction[] allActions;
+  private CardSlot<? extends Layout<Card>> talon;
   private CardSlot<StackLayout> playSlot;
   private CardSlot<TiledCardsRotatedLayout> playerslot1;
   private CardSlot<TiledCardsRotatedLayout> playerslot2;
   private CardSlot<TiledCardsRotatedLayout> playerslot3;
   private CardSlot<TiledCardsRotatedLayout> playerslot4;
-  private MaumauPlayer player1;
-  private MaumauPlayer player2;
+  private MaumauRobotPlayer player1;
+  private MaumauRobotPlayer player2;
+  private MaumauRobotPlayer player3;
+  private MaumauRobotPlayer player4;
 
   @Before
   public void setup() throws Exception {
-    gameLogic = new MaumauGameLogic();
+
+    player1 = mock(MaumauRobotPlayer.class);
+    player2 = mock(MaumauRobotPlayer.class);
+    player3 = mock(MaumauRobotPlayer.class);
+    player4 = mock(MaumauRobotPlayer.class);
+    playerRegistry = mock(MaumauPlayerRegistry.class);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player1),eq(true))).thenReturn(player2);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player2),eq(true))).thenReturn(player3);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player3),eq(true))).thenReturn(player4);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player4),eq(true))).thenReturn(player1);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player1),eq(false))).thenReturn(player4);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player2),eq(false))).thenReturn(player1);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player3),eq(false))).thenReturn(player2);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player4),eq(false))).thenReturn(player3);
+    
+    
+    
+
+    gameLogic = new MaumauGameLogic(playerRegistry);
     gameLogic.configure();
-    talon = new CardSlot<StackLayout>("testtalon", new StackLayout(10, 10));
+
+    talon = new CardSlot<StackLayout>("Testtalon ", new StackLayout(0, 10));
     talon.init();
     gameLogic.talon = talon.childs();
 
@@ -82,108 +115,152 @@ public class MaumauGameLogicTest {
         10));
     playerslot4.init();
     gameLogic.slotPlayer4 = playerslot4.childs();
-    
-    PlayerRegistry<MaumauPlayer> playerRegistry = new PlayerRegistry<MaumauPlayer>();
-    gameLogic.setPlayerRegistry(playerRegistry);
 
-    player1 = new MaumauPlayer("testPlayer1", gameLogic, null, null, playerslot1) {
+    allActions = new GameAction[] {
+        mock(CardDealedAction.class), mock(CardPlayedAction.class), mock(LeaveResultsAction.class),
+        mock(PickupAction.class), mock(PlayerFinishedAction.class), mock(PlaynAction.class),
+        mock(RefillTalonAction.class), mock(StartGameAction.class), mock(SystemReadyAction.class),
+        mock(TalonFilledAction.class)};
 
-      
-
-      @Override
-      public boolean isDealer() {
-        // TODO Auto-generated method stub
-        return true;
-      }
-
-      @Override
-      public void update() {
-        // TODO Auto-generated method stub
-        
-      }
-    };
-
-    player2 = new MaumauPlayer("testPlayer2", gameLogic, null,null, playerslot2) {
-
-      
-
-      @Override
-      public boolean isDealer() {
-        // TODO Auto-generated method stub
-        return false;
-      }
-
-      @Override
-      public void update() {
-        // TODO Auto-generated method stub
-        
-      }
-    };
-    
-    playerRegistry.register(player1);
-    playerRegistry.register(player2); 
     
 
   }
 
+//  @Test
+//  public void actionsComplete() {
+//    assertThat("Actions are not in sync: " + allActionClasses(), allActions.length,
+//        is(allActionClasses().size()));
+//  }
 
   @Test
   public void systemReady() throws Exception {
     gotoAttracting();
   }
 
+  private <T> T mockaction(Class<T> clazz) {
+    for (GameAction action : allActions) {
+      if (clazz.isInstance(action))
+        return (T) action;
+    }
+    return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void gotoAttracting() throws Exception {
+    assertThat(gameLogic.talon.isEmpty(), is(true));
+    expectLogicErrorOnAllActionsExceptOf(Mode.Init, SystemReadyAction.class);
+    gameLogic.executeAction(new SystemReadyAction());
+    assertThat(gameLogic.getMode(), is(Mode.Attracting));
+  }
+
+  private GameAction instatiate(Class<?> actionClass) {
+    GameAction action;
+    try {
+      action = (GameAction) actionClass.newInstance();
+    } catch (InstantiationException e) {
+      throw new RuntimeException(e);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+    return action;
+  }
+
+  public List<Class<?>> allActionClasses() {
+    return ActionManager.Util.allActionsClasses("de.alexkrieg.cards.maumau.action");
+  }
+
+  private void expectLogicErrorOnAllActionsExceptOf(Mode expectedMode,
+      Class<? extends GameAction>... validActions) {
+    List<Class<?>> allActionClasses = allActionClasses();
+    for (Class<?> actionClass : allActionClasses) {
+      if (!Arrays.asList(validActions).contains(actionClass)) {
+        GameAction action = instatiate(actionClass);
+        expectLogicErrorOnAction(action, expectedMode, action
+            + "should not be allowed!, Only allow:  " + validActions);
+      }
+    }
+  }
+
+  private void expectLogicErrorOnAction(GameAction trigger, Mode expectedMode, String failMessage) {
+    try {
+      gameLogic.executeAction(trigger);
+      fail(failMessage);
+    } catch (MaumauGameLogic.Error e) {
+      assertThat(e.mode, is(expectedMode));
+      log().info(e.getMessage());
+    } catch (Exception e) {
+      String msg = "unexpected Exception thrown: " + e;
+      log().error(msg, e);
+      fail(msg);
+    }
+  }
+
   @Test
   public void startGame() throws Exception {
     gotoDealing();
   }
-  
+
+  @SuppressWarnings("unchecked")
+  private void gotoDealing() throws Exception {
+    gotoAttracting();
+    expectLogicErrorOnAllActionsExceptOf(Mode.Attracting, StartGameAction.class);
+    gameLogic.executeAction(new StartGameAction(talon));
+    assertThat(gameLogic.getMode(), is(Mode.Dealing));
+    assertThat(gameLogic.talon, is(not((List<Card>) null)));
+    assertThat(gameLogic.talon.size(), is(52));
+  }
+
   @Test
   public void dealing() throws Exception {
     gotoDealing();
-    gameLogic.executeAction(new CardDealedAction(player1,talon.childs().get(0),playerslot1));
-    assertThat(gameLogic.getMode(),is(Mode.Dealing));
+    expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, CardDealedAction.class);
+    gameLogic.executeAction(new CardDealedAction(player1, talon.childs().get(0), playerslot1));
+    assertThat(gameLogic.getMode(), is(Mode.Dealing));
+
   }
-  
+
   @Test
   public void dealingButPlayerHaveEnoughCards() throws Exception {
     gotoDealing();
     fillPlayerSlots();
-    expectLogicErrorOnAction(new CardDealedAction(), Mode.Dealing, "Dealing with full playerSlots  ");
+    expectLogicErrorOnAction(new CardDealedAction(player1, talon.childs().get(0), playerslot1), Mode.Dealing,
+        "Dealing with full playerSlots  ");
   }
 
   @Test
   public void playnNotReadyCardsNotDealed() throws Exception {
-    gameLogic.executeAction(new SystemReadyAction());
-    gameLogic.executeAction(new StartGameAction(talon));
+    gotoDealing();
     assertThat(gameLogic.slotPlayer1.isEmpty(), is(true));
-    expectLogicErrorOnAction(new PlaynAction(), Mode.Dealing,
+    Card firstPlayCard = talon.firstCard();
+    expectLogicErrorOnAction(new PlaynAction(player1, firstPlayCard , playSlot), Mode.Dealing,
         "Expect error because player has no cards");
   }
-  
-
 
   @Test
   public void playn() throws Exception {
     gotoPlayn();
   }
-  
+
   @Test
   public void pickupFromTalon() throws Exception {
     gotoPlayn();
-    playSlot.put(talon.childs().get(0), null);
-    Card card = talon.childs().get(1);
-    gameLogic.executeAction(new PickupAction(player1, card, playerslot1));
-    assertThat(gameLogic.getMode(),is(Mode.Playing));
+    Card card1 = talon.childs().get(0);
+    Card card2 = talon.childs().get(1);
+    assertThat(gameLogic.waitingForPlayer,is(player2));
+    assertThat(gameLogic.slotPlayer2,not(hasItem(card1)));
+    assertThat(gameLogic.slotPlayer2,not(hasItem(card2)));
+    assertThat(gameLogic.direction,is(Direction.Clockwise));
+    
+    gameLogic.executeAction(new PickupAction(player2, card1,card2, playerslot2));
+    verify(playerRegistry).getNeighbourPlayerOf(eq(player2), eq(true));
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.waitingForPlayer, is(player3));
+    assertThat(gameLogic.slotPlayer2,hasItem(card1));
+    assertThat(gameLogic.slotPlayer2,hasItem(card2));
+    assertThat(gameLogic.direction,is(Direction.Clockwise));
   }
-  
-  
 
-  @Test
-  public void cardPlayedSlotEmpty() throws Exception {
-    gotoPlayn();
-    expectLogicErrorOnAction(new CardPlayedAction(player1, playerslot1.firstCard(), playSlot),
-        Mode.Playing, "Expect error because playslot is empty");
-  }
+  
 
   @Test
   public void cardPlayedNoMatch() throws Exception {
@@ -197,12 +274,12 @@ public class MaumauGameLogicTest {
     assertThat(gameLogic.currentPlayCard(), is(not(playersCard)));
   }
 
-
   @SuppressWarnings("unchecked")
   @Test
   public void cardPlaynSuccess() throws Exception {
     Card playersCard = findMatchingCardForPlayer1();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Playing, CardPlayedAction.class, PickupAction.class, PlayerFinishedAction.class,RefillTalonAction.class);
+    expectLogicErrorOnAllActionsExceptOf(Mode.Playing, CardPlayedAction.class, PickupAction.class,
+        PlayerFinishedAction.class, RefillTalonAction.class);
     gameLogic.executeAction(new CardPlayedAction(player1, playersCard, playSlot));
     assertThat(gameLogic.currentPlayCard(), is(playersCard));
   }
@@ -218,59 +295,54 @@ public class MaumauGameLogicTest {
   public void refillTalon() throws Exception {
     gotoRefillTalon();
   }
-  
+
   @Test
   public void talonFilled() throws Exception {
     gotoRefillTalon();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Refilling, CardPlayedAction.class,TalonFilledAction.class);
+    expectLogicErrorOnAllActionsExceptOf(Mode.Refilling, CardPlayedAction.class,
+        TalonFilledAction.class);
     gameLogic.executeAction(new TalonFilledAction());
-    assertThat(gameLogic.getMode(),is(Mode.Playing));
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
   }
-  
+
   @Test
   public void talonFilledButisNot() throws Exception {
     gotoRefillTalon();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Refilling, CardPlayedAction.class,TalonFilledAction.class);
+    expectLogicErrorOnAllActionsExceptOf(Mode.Refilling, CardPlayedAction.class,
+        TalonFilledAction.class);
     gameLogic.talon.clear();
-    expectLogicErrorOnAction(new TalonFilledAction(), Mode.Refilling, "Expect Exception because talon is (still) empty");
+    expectLogicErrorOnAction(new TalonFilledAction(), Mode.Refilling,
+        "Expect Exception because talon is (still) empty");
   }
 
   @Test
   public void playerFinishedButStillHasCards() throws Exception {
     gotoPlayn();
-    assertThat(gameLogic.slotPlayer1.isEmpty(),is(not(true)));
-    expectLogicErrorOnAction(new PlayerFinishedAction(player1),Mode.Playing,"Expect Exception because Player still has cards");
+    assertThat(gameLogic.slotPlayer1.isEmpty(), is(not(true)));
+    expectLogicErrorOnAction(new PlayerFinishedAction(player1), Mode.Playing,
+        "Expect Exception because Player still has cards");
   }
-  
+
   @Test
   public void playerFinishedSuccess() throws Exception {
     gotoFinishing();
   }
-  
+
   @Test
   public void backtoAttracting() throws Exception {
     gotoFinishing();
     expectLogicErrorOnAllActionsExceptOf(Mode.Finishing, LeaveResultsAction.class);
     gameLogic.executeAction(new LeaveResultsAction());
-    assertThat(gameLogic.getMode(),is(Mode.Attracting));
+    assertThat(gameLogic.getMode(), is(Mode.Attracting));
   }
-  
-  
-
 
   private void gotoFinishing() throws Exception {
     gotoPlayn();
     gameLogic.slotPlayer1.clear();
-    assertThat(gameLogic.slotPlayer1.isEmpty(),is(true));
+    assertThat(gameLogic.slotPlayer1.isEmpty(), is(true));
     gameLogic.executeAction(new PlayerFinishedAction(player1));
-    assertThat(gameLogic.getMode(),is(Mode.Finishing));
+    assertThat(gameLogic.getMode(), is(Mode.Finishing));
   }
-  
-  
-  
-  
-  
-  
 
   private void gotoRefillTalon() throws Exception {
     Card playersCard = findMatchingCardForPlayer1();
@@ -279,37 +351,26 @@ public class MaumauGameLogicTest {
     gameLogic.executeAction(new RefillTalonAction());
     assertThat(gameLogic.getMode(), is(Mode.Refilling));
   }
-  
-  
-  
-  @SuppressWarnings("unchecked")
-  private void gotoAttracting() throws Exception {
-    assertThat(gameLogic.talon.isEmpty(), is(true));
-    expectLogicErrorOnAllActionsExceptOf(Mode.Init, SystemReadyAction.class);
-    gameLogic.executeAction(new SystemReadyAction());
-    assertThat(gameLogic.getMode(), is(Mode.Attracting));
-  }
-
-
-  @SuppressWarnings("unchecked")
-  private void gotoDealing() throws Exception {
-    gotoAttracting();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Attracting, StartGameAction.class);
-    gameLogic.executeAction(new StartGameAction(talon));
-    assertThat(gameLogic.getMode(), is(Mode.Dealing));
-    assertThat(gameLogic.talon, is(not((List<Card>) null)));
-    assertThat(gameLogic.talon.size(), is(52));
-  }
 
   @SuppressWarnings("unchecked")
   private void gotoPlayn() throws Exception {
     gotoDealing();
     fillPlayerSlots();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, PlaynAction.class,CardDealedAction.class);
-    gameLogic.executeAction(new PlaynAction());
+    assertThat(playSlot.childs().isEmpty(),is(true));
+    expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, PlaynAction.class, CardDealedAction.class);
+    Card firstPlayCard = talon.firstCard();
+    assertThat(gameLogic.waitingForPlayer,is((MaumauRobotPlayer)null));
+    
+    
+    gameLogic.executeAction(new PlaynAction(player1, firstPlayCard , playSlot));
+    verify(playerRegistry).getNeighbourPlayerOf(eq(player1), eq(true));
     assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.playSlot.get(0),is(firstPlayCard));
+    assertThat(gameLogic.waitingForPlayer,is(player2));
+    assertThat(gameLogic.direction,is(Direction.Clockwise));
+    
+    
   }
-
 
   private void fillPlayerSlots() {
     moveCards(talon, playerslot1, MaumauGameLogic.dialedCardsCount);
@@ -331,7 +392,6 @@ public class MaumauGameLogicTest {
     return playersCard;
   }
 
-
   private void moveCards(CardSlot<? extends Layout<Card>> source,
       CardSlot<? extends Layout<Card>> dest, int count) {
     for (int i = 0; i < count; i++) {
@@ -339,63 +399,6 @@ public class MaumauGameLogicTest {
     }
   }
 
-  private void fillSlot(CardSlot<? extends Layout<Card>> cs, Card... cards) {
-    for (Card card : cards) {
-      cs.put(card, null);
-    }
-  }
-
-  private void expectLogicErrorOnAllActionsExceptOf(Mode expectedMode,
-      Class<? extends GameAction>... validActions) {
-    List<Class<?>> allActionClasses = allActionClasses();
-    for (Class<?> actionClass : allActionClasses) {
-      if (!Arrays.asList(validActions).contains(actionClass)) {
-        GameAction action = instatiate(actionClass);
-        expectLogicErrorOnAction(action, expectedMode, action
-            + "should not be allowed!, Only allow:  " + validActions);
-      }
-    }
-  }
-
-  private GameAction instatiate(Class<?> actionClass) {
-    GameAction action;
-    try {
-      action = (GameAction) actionClass.newInstance();
-    } catch (InstantiationException e) {
-      throw new RuntimeException(e);
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
-    return action;
-  }
-
-  public List<Class<?>> allActionClasses() {
-    return ActionManager.allActionsClasses("de.alexkrieg.cards.maumau.action");
-
-  }
-
-  // Class.forName(className)
-
-  // Class<?>[] classes = GameAction.class.getPackage().
-  // return classes;
-  // GameAction[] allActions = new GameAction[] {new SystemReadyAction(),new
-  // StartGameAction(talon),new PlaynAction(),new RefillTalonAction(),new PlayerFinishedAction(),new
-  // LeaveResultsAction(),new CardPlayedAction(player1,new Card(Value._2c),playSlot)};
-  // return allActions;
-  // }
-
-  private void expectLogicErrorOnAction(GameAction trigger, Mode expectedMode, String failMessage) {
-    try {
-      gameLogic.executeAction(trigger);
-      fail(failMessage);
-    } catch (MaumauGameLogic.Error e) {
-      assertThat(e.mode, is(expectedMode));
-      log().info(e.getMessage());
-    } catch (Exception e) {
-      String msg = "unexpected Exception thrown: " + e;
-      log().error(msg, e);
-      fail(msg);
-    }
-  }
+ 
 
 }

@@ -15,10 +15,10 @@
  */
 package de.alexkrieg.cards.html;
 
-import de.alexkrieg.cards.maumau.MaumauCardGame;
 import playn.core.PlayN;
 import playn.html.HtmlGame;
 import playn.html.HtmlPlatform;
+import de.alexkrieg.cards.core.CardGame;
 
 public class CardsGameHtml extends HtmlGame {
 
@@ -26,6 +26,7 @@ public class CardsGameHtml extends HtmlGame {
   public void start() {
     HtmlPlatform platform = HtmlPlatform.register();
     platform.assets().setPathPrefix("hellogame/");
-    PlayN.run(new MaumauCardGame());
+    PlayN.run(new CardGame() {
+    } );
   }
 }

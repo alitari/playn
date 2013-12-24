@@ -1,15 +1,14 @@
 package de.alexkrieg.cards.maumau;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-
-import de.alexkrieg.cards.core.ActionManager;
+import playn.core.util.Clock.Source;
+import de.alexkrieg.cards.core.AbstractPlayer;
 import de.alexkrieg.cards.core.Card;
+import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
-import de.alexkrieg.cards.core.layout.StackLayout;
+import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauGameLogic.Mode;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
@@ -18,7 +17,8 @@ import de.alexkrieg.cards.maumau.action.PickupAction;
 import de.alexkrieg.cards.maumau.action.PlaynAction;
 import de.alexkrieg.cards.maumau.action.SystemReadyAction;
 
-public class MaumauRobotPlayer extends MaumauPlayer {
+public class MaumauRobotPlayer extends
+    AbstractPlayer<NESWLayout, MaumauRobotPlayer, MaumauGameLogic> {
 
   private boolean dealer = false;
   private boolean systemReadySent = false;
@@ -26,56 +26,66 @@ public class MaumauRobotPlayer extends MaumauPlayer {
   private LinkedList<Card> cardsDealt = new LinkedList<Card>();
   private boolean cardPlayed = false;
 
-  public MaumauRobotPlayer(String name, MaumauGameLogic gameLogic, ActionManager actionManager,
-      MaumauCardtable cardTable, CardSlot<TiledCardsRotatedLayout> myCards) {
-    super(name, gameLogic, actionManager, cardTable, myCards);
+  public MaumauRobotPlayer(String name) {
+    super(name);
   }
+  
+  
 
   @Override
-  public void update() {
-    if (gameLogic.getMode() == Mode.Init && !systemReadySent) {
+  public void paint(Source _clock) {
+// nothing tzo paint yet    
+  }
+
+
+
+  @Override
+  public void update(int delta, CardGame<NESWLayout, MaumauRobotPlayer, MaumauGameLogic> game) {
+    MaumauCardtable table = (MaumauCardtable) game.cardTable;
+    CardSlot<TiledCardsRotatedLayout> ownedSlot = ownedSlot(table);
+    List<Card> ownCardList = ownedSlot.childs();
+    if (game.gameLogic.getMode() == Mode.Init && !systemReadySent) {
       if (isDealer()) {
         systemReadySent = true;
-        shedule(new SystemReadyAction());
+        shedule(game.actionManager, new SystemReadyAction());
       } else {
         // do nothing
       }
 
-    } else if (gameLogic.getMode() == Mode.Dealing && !playnSent) {
+    } else if (game.gameLogic.getMode() == Mode.Dealing && !playnSent) {
       if (isDealer()) {
-        List<Card> talon = table().talon.childs();
+        List<Card> talon = game.gameLogic.talon;
         if (cardsDealt.isEmpty()) {
           cardsDealt.addAll(talon.subList(talon.size() - 4 * MaumauGameLogic.dialedCardsCount - 1,
               talon.size()));
         }
         if (cardsDealt.size() > 1) {
           int playerNr = (cardsDealt.size() - 1) % 4;
-          CardSlot<TiledCardsRotatedLayout> playerSlot = (playerNr == 0 ? table().slotPlayer1
-              : (playerNr == 1 ? table().slotPlayer2 : (playerNr == 2 ? table().slotPlayer3
-                  : table().slotPlayer4)));
+          CardSlot<TiledCardsRotatedLayout> playerSlot = (playerNr == 0 ? table.slotPlayer1
+              : (playerNr == 1 ? table.slotPlayer2 : (playerNr == 2 ? table.slotPlayer3
+                  : table.slotPlayer4)));
           Card card = cardsDealt.removeLast();
-          shedule(new CardDealedAction(this, card, playerSlot));
+          shedule(game.actionManager, new CardDealedAction(this, card, playerSlot));
         } else {
           Card card = cardsDealt.removeLast();
-          shedule(new PlaynAction(this, card, table().playSlot));
+          shedule(game.actionManager, new PlaynAction(this, card, table.playSlot));
           playnSent = true;
         }
       } else {
         // do nothing
       }
-    } else if (gameLogic.getMode() == Mode.Playing) {
-      if (gameLogic.waitingForPlayer == this) {
+    } else if (game.gameLogic.getMode() == Mode.Playing) {
+      if (game.gameLogic.waitingForPlayer == this) {
         if (!cardPlayed) {
-          List<Card> ownCardList = ownedCards().childs();
-          List<Card> matches = Card.matches(gameLogic.currentPlayCard(), ownCardList);
+          List<Card> matches = Card.matches(game.gameLogic.currentPlayCard(), ownCardList);
           if (matches.isEmpty()) {
-            Card card = table().talon.getLastUnusedChild();
-            shedule(new PickupAction(this, card, ownedCards()));
-            card = table().talon.getLastUnusedChild();
-            shedule(new PickupAction(this, card, ownedCards()));
+            Card card = table.talon.getLastUnusedChild();
+            shedule( game.actionManager, new PickupAction(this, card, ownedSlot));
+            card = table.talon.getLastUnusedChild();
+            shedule(game.actionManager,new PickupAction(this, card, ownedSlot));
           } else {
             Card card = matches.get(0);
-            shedule(new CardPlayedAction(this, card, table().playSlot));
+            shedule(game.actionManager,new CardPlayedAction(this, card, table.playSlot));
           }
           cardPlayed = true;
         } else {
@@ -88,6 +98,20 @@ public class MaumauRobotPlayer extends MaumauPlayer {
 
     }
 
+  }
+
+  private CardSlot<TiledCardsRotatedLayout> ownedSlot(MaumauCardtable table) {
+    if (id == MaumauPlayerRegistry.ID_PLAYER1) {
+      return table.slotPlayer1;
+    } else if (id == MaumauPlayerRegistry.ID_PLAYER2) {
+      return table.slotPlayer2;
+    } else if (id == MaumauPlayerRegistry.ID_PLAYER3) {
+      return table.slotPlayer3;
+    } else if (id == MaumauPlayerRegistry.ID_PLAYER4) {
+      return table.slotPlayer4;
+    } else {
+      throw new RuntimeException("Unknown id:"+id);
+    }
   }
 
   // private List<Card> findCandidates(Card card) {

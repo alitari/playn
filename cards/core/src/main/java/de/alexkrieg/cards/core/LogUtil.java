@@ -48,7 +48,7 @@ public class LogUtil {
   }
   
   
-  public static String  logString(PlayerRegistry<?> playerRegistry) {
+  public static String  logString(PlayerRegistry<?,?,?> playerRegistry) {
     StringBuffer strb = new StringBuffer(playerRegistry.getClass().getSimpleName());
     return strb.toString();
   }

@@ -31,12 +31,11 @@ import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public abstract class CardTable<G extends GameLogic, L extends Layout<CardSlot<?>>> extends
-    AbstractLayerEntityContainer<CardSlot<?>, L> {
+public abstract class CardTable<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G extends GameLogic<L,P,G>> extends
+    AbstractLayerEntityContainer<CardSlot<?>, L> implements Updateable<L,P,G>{
 
   public static final Font TITLE_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 36);
 
-  protected G gameLogic;
 
   protected Interface iface;
   
@@ -61,19 +60,20 @@ public abstract class CardTable<G extends GameLogic, L extends Layout<CardSlot<?
     layer().setOrigin(0, 0);
   }
 
+  @Override
   public void paint(Clock.Source _clock) {
     if (iface != null) {
       iface.paint(_clock);
     }
   }
 
-  public void update(int delta) {
+  @Override
+  public void update(int delta, CardGame<L,P,G> game) {
     if (iface != null) {
       iface.update(delta);
     }
   }
   
-  public abstract void connect(G gameLogic); 
 
   @Override
   protected void fillWithLayers(List<Layer> layers) {

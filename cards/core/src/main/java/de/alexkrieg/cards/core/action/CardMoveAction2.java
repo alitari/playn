@@ -10,7 +10,6 @@ public class CardMoveAction2<L extends Layout<Card>> extends MoveAction<Card, L 
   
   public CardMoveAction2(Card card,  CardSlot<L> destination) {
     super(card, DURATION, destination);
-    card.layer().parent().setDepth( destination.layer().depth()+1);
   }
 
   @Override

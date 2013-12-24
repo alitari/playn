@@ -1,163 +1,69 @@
 package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.graphics;
-import static playn.core.PlayN.keyboard;
-import playn.core.Canvas;
-import playn.core.CanvasImage;
-import playn.core.Font;
+
+import javax.inject.Inject;
+
 import playn.core.Game;
 import playn.core.GroupLayer;
-import playn.core.ImageLayer;
-import playn.core.Key;
-import playn.core.Keyboard;
-import playn.core.Keyboard.Event;
-import playn.core.Layer;
-import playn.core.TextFormat;
-import playn.core.TextLayout;
 import playn.core.util.Clock;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, G extends GameLogic> extends
-    Game.Default {
+public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G extends GameLogic<L,P,G>>
+    extends Game.Default {
 
-  private static final Font DEBUG_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN, 11);
-  private final TextFormat debugTextFormat = new TextFormat().withFont(DEBUG_FONT).withWrapWidth(
-      graphics().width());
-
-  public boolean debug = true;
-  private boolean debugSnapShot = true;
-  private final static Key DEBUGKEY = Key.D;
-
-  protected ActionManager actionManager = new ActionManager(50);
-
-  protected CardTable<G, L> cardTable;
-  protected PlayerRegistry<P> playerRegistry;
   
-  public G gameLogic;
-
-  private Layer debugLayer;
-
+  protected final Clock.Source _clock = new Clock.Source(UPDATE_RATE);
   public static final int UPDATE_RATE = 50;
+  
+  public final ActionManager actionManager;// = new ActionManager(50);
+  final public CardTable<L,P,G> cardTable;
+  final public  PlayerRegistry<L,P,G> playerRegistry;
+  final public G gameLogic;
 
-  public CardGame() {
+
+  @Inject
+  public CardGame(ActionManager actionManager, CardTable<L,P,G> cardTable,
+      PlayerRegistry<L,P,G> playerRegistry, G gamelogic) {
     super(UPDATE_RATE);
+    this.actionManager = actionManager;
+    this.cardTable = cardTable;
+    this.playerRegistry = playerRegistry;
+    this.gameLogic = gamelogic;
   }
-  
-  
-  public PlayerRegistry<P> playerRegistry() {
+
+  // for other platforms which are already not supported
+  public CardGame() {
+    this(null, null, null, null);
+  }
+
+  public PlayerRegistry<L,P,G> playerRegistry() {
     return playerRegistry;
   }
 
   @Override
   public void init() {
-    cardTable = createCardTable();
-    gameLogic = createGameLogic();
-    actionManager.setGameLogic(gameLogic);
-    cardTable.connect(gameLogic);
-    playerRegistry = createPlayerRegistry();
-    gameLogic.setPlayerRegistry(playerRegistry);
-    
+    cardTable.init();
+    gameLogic.configure();
     GroupLayer rootLayer = graphics().rootLayer();
     rootLayer.add(cardTable.layer());
-    if (debug) {
-      keyboard().setListener(new Keyboard.Adapter() {
-
-        @Override
-        public void onKeyDown(Event event) {
-          super.onKeyDown(event);
-          debugSnapShot = event.key().equals(DEBUGKEY);
-        }
-
-        @Override
-        public void onKeyUp(Event event) {
-          super.onKeyUp(event);
-          if (event.key().equals(DEBUGKEY)) {
-            debugSnapShot = false;
-          }
-        }
-
-      });
-
-      debugLayer = createDebugLayer();
-      rootLayer.add(debugLayer);
-    }
-
   }
-
-
-
-  private Layer createDebugLayer() {
-    GroupLayer debugGroupLayer = graphics().createGroupLayer();
-    CanvasImage debugCanvasImage = graphics().createImage((int) Math.ceil(graphics().width()),
-        (int) Math.ceil(graphics().height()));
-    debugCanvas = debugCanvasImage.canvas();
-    debugCanvas.setFillColor(0xFF660000);
-    debugCanvas.setStrokeColor(0xFF660000); //
-    // debugCanvasImage.canvas().fillText(debugTextLayout, 0, 0);
-    ImageLayer imageLayer = graphics().createImageLayer(debugCanvasImage);
-    debugGroupLayer.add(imageLayer);
-
-    return debugGroupLayer;
-
-  }
-
-  protected String debugUpdate(int delta) {
-    StringBuffer str = new StringBuffer();
-    str.append(LogUtil.logString(this));
-    return str.toString();
-  }
-
-  private TextLayout createDebugTextLayout(String text, TextFormat textFormat) {
-    return graphics().layoutText(text, textFormat);
-  }
-
-  protected abstract G createGameLogic();
-  protected abstract PlayerRegistry<P> createPlayerRegistry();
-
-  protected abstract CardTable<G, L> createCardTable();
-
-  
 
   @Override
   public void paint(float alpha) {
     _clock.paint(alpha);
     actionManager.paintActions(alpha);
     cardTable.paint(_clock);
-
   }
 
   @Override
   public void update(int delta) {
     _clock.update(delta);
     actionManager.executeActions();
-    playerRegistry.updatePlayers();
-    cardTable.update(delta);
-    if (debug && isDebugSnapShot()) {
-      updateDebug(delta);
-    }
-
+    playerRegistry.update(delta,this);
+    cardTable.update(delta,this);
   }
 
-  private void updateDebug(int delta) {
-    String debugText = debugUpdate(delta);
-    debugCanvas.clear();
-    debugCanvas.fillText(createDebugTextLayout(debugText, createDebugTextFormat()), 0, 0);
-    setDebugSnapShot(false);
-  }
-
-  protected TextFormat createDebugTextFormat() {
-    return debugTextFormat;
-  }
-
-  public boolean isDebugSnapShot() {
-    return debugSnapShot;
-  }
-
-  public void setDebugSnapShot(boolean debugSnapShot) {
-    this.debugSnapShot = debugSnapShot;
-  }
-
-  protected final Clock.Source _clock = new Clock.Source(UPDATE_RATE);
-  private Canvas debugCanvas;
+  
 
 }

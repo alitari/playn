@@ -31,6 +31,11 @@ public abstract class AbstractAction implements GameAction {
 		return duration;
 	}
 	
+	public GameAction merge(GameAction action) {
+	  return new Merge(this, action); 
+	}
 	
+	
+		
 
 }

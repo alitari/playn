@@ -1,6 +1,7 @@
 package de.alexkrieg.cards.maumau;
 
-import static playn.core.PlayN.log;
+import javax.inject.Inject;
+
 import react.UnitSlot;
 import tripleplay.ui.Button;
 import tripleplay.ui.Group;
@@ -9,6 +10,7 @@ import tripleplay.ui.Root;
 import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.ActionManager;
+import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.CardTable;
 import de.alexkrieg.cards.core.layout.NESWLayout;
@@ -17,9 +19,7 @@ import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.action.StartGameAction;
 
 
-public class MaumauCardtable extends CardTable<MaumauGameLogic,NESWLayout> {
-  
-  
+public class MaumauCardtable extends CardTable<NESWLayout,MaumauRobotPlayer,MaumauGameLogic> {
   
   public CardSlot<TiledCardsRotatedLayout> slotPlayer1;
   public CardSlot<TiledCardsRotatedLayout> slotPlayer2;
@@ -30,18 +30,20 @@ public class MaumauCardtable extends CardTable<MaumauGameLogic,NESWLayout> {
 
 
 
+  @Inject
   public MaumauCardtable( ActionManager actionManager, NESWLayout layout) {
     super( actionManager,layout);
   }
   
-  
-
   @Override
-  public void update(int delta) {
+  public void update(int delta, CardGame<NESWLayout,MaumauRobotPlayer,MaumauGameLogic> game) {
+    if ( game.gameLogic.talon== null) {
+      connect(game.gameLogic);
+    }
     if ( iface != null ) {
-      boolean startScreen =  gameLogic.getMode()== MaumauGameLogic.Mode.Attracting;
+      boolean startScreen =  game.gameLogic.getMode()== MaumauGameLogic.Mode.Attracting;
       iface.roots().iterator().next().setVisible(startScreen);
-      super.update(delta);
+      super.update(delta,game);
     }
   }
 
@@ -90,15 +92,13 @@ public class MaumauCardtable extends CardTable<MaumauGameLogic,NESWLayout> {
 
 
 
-  @Override
-  public void connect(MaumauGameLogic gameLogic) {
+  private void connect(MaumauGameLogic gameLogic) {
     gameLogic.playSlot = playSlot.childs();
     gameLogic.talon = talon.childs();
     gameLogic.slotPlayer1 = slotPlayer1.childs();
     gameLogic.slotPlayer2 = slotPlayer2.childs();
     gameLogic.slotPlayer3 = slotPlayer3.childs();
     gameLogic.slotPlayer4 = slotPlayer4.childs();
-    this.gameLogic = gameLogic;
   }
 
 

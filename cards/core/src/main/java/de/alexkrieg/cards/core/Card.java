@@ -5,6 +5,7 @@ import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -115,6 +116,10 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
     return result;
   }
 
+  public static boolean matches(Card card1, Card card2) {
+    return !matches(card1, Arrays.asList(new Card[] {card2})).isEmpty();
+  }
+  
   public static List<Card> matches(Card matchCard, List<Card> cards) {
     return applyFilter(new MatchFilter(matchCard), cards);
   }

@@ -4,12 +4,12 @@ import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.action.CardMoveAction2;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
-import de.alexkrieg.cards.maumau.MaumauPlayer;
+import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
 public class CardDealedAction extends CardMoveAction2<TiledCardsRotatedLayout> {
   
   
-  private final MaumauPlayer player;
+  private final MaumauRobotPlayer player;
   
   
   public CardDealedAction() {
@@ -18,13 +18,13 @@ public class CardDealedAction extends CardMoveAction2<TiledCardsRotatedLayout> {
     this.player = null;
   }
 
-  public CardDealedAction(MaumauPlayer player, Card card, CardSlot<TiledCardsRotatedLayout> playerSlot) {
+  public CardDealedAction(MaumauRobotPlayer player, Card card, CardSlot<TiledCardsRotatedLayout> playerSlot) {
     super(card, playerSlot);
     this.player = player;
     card.setSide(Card.Side.Image);
   }
 
-  public MaumauPlayer player() {
+  public MaumauRobotPlayer player() {
     return player;
   }
 

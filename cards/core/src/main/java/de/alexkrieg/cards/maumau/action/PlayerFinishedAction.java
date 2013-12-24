@@ -1,21 +1,20 @@
 package de.alexkrieg.cards.maumau.action;
 
-import de.alexkrieg.cards.core.Player;
-import de.alexkrieg.cards.maumau.MaumauPlayer;
+import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
 public class PlayerFinishedAction extends ActionAdapter {
   
-  final MaumauPlayer player;
+  final MaumauRobotPlayer player;
 
   public PlayerFinishedAction() {
     this(null);
   }
   
-  public PlayerFinishedAction(MaumauPlayer player) {
+  public PlayerFinishedAction(MaumauRobotPlayer player) {
     this.player = player;
   }
 
-  public MaumauPlayer player() {
+  public MaumauRobotPlayer player() {
     return player;
   }
   

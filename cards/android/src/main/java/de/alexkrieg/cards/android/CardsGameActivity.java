@@ -15,14 +15,15 @@
  */
 package de.alexkrieg.cards.android;
 
-import de.alexkrieg.cards.maumau.MaumauCardGame;
 import playn.android.GameActivity;
 import playn.core.PlayN;
+import de.alexkrieg.cards.core.CardGame;
 
 public class CardsGameActivity extends GameActivity {
 
   @Override
   public void main(){
-    PlayN.run(new MaumauCardGame());
+    PlayN.run(new CardGame() {
+    });
   }
 }

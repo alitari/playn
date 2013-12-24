@@ -15,10 +15,14 @@
  */
 package de.alexkrieg.cards.java;
 
-import de.alexkrieg.cards.maumau.MaumauCardGame;
 import playn.core.PlayN;
 import playn.java.JavaGraphics;
 import playn.java.JavaPlatform;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import de.alexkrieg.cards.maumau.MaumauCardGame;
 
 public class CardsGameJava {
 
@@ -33,7 +37,10 @@ public class CardsGameJava {
 		}
 		
 		graphics.setSize(width, height);
-		PlayN.run(new MaumauCardGame());
+		
+		
+		Injector _injector = Guice.createInjector(new CardsGameModule());
+    PlayN.run(_injector.getInstance(MaumauCardGame.class));
 
 	}
 }

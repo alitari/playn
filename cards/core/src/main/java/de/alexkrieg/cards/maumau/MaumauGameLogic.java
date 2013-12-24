@@ -4,6 +4,8 @@ import static playn.core.PlayN.log;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.googlecode.stateless4j.StateMachine;
 import com.googlecode.stateless4j.delegates.Action;
 import com.googlecode.stateless4j.delegates.Action1;
@@ -14,8 +16,8 @@ import com.googlecode.stateless4j.triggers.TriggerWithParameters1;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.GameLogic;
 import de.alexkrieg.cards.core.LogUtil;
-import de.alexkrieg.cards.core.PlayerRegistry;
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
 import de.alexkrieg.cards.maumau.action.LeaveResultsAction;
@@ -27,7 +29,7 @@ import de.alexkrieg.cards.maumau.action.StartGameAction;
 import de.alexkrieg.cards.maumau.action.SystemReadyAction;
 import de.alexkrieg.cards.maumau.action.TalonFilledAction;
 
-public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
+public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer, MaumauGameLogic> {
 
   public final static int dialedCardsCount = 6;
 
@@ -41,6 +43,12 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
       super(message);
       this.mode = mode;
       this.action = action;
+    }
+
+    public Error(String message, Throwable cause) {
+      super(message, cause);
+      this.mode = null;
+      this.action = null;
     }
 
   }
@@ -57,7 +65,7 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
     Init, Attracting, Dealing, Playing, Refilling, Finishing;
   }
 
-  MaumauPlayer waitingForPlayer;
+  MaumauRobotPlayer waitingForPlayer;
   Direction direction;
 
   List<Card> slotPlayer1;
@@ -70,6 +78,13 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
   List<Card> playSlot;
 
   private StateMachine<Mode, Class<? extends GameAction>> stateMachine;
+  final private MaumauPlayerRegistry playerRegistry;
+
+  @Inject
+  public MaumauGameLogic(MaumauPlayerRegistry playerRegistry) {
+    super();
+    this.playerRegistry = playerRegistry;
+  }
 
   private class ReadyForPlayn implements Func<Boolean> {
 
@@ -145,21 +160,41 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
     }
   };
 
+  private final ModeEntry<PlaynAction> playnModeEntry = new ModeEntry<PlaynAction>() {
+
+    @Override
+    public void doIt(PlaynAction playnAction) {
+      playnAction.execute();
+      direction = Direction.Clockwise;
+      nextPlayer(playnAction.player());
+    }
+
+  };
+
+  private final ModeEntry<PickupAction> pickupModeEntry = new ModeEntry<PickupAction>() {
+
+    @Override
+    public void doIt(PickupAction pickupAction) {
+      pickupAction.execute();
+      nextPlayer(pickupAction.player());
+    }
+
+  };
+
   private final ModeEntry<CardPlayedAction> cardPlayedModeEntry = new ModeEntry<CardPlayedAction>() {
 
     @Override
     public void doIt(CardPlayedAction cardPlaydAction) {
       Card card = cardPlaydAction.card();
       Card currenPlayCard = currentPlayCard();
-      if (card.value.suit() != currenPlayCard.value.suit()
-          && card.value.rank() != currenPlayCard.value.rank()) {
+      if (!Card.matches(card, currenPlayCard)) {
         log().error("can't play card " + cardPlaydAction.card() + " on " + currenPlayCard);
-      } else if (!cardPlaydAction.player().ownedCards().childs().contains(card)) {
+      } else if (!playersCards(cardPlaydAction.player()).contains(card)) {
         log().error(
             "played card " + card + " does not belong to player " + cardPlaydAction.player());
       } else {
         cardPlaydAction.execute();
-        waitingForPlayer = playerRegistry.getNextPlayerOf(cardPlaydAction.player());
+        nextPlayer(cardPlaydAction.player());
       }
 
     }
@@ -170,8 +205,8 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
 
     @Override
     public void doIt(PlayerFinishedAction finishedAction) {
-      MaumauPlayer finishedPlayer = finishedAction.player();
-      boolean playerHasNoCards = finishedPlayer.ownedCards().childs().isEmpty();
+      MaumauRobotPlayer finishedPlayer = finishedAction.player();
+      boolean playerHasNoCards = playersCards(finishedPlayer).isEmpty();
       if (playerHasNoCards) {
         finishedAction.execute();
       } else {
@@ -186,20 +221,7 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
 
     @Override
     public void doIt() {
-      waitingForPlayer = playerRegistry.getNextPlayerOf(playerRegistry.getDealer());
-    }
-
-  };
-
-  private final Action pickupEntry = new Action() {
-    int count = 0;
-
-    @Override
-    public void doIt() {
-      count++;
-      if (count % 2 == 0) {
-        waitingForPlayer = playerRegistry.getNextPlayerOf(waitingForPlayer);
-      }
+      // waitingForPlayer = playerRegistry.getNextPlayerOf(playerRegistry.getDealer());
     }
 
   };
@@ -210,10 +232,29 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
 
   private TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameAction>> cardPlayedTrigger;
   private TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameAction>> playerFinishedTrigger;
-  private PlayerRegistry<MaumauPlayer> playerRegistry;
+  private TriggerWithParameters1<PlaynAction, Mode, Class<? extends GameAction>> playnTrigger;
+  private TriggerWithParameters1<PickupAction, Mode, Class<? extends GameAction>> pickupTrigger;
 
-  public void configure() throws Exception {
+  private List<Card> playersCards(MaumauRobotPlayer finishedPlayer) {
+    if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER1) {
+      return slotPlayer1;
+    } else if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER2) {
+      return slotPlayer2;
+    } else if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER3) {
+      return slotPlayer3;
+    } else if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER4) {
+      return slotPlayer4;
+    } else {
+      throw new RuntimeException("Unknown id:" + finishedPlayer.id);
+    }
+  }
 
+  private void nextPlayer(MaumauRobotPlayer player) {
+    waitingForPlayer = playerRegistry.getNeighbourPlayerOf(player, direction == Direction.Clockwise);
+  }
+
+  @Override
+  public void configure() {
     stateMachine = new StateMachine<Mode, Class<? extends GameAction>>(Mode.Init);
     Action2<Mode, Class<? extends GameAction>> unhandledTriggerAction = new Action2<Mode, Class<? extends GameAction>>() {
       @Override
@@ -223,40 +264,60 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
       }
 
     };
-    stateMachine.OnUnhandledTrigger(unhandledTriggerAction);
+    try {
+      stateMachine.OnUnhandledTrigger(unhandledTriggerAction);
 
-    stateMachine.Configure(Mode.Init).Permit(SystemReadyAction.class, Mode.Attracting);
+      stateMachine.Configure(Mode.Init).Permit(SystemReadyAction.class, Mode.Attracting);
 
-    stateMachine.Configure(Mode.Attracting).Permit(StartGameAction.class, Mode.Dealing);
+      stateMachine.Configure(Mode.Attracting).Permit(StartGameAction.class, Mode.Dealing);
 
-    stateMachine.Configure(Mode.Dealing).PermitReentryIf(CardDealedAction.class,
-        new ReadyForPlayn(false));
-    stateMachine.Configure(Mode.Dealing).PermitIf(PlaynAction.class, Mode.Playing,
-        new ReadyForPlayn(true));
-    stateMachine.Configure(Mode.Playing).Permit(RefillTalonAction.class, Mode.Refilling).PermitIf(
-        PlayerFinishedAction.class, Mode.Finishing, readyForFinishing);
+      stateMachine.Configure(Mode.Dealing).PermitReentryIf(CardDealedAction.class,
+          new ReadyForPlayn(false));
 
-    cardPlayedTrigger = new TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameAction>>(
-        CardPlayedAction.class, CardPlayedAction.class);
-    stateMachine.SetTriggerParameters(CardPlayedAction.class, CardPlayedAction.class);
-    stateMachine.Configure(Mode.Playing).PermitReentryIf(CardPlayedAction.class, readyForPlaynCard);
+      // Dealing->Playing
+      playnTrigger = new TriggerWithParameters1<PlaynAction, Mode, Class<? extends GameAction>>(
+          PlaynAction.class, PlaynAction.class);
+      stateMachine.SetTriggerParameters(PlaynAction.class, PlaynAction.class);
+      stateMachine.Configure(Mode.Dealing).PermitIf(PlaynAction.class, Mode.Playing,
+          new ReadyForPlayn(true));
+      stateMachine.Configure(Mode.Playing).OnEntryFrom(playnTrigger, playnModeEntry,
+          PlaynAction.class);
 
-    stateMachine.Configure(Mode.Playing).PermitReentryIf(PickupAction.class, readyForPlaynCard);
+      stateMachine.Configure(Mode.Playing).Permit(RefillTalonAction.class, Mode.Refilling).PermitIf(
+          PlayerFinishedAction.class, Mode.Finishing, readyForFinishing);
 
-    stateMachine.Configure(Mode.Playing).OnEntryFrom(cardPlayedTrigger, cardPlayedModeEntry,
-        CardPlayedAction.class);
+      cardPlayedTrigger = new TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameAction>>(
+          CardPlayedAction.class, CardPlayedAction.class);
+      stateMachine.SetTriggerParameters(CardPlayedAction.class, CardPlayedAction.class);
+      stateMachine.Configure(Mode.Playing).PermitReentryIf(CardPlayedAction.class,
+          readyForPlaynCard);
 
-    stateMachine.Configure(Mode.Playing).OnEntryFrom(PlaynAction.class, playnEntry);
-    stateMachine.Configure(Mode.Playing).OnEntryFrom(PickupAction.class, pickupEntry);
+      stateMachine.Configure(Mode.Playing).PermitReentryIf(PickupAction.class, readyForPlaynCard);
 
-    playerFinishedTrigger = new TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameAction>>(
-        PlayerFinishedAction.class, PlayerFinishedAction.class);
-    stateMachine.Configure(Mode.Playing).OnEntryFrom(playerFinishedTrigger,
-        playerFinishedModeEntry, PlayerFinishedAction.class);
+      stateMachine.Configure(Mode.Playing).OnEntryFrom(cardPlayedTrigger, cardPlayedModeEntry,
+          CardPlayedAction.class);
 
-    stateMachine.Configure(Mode.Finishing).Permit(LeaveResultsAction.class, Mode.Attracting);
-    stateMachine.Configure(Mode.Refilling).PermitReentry(CardPlayedAction.class).PermitIf(
-        TalonFilledAction.class, Mode.Playing, readyForContinuePlaying);
+      stateMachine.Configure(Mode.Playing).OnEntryFrom(PlaynAction.class, playnEntry);
+
+      // PickupTrigger
+      pickupTrigger = new TriggerWithParameters1<PickupAction, Mode, Class<? extends GameAction>>(
+          PickupAction.class, PickupAction.class);
+      stateMachine.SetTriggerParameters(PickupAction.class, PickupAction.class);
+      stateMachine.Configure(Mode.Playing).OnEntryFrom(pickupTrigger, pickupModeEntry,
+          PickupAction.class);
+
+      playerFinishedTrigger = new TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameAction>>(
+          PlayerFinishedAction.class, PlayerFinishedAction.class);
+      stateMachine.Configure(Mode.Playing).OnEntryFrom(playerFinishedTrigger,
+          playerFinishedModeEntry, PlayerFinishedAction.class);
+
+      stateMachine.Configure(Mode.Finishing).Permit(LeaveResultsAction.class, Mode.Attracting);
+      stateMachine.Configure(Mode.Refilling).PermitReentry(CardPlayedAction.class).PermitIf(
+          TalonFilledAction.class, Mode.Playing, readyForContinuePlaying);
+
+    } catch (Exception e) {
+      throw new Error("Problem during configuration of gamelogic", e);
+    }
 
   }
 
@@ -274,17 +335,15 @@ public class MaumauGameLogic implements GameLogic<MaumauPlayer> {
     log().info("execute " + action);
     if (action instanceof CardPlayedAction) {
       stateMachine.Fire(cardPlayedTrigger, (CardPlayedAction) action);
+    } else if (action instanceof PlaynAction) {
+      stateMachine.Fire(playnTrigger, (PlaynAction) action);
+    } else if (action instanceof PickupAction) {
+      stateMachine.Fire(pickupTrigger, (PickupAction) action);
     } else {
       stateMachine.Fire((Class<? extends GameAction>) action.getClass());
       action.execute();
     }
     log().info("game mode= " + getMode() + ",waiting4Player=" + waitingForPlayer);
-  }
-
-  @Override
-  public void setPlayerRegistry(PlayerRegistry<MaumauPlayer> playerRegistry) {
-    this.playerRegistry = playerRegistry;
-
   }
 
 }
