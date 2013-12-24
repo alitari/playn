@@ -89,7 +89,7 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
   @Override
   public L layout() {
-    return this.layout;
+     return this.layout;
   }
 
   @Override
