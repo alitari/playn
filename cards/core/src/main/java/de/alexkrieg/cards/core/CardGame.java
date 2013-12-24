@@ -28,7 +28,7 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, 
   private boolean debugSnapShot = true;
   private final static Key DEBUGKEY = Key.D;
 
-  protected ActionManager actionManager = new ActionManager(50);
+  protected ActionManager actionManager;// = new ActionManager(50);
 
   protected CardTable<G, L> cardTable;
   protected PlayerRegistry<P> playerRegistry;
@@ -39,8 +39,9 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, 
 
   public static final int UPDATE_RATE = 50;
 
-  public CardGame() {
+  public CardGame(ActionManager actionManager) {
     super(UPDATE_RATE);
+    this.actionManager = actionManager;
   }
   
   
@@ -60,24 +61,6 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, 
     GroupLayer rootLayer = graphics().rootLayer();
     rootLayer.add(cardTable.layer());
     if (debug) {
-      keyboard().setListener(new Keyboard.Adapter() {
-
-        @Override
-        public void onKeyDown(Event event) {
-          super.onKeyDown(event);
-          debugSnapShot = event.key().equals(DEBUGKEY);
-        }
-
-        @Override
-        public void onKeyUp(Event event) {
-          super.onKeyUp(event);
-          if (event.key().equals(DEBUGKEY)) {
-            debugSnapShot = false;
-          }
-        }
-
-      });
-
       debugLayer = createDebugLayer();
       rootLayer.add(debugLayer);
     }
@@ -87,6 +70,24 @@ public abstract class CardGame<L extends Layout<CardSlot<?>>, P extends Player, 
 
 
   private Layer createDebugLayer() {
+    keyboard().setListener(new Keyboard.Adapter() {
+
+      @Override
+      public void onKeyDown(Event event) {
+        super.onKeyDown(event);
+        debugSnapShot = event.key().equals(DEBUGKEY);
+      }
+
+      @Override
+      public void onKeyUp(Event event) {
+        super.onKeyUp(event);
+        if (event.key().equals(DEBUGKEY)) {
+          debugSnapShot = false;
+        }
+      }
+
+    });
+    
     GroupLayer debugGroupLayer = graphics().createGroupLayer();
     CanvasImage debugCanvasImage = graphics().createImage((int) Math.ceil(graphics().width()),
         (int) Math.ceil(graphics().height()));

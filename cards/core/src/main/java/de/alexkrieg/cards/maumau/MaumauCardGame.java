@@ -1,16 +1,28 @@
 package de.alexkrieg.cards.maumau;
 
+import javax.inject.Inject;
+
 import playn.core.ImageLayer;
+import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.CardGame;
-import de.alexkrieg.cards.core.CardSlot;
-import de.alexkrieg.cards.core.CardTable;
 import de.alexkrieg.cards.core.PlayerRegistry;
 import de.alexkrieg.cards.core.layout.NESWLayout;
-import de.alexkrieg.cards.core.layout.StackLayout;
-import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 
 public class MaumauCardGame extends CardGame<NESWLayout, MaumauPlayer,MaumauGameLogic> {
   
+  @Inject
+  public MaumauCardGame(ActionManager actionManager) {
+    super(actionManager);
+  }
+  
+  public MaumauCardGame() {
+    // not used 
+    super(null);
+  }
+  
+  
+
+
   public static final String TALON_NAME = "Talon";
 
 

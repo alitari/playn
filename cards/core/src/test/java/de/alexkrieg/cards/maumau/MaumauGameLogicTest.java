@@ -370,7 +370,7 @@ public class MaumauGameLogicTest {
   }
 
   public List<Class<?>> allActionClasses() {
-    return ActionManager.allActionsClasses("de.alexkrieg.cards.maumau.action");
+    return ActionManager.Util.allActionsClasses("de.alexkrieg.cards.maumau.action");
 
   }
 

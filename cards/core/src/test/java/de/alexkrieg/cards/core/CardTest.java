@@ -2,15 +2,13 @@ package de.alexkrieg.cards.core;
 
 import static de.alexkrieg.cards.core.Card.matches;
 import static de.alexkrieg.cards.core.Card.matchesNot;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -62,8 +60,8 @@ public class CardTest {
     cards.add(card5s);
     cards.add(card6s);
 
-    assertThat(matchesNot(new Card(Value._7d), cards), not(hasItem(card3d)));
-    assertThat(matchesNot(new Card(Value._7d), cards), hasItems(card4c,card5s,card6s));
+    assertThat(matchesNot(new Card(Value._7d), cards).contains(card3d), is(false));
+    assertThat(matchesNot(new Card(Value._7d), cards).containsAll( Arrays.asList(new Card[] {card4c,card5s,card6s})), is(true));
 
   }
 
