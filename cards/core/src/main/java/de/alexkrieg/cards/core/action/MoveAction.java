@@ -7,7 +7,7 @@ import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.LayerEntityContainer;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public class MoveAction<T extends LayerEntity, L extends Layout<T>> extends TransformAction {
+public abstract class MoveAction<T extends LayerEntity, L extends Layout<T>> extends TransformAction {
 
   protected final T layerEntity;
   protected final LayerEntityContainer<T, L> destination;
@@ -24,17 +24,31 @@ public class MoveAction<T extends LayerEntity, L extends Layout<T>> extends Tran
   }
 
   private Transform calcTransform() {
-    L layout = destination.layout();
-    layout.recalc(layerEntity, null);
     Layer destLayer = destination.layer();
+    Layer sourceLayer = layerEntity.layer();
+    Layer containerLayer = layerEntity.getContainer().layer();
+    float sourceRot = containerLayer.transform().rotation();//+sourceLayer.transform().rotation();
+    L layout = destination.layout();
+    recalcLayout(layout);
+    float destRot = destLayer.transform().rotation()-layout.rot(layerEntity);
+ 
     Point destScreen = Layer.Util.layerToScreen(destLayer, layout.x(layerEntity),
         layout.y(layerEntity));
     Point destPoint = new Point();
-    Layer.Util.screenToLayer(layerEntity.getContainer().layer(), destScreen, destPoint);
-    Transform transform = layerEntity.layer().transform().copy();
+    Layer.Util.screenToLayer(containerLayer, destScreen, destPoint);
+    Transform transform = sourceLayer.transform().copy();
     transform.setTranslation(destPoint.x, destPoint.y);
+    // rotation diff
+    transform.setRotation(sourceRot-destRot);    
+    // scale
+    transform.setUniformScale(layout.scale(layerEntity));
+    
     return transform;
   }
+
+  protected abstract void recalcLayout(L layout);
+    
+  
 
   @Override
   public void execute() {

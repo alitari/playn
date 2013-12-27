@@ -79,10 +79,8 @@ public class MaumauRobotPlayer extends
         if (!cardPlayed) {
           List<Card> matches = Card.matches(game.gameLogic.currentPlayCard(), ownCardList);
           if (matches.isEmpty()) {
-            Card card = table.talon.getLastUnusedChild();
-            shedule( game.actionManager, new PickupAction(this, card, ownedSlot));
-            card = table.talon.getLastUnusedChild();
-            shedule(game.actionManager,new PickupAction(this, card, ownedSlot));
+            List<Card> cards = table.talon.getLastUnusedChilds(2);
+            shedule( game.actionManager, new PickupAction(this, cards.get(0),cards.get(1), ownedSlot));
           } else {
             Card card = matches.get(0);
             shedule(game.actionManager,new CardPlayedAction(this, card, table.playSlot));

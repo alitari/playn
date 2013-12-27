@@ -5,6 +5,7 @@ import static playn.core.PlayN.log;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.print.attribute.standard.Finishings;
 
 import com.googlecode.stateless4j.StateMachine;
 import com.googlecode.stateless4j.delegates.Action;
@@ -185,18 +186,25 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
     @Override
     public void doIt(CardPlayedAction cardPlaydAction) {
-      Card card = cardPlaydAction.card();
-      Card currenPlayCard = currentPlayCard();
-      if (!Card.matches(card, currenPlayCard)) {
-        log().error("can't play card " + cardPlaydAction.card() + " on " + currenPlayCard);
-      } else if (!playersCards(cardPlaydAction.player()).contains(card)) {
+      MaumauRobotPlayer player = cardPlaydAction.player();
+      if (player != waitingForPlayer) {
         log().error(
-            "played card " + card + " does not belong to player " + cardPlaydAction.player());
+            "its not  " + player + " who were waiting for, we wait for  " + waitingForPlayer);
       } else {
-        cardPlaydAction.execute();
-        nextPlayer(cardPlaydAction.player());
-      }
+        Card card = cardPlaydAction.card();
+        Card currenPlayCard = currentPlayCard();
+        if (!Card.matches(card, currenPlayCard)) {
+          log().error("can't play card " + cardPlaydAction.card() + " on " + currenPlayCard);
+        } else {
+          if (!playersCards(player).contains(card)) {
+            log().error("played card " + card + " does not belong to player " + player);
+          } else {
+            cardPlaydAction.execute();
+            nextPlayer(player);
+          }
+        }
 
+      }
     }
 
   };
@@ -236,16 +244,16 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
   private TriggerWithParameters1<PickupAction, Mode, Class<? extends GameAction>> pickupTrigger;
 
   private List<Card> playersCards(MaumauRobotPlayer finishedPlayer) {
-    if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER1) {
+    if (finishedPlayer.id() == MaumauPlayerRegistry.ID_PLAYER1) {
       return slotPlayer1;
-    } else if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER2) {
+    } else if (finishedPlayer.id() == MaumauPlayerRegistry.ID_PLAYER2) {
       return slotPlayer2;
-    } else if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER3) {
+    } else if (finishedPlayer.id() == MaumauPlayerRegistry.ID_PLAYER3) {
       return slotPlayer3;
-    } else if (finishedPlayer.id == MaumauPlayerRegistry.ID_PLAYER4) {
+    } else if (finishedPlayer.id() == MaumauPlayerRegistry.ID_PLAYER4) {
       return slotPlayer4;
     } else {
-      throw new RuntimeException("Unknown id:" + finishedPlayer.id);
+      throw new RuntimeException("Unknown id:" + finishedPlayer.id());
     }
   }
 
@@ -283,8 +291,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
       stateMachine.Configure(Mode.Playing).OnEntryFrom(playnTrigger, playnModeEntry,
           PlaynAction.class);
 
-      stateMachine.Configure(Mode.Playing).Permit(RefillTalonAction.class, Mode.Refilling).PermitIf(
-          PlayerFinishedAction.class, Mode.Finishing, readyForFinishing);
+      stateMachine.Configure(Mode.Playing).Permit(RefillTalonAction.class, Mode.Refilling);
 
       cardPlayedTrigger = new TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameAction>>(
           CardPlayedAction.class, CardPlayedAction.class);
@@ -308,12 +315,18 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
       playerFinishedTrigger = new TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameAction>>(
           PlayerFinishedAction.class, PlayerFinishedAction.class);
-      stateMachine.Configure(Mode.Playing).OnEntryFrom(playerFinishedTrigger,
+      stateMachine.SetTriggerParameters(PlayerFinishedAction.class, PlayerFinishedAction.class);
+      stateMachine.Configure(Mode.Playing).PermitIf(
+          PlayerFinishedAction.class, Mode.Finishing, readyForFinishing);
+      stateMachine.Configure(Mode.Finishing).OnEntryFrom(playerFinishedTrigger,
           playerFinishedModeEntry, PlayerFinishedAction.class);
 
       stateMachine.Configure(Mode.Finishing).Permit(LeaveResultsAction.class, Mode.Attracting);
-      stateMachine.Configure(Mode.Refilling).PermitReentry(CardPlayedAction.class).PermitIf(
+      stateMachine.Configure(Mode.Refilling).PermitReentry(CardPlayedAction.class).PermitReentry(RefillTalonAction.class).PermitReentry(PickupAction.class).PermitIf(
           TalonFilledAction.class, Mode.Playing, readyForContinuePlaying);
+      stateMachine.Configure(Mode.Refilling).OnEntryFrom(cardPlayedTrigger, cardPlayedModeEntry,
+          CardPlayedAction.class);
+        
 
     } catch (Exception e) {
       throw new Error("Problem during configuration of gamelogic", e);
@@ -332,15 +345,18 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
   @Override
   public void executeAction(GameAction action) throws Exception {
-    log().info("execute " + action);
+    log().info("want to execute " + action+"...");
     if (action instanceof CardPlayedAction) {
       stateMachine.Fire(cardPlayedTrigger, (CardPlayedAction) action);
     } else if (action instanceof PlaynAction) {
       stateMachine.Fire(playnTrigger, (PlaynAction) action);
     } else if (action instanceof PickupAction) {
       stateMachine.Fire(pickupTrigger, (PickupAction) action);
+    } else if (action instanceof PlayerFinishedAction) {
+      stateMachine.Fire(playerFinishedTrigger, (PlayerFinishedAction) action);
     } else {
       stateMachine.Fire((Class<? extends GameAction>) action.getClass());
+      log().info("execute " + action);
       action.execute();
     }
     log().info("game mode= " + getMode() + ",waiting4Player=" + waitingForPlayer);

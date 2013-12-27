@@ -21,4 +21,9 @@ public class FillTalonAction extends CardMoveAction2<StackLayout> {
 //        : MaumauCardGame.State.Mode.Refill;
   }
 
+  @Override
+  protected void recalcLayout(StackLayout layout) {
+    layout.recalc(layerEntity, null);
+  }
+
 }

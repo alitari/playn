@@ -74,14 +74,18 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
   
 
   @Override
-  public T getLastUnusedChild() {
+  public List<T> getLastUnusedChilds(int count) {
+    List<T> results = new ArrayList<T>();
     for ( int i = childs.size()-1; i >= 0;i--) {
       T child = childs.get(i); 
       if ( child.getInUseAction() == null) {
-        return child;
+        results.add(child);
+        if ( results.size()>=count) {
+          return results;
+        }
       }
     }
-    return null;
+    return results;
   }
 
 
@@ -118,6 +122,13 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
   public void remove(T child) {
     child.setContainer(null);
     childs.remove(child);
+    if ( layout.needsRecalcWhenRemove()) {
+      for ( T c:childs) {
+        layout.recalc(c, null);
+        Layer l = c.layer();
+        transform(l, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
+      }
+    }
   }
 
   @Override
@@ -130,19 +141,20 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
     child.setContainer(this);
 
     layout.recalc(child, param);
-    put(child, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
+    
+    Layer l = child.layer();
+    transform(l, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
+    ((GroupLayer) layer()).add(l);
     childs.add(child);
   }
 
-  private void put(T child, float x, float y, float rot, float scale) {
-    Layer l = child.layer();
+  private void transform(Layer l, float x, float y, float rot, float scale) {
     Transform t = l.transform();
     t.setTx(x);
     t.setTy(y);
     t.setRotation(rot);
     t.setUniformScale(scale);
 
-    ((GroupLayer) layer()).add(l);
   }
 
 }

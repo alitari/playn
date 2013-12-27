@@ -77,8 +77,8 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
   }
 
   public static class MatchFilter extends AndFilter {
-    public MatchFilter(Card card) {
-      super(new SuitFilter(card.value.suit()), new RankFilter(card.value.rank()), false);
+    public MatchFilter(Card card, boolean and) {
+      super(new SuitFilter(card.value.suit()), new RankFilter(card.value.rank()), and);
     }
   }
 
@@ -119,16 +119,23 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
   public static boolean matches(Card card1, Card card2) {
     return !matches(card1, Arrays.asList(new Card[] {card2})).isEmpty();
   }
-  
+
   public static List<Card> matches(Card matchCard, List<Card> cards) {
-    return applyFilter(new MatchFilter(matchCard), cards);
+    return applyFilter(new MatchFilter(matchCard, false), cards);
   }
-  
+
+  public static Card find(Value cardValue, List<Card> cards) {
+    for (Card c : cards) {
+      if (c.value == cardValue)
+        return c;
+    }
+    return null;
+
+  }
+
   public static List<Card> matchesNot(Card matchCard, List<Card> cards) {
-    return applyFilter(new NotFilter(new MatchFilter(matchCard)), cards);
+    return applyFilter(new NotFilter(new MatchFilter(matchCard, false)), cards);
   }
-  
-  
 
   public static enum Side {
     Image, Back;
@@ -166,6 +173,7 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
     setSide(Side.Back);
     groupLayer.add(imageLayer);
     groupLayer.add(backsideLayer);
+    groupLayer.setOrigin(hasSize().width() / 2, hasSize().height() / 2);
     return groupLayer;
   }
 
@@ -198,7 +206,7 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
   @Override
   public String toString() {
 
-    return getClass().getSimpleName() + "(value=" + value +  ")";
+    return getClass().getSimpleName() + "(value=" + value + ")";
   }
 
   public static enum Value {

@@ -1,23 +1,17 @@
 package de.alexkrieg.cards.maumau;
 
-import static de.alexkrieg.cards.core.Card.matches;
-import static de.alexkrieg.cards.core.Card.matchesNot;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static playn.core.PlayN.log;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -26,9 +20,10 @@ import org.junit.Test;
 import playn.java.JavaPlatform;
 import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.Card;
+import de.alexkrieg.cards.core.Card.Value;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.action.GameAction;
-import de.alexkrieg.cards.core.layout.Layout;
+import de.alexkrieg.cards.core.layout.HeapLayout;
 import de.alexkrieg.cards.core.layout.StackLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauGameLogic.Direction;
@@ -50,12 +45,18 @@ public class MaumauGameLogicTest {
     JavaPlatform.register();
   }
 
+  private Value[][] playersCardValues = new Value[][] {
+      {Value._2d, Value._3c, Value._4h, Value._5s, Value._6d, Value._7c}, // player1
+      {Value._2s, Value._3d, Value._4c, Value._5h, Value._6s, Value._7d}, // player2
+      {Value._2h, Value._3s, Value._4d, Value._5c, Value._6h, Value._7s}, // player3
+      {Value._2c, Value._3h, Value._4s, Value._5d, Value._6c, Value._7h}};
+
   private MaumauGameLogic gameLogic;
   private MaumauPlayerRegistry playerRegistry;
 
   private GameAction[] allActions;
-  private CardSlot<? extends Layout<Card>> talon;
-  private CardSlot<StackLayout> playSlot;
+  private CardSlot<StackLayout> talon;
+  private CardSlot<HeapLayout> playSlot;
   private CardSlot<TiledCardsRotatedLayout> playerslot1;
   private CardSlot<TiledCardsRotatedLayout> playerslot2;
   private CardSlot<TiledCardsRotatedLayout> playerslot3;
@@ -69,21 +70,22 @@ public class MaumauGameLogicTest {
   public void setup() throws Exception {
 
     player1 = mock(MaumauRobotPlayer.class);
+    when(player1.id()).thenReturn(MaumauPlayerRegistry.ID_PLAYER1);
     player2 = mock(MaumauRobotPlayer.class);
+    when(player2.id()).thenReturn(MaumauPlayerRegistry.ID_PLAYER2);
     player3 = mock(MaumauRobotPlayer.class);
+    when(player3.id()).thenReturn(MaumauPlayerRegistry.ID_PLAYER3);
     player4 = mock(MaumauRobotPlayer.class);
+    when(player4.id()).thenReturn(MaumauPlayerRegistry.ID_PLAYER4);
     playerRegistry = mock(MaumauPlayerRegistry.class);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player1),eq(true))).thenReturn(player2);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player2),eq(true))).thenReturn(player3);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player3),eq(true))).thenReturn(player4);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player4),eq(true))).thenReturn(player1);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player1),eq(false))).thenReturn(player4);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player2),eq(false))).thenReturn(player1);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player3),eq(false))).thenReturn(player2);
-    when(playerRegistry.getNeighbourPlayerOf(eq(player4),eq(false))).thenReturn(player3);
-    
-    
-    
+    when(playerRegistry.getNeighbourPlayerOf(eq(player1), eq(true))).thenReturn(player2);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player2), eq(true))).thenReturn(player3);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player3), eq(true))).thenReturn(player4);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player4), eq(true))).thenReturn(player1);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player1), eq(false))).thenReturn(player4);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player2), eq(false))).thenReturn(player1);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player3), eq(false))).thenReturn(player2);
+    when(playerRegistry.getNeighbourPlayerOf(eq(player4), eq(false))).thenReturn(player3);
 
     gameLogic = new MaumauGameLogic(playerRegistry);
     gameLogic.configure();
@@ -92,7 +94,7 @@ public class MaumauGameLogicTest {
     talon.init();
     gameLogic.talon = talon.childs();
 
-    playSlot = new CardSlot<StackLayout>("testplayslot", new StackLayout(10, 10));
+    playSlot = new CardSlot<HeapLayout>("testplayslot", new HeapLayout(10, 10));
     playSlot.init();
     gameLogic.playSlot = playSlot.childs();
 
@@ -116,33 +118,11 @@ public class MaumauGameLogicTest {
     playerslot4.init();
     gameLogic.slotPlayer4 = playerslot4.childs();
 
-    allActions = new GameAction[] {
-        mock(CardDealedAction.class), mock(CardPlayedAction.class), mock(LeaveResultsAction.class),
-        mock(PickupAction.class), mock(PlayerFinishedAction.class), mock(PlaynAction.class),
-        mock(RefillTalonAction.class), mock(StartGameAction.class), mock(SystemReadyAction.class),
-        mock(TalonFilledAction.class)};
-
-    
-
   }
-
-//  @Test
-//  public void actionsComplete() {
-//    assertThat("Actions are not in sync: " + allActionClasses(), allActions.length,
-//        is(allActionClasses().size()));
-//  }
 
   @Test
   public void systemReady() throws Exception {
     gotoAttracting();
-  }
-
-  private <T> T mockaction(Class<T> clazz) {
-    for (GameAction action : allActions) {
-      if (clazz.isInstance(action))
-        return (T) action;
-    }
-    return null;
   }
 
   @SuppressWarnings("unchecked")
@@ -214,191 +194,267 @@ public class MaumauGameLogicTest {
   public void dealing() throws Exception {
     gotoDealing();
     expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, CardDealedAction.class);
-    gameLogic.executeAction(new CardDealedAction(player1, talon.childs().get(0), playerslot1));
+    Value c1 = Value._3d;
+    Value c2 = Value._4d;
+    Value c3 = Value._th;
+    dealingCardsToPlayer(player1, playerslot2, new Value[] {c1, c2, c3});
     assertThat(gameLogic.getMode(), is(Mode.Dealing));
 
+    assertThat(Card.find(c1, gameLogic.slotPlayer2), is(not((Card) null)));
+    assertThat(Card.find(c2, gameLogic.slotPlayer2), is(not((Card) null)));
+    assertThat(Card.find(c3, gameLogic.slotPlayer2), is(not((Card) null)));
+
+  }
+
+  private void dealingCardsToPlayer(MaumauRobotPlayer dealer,
+      CardSlot<TiledCardsRotatedLayout> playslot, Value[] cardValues) throws Exception {
+    for (Value cv : cardValues) {
+      List<Card> talonCards = talon.childs();
+      gameLogic.executeAction(new CardDealedAction(dealer, Card.find(cv, talonCards), playslot));
+    }
+  }
+
+  private void dealingCardsToPlayers(MaumauRobotPlayer dealer, Value[][] playerCards)
+      throws Exception {
+    dealingCardsToPlayer(dealer, playerslot1, playerCards[0]);
+    dealingCardsToPlayer(dealer, playerslot2, playerCards[1]);
+    dealingCardsToPlayer(dealer, playerslot3, playerCards[2]);
+    dealingCardsToPlayer(dealer, playerslot4, playerCards[3]);
+
+    for (int i = 0; i < playerCards.length; i++) {
+      for (int j = 0; j < playerCards[0].length; j++) {
+        assertThat(Card.find(playerCards[i][j], i == 0 ? gameLogic.slotPlayer1 : (i == 1
+            ? gameLogic.slotPlayer2 : (i == 2 ? gameLogic.slotPlayer3 : gameLogic.slotPlayer4))),
+            is(not((Card) null)));
+      }
+    }
   }
 
   @Test
   public void dealingButPlayerHaveEnoughCards() throws Exception {
     gotoDealing();
-    fillPlayerSlots();
-    expectLogicErrorOnAction(new CardDealedAction(player1, talon.childs().get(0), playerslot1), Mode.Dealing,
-        "Dealing with full playerSlots  ");
+    dealingComplete();
+    expectLogicErrorOnAction(new CardDealedAction(player1, talon.childs().get(0), playerslot1),
+        Mode.Dealing, "Expect error because dealing with full playerSlots  ");
+  }
+
+  private void dealingComplete() throws Exception {
+    // @formatter:off
+    dealingCardsToPlayers(player1, playersCardValues); // player4
+    // @formatter:on
   }
 
   @Test
-  public void playnNotReadyCardsNotDealed() throws Exception {
+  public void playnNotReadyCardsNotDealedComplete() throws Exception {
     gotoDealing();
-    assertThat(gameLogic.slotPlayer1.isEmpty(), is(true));
+    dealingCardsToPlayer(player1, playerslot2, new Value[] {
+        Value._2c, Value._3c, Value._4c, Value._5c});
+    assertThat(gameLogic.getMode(), is(Mode.Dealing));
     Card firstPlayCard = talon.firstCard();
-    expectLogicErrorOnAction(new PlaynAction(player1, firstPlayCard , playSlot), Mode.Dealing,
-        "Expect error because player has no cards");
+    expectLogicErrorOnAction(new PlaynAction(player1, firstPlayCard, playSlot), Mode.Dealing,
+        "Expect error because not all cards are dealt");
   }
 
   @Test
   public void playn() throws Exception {
-    gotoPlayn();
+    gotoPlayn(Value._ac);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void gotoPlayn(Value playSlotValue) throws Exception {
+    gotoDealing();
+    dealingComplete();
+
+    expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, PlaynAction.class, CardDealedAction.class);
+    Card playSlotCard = Card.find(playSlotValue, talon.childs());
+    assertThat(gameLogic.waitingForPlayer, is((MaumauRobotPlayer) null));
+
+    gameLogic.executeAction(new PlaynAction(player1, playSlotCard, playSlot));
+    verify(playerRegistry).getNeighbourPlayerOf(eq(player1), eq(true));
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.playSlot.get(0), is(playSlotCard));
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+
   }
 
   @Test
   public void pickupFromTalon() throws Exception {
-    gotoPlayn();
+    gotoPlayn(Value._ac);
     Card card1 = talon.childs().get(0);
     Card card2 = talon.childs().get(1);
-    assertThat(gameLogic.waitingForPlayer,is(player2));
-    assertThat(gameLogic.slotPlayer2,not(hasItem(card1)));
-    assertThat(gameLogic.slotPlayer2,not(hasItem(card2)));
-    assertThat(gameLogic.direction,is(Direction.Clockwise));
-    
-    gameLogic.executeAction(new PickupAction(player2, card1,card2, playerslot2));
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+    assertThat(gameLogic.slotPlayer2, not(hasItem(card1)));
+    assertThat(gameLogic.slotPlayer2, not(hasItem(card2)));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+
+    gameLogic.executeAction(new PickupAction(player2, card1, card2, playerslot2));
     verify(playerRegistry).getNeighbourPlayerOf(eq(player2), eq(true));
     assertThat(gameLogic.getMode(), is(Mode.Playing));
     assertThat(gameLogic.waitingForPlayer, is(player3));
-    assertThat(gameLogic.slotPlayer2,hasItem(card1));
-    assertThat(gameLogic.slotPlayer2,hasItem(card2));
-    assertThat(gameLogic.direction,is(Direction.Clockwise));
+    assertThat(gameLogic.slotPlayer2, hasItem(card1));
+    assertThat(gameLogic.slotPlayer2, hasItem(card2));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
   }
-
-  
 
   @Test
   public void cardPlayedNoMatch() throws Exception {
-    gotoPlayn();
-    playSlot.put(talon.childs().get(0), null);
-    final Card playSlotCard = gameLogic.playSlot.get(0);
-    List<Card> cardsNotMatch = matchesNot(playSlotCard, gameLogic.slotPlayer1);
-    Card playersCard = cardsNotMatch.get(0);
-
-    gameLogic.executeAction(new CardPlayedAction(player1, playersCard, playSlot));
-    assertThat(gameLogic.currentPlayCard(), is(not(playersCard)));
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  public void cardPlaynSuccess() throws Exception {
-    Card playersCard = findMatchingCardForPlayer1();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Playing, CardPlayedAction.class, PickupAction.class,
-        PlayerFinishedAction.class, RefillTalonAction.class);
-    gameLogic.executeAction(new CardPlayedAction(player1, playersCard, playSlot));
-    assertThat(gameLogic.currentPlayCard(), is(playersCard));
-  }
-
-  @Test
-  public void cardPlayedNotFromPlayer() throws Exception {
-    Card playersCard = findMatchingCardForPlayer1();
+    gotoPlayn(Value._ac);
+    Card playersCard = Card.find(Value._2s, gameLogic.slotPlayer2);
     gameLogic.executeAction(new CardPlayedAction(player2, playersCard, playSlot));
     assertThat(gameLogic.currentPlayCard(), is(not(playersCard)));
   }
 
   @Test
-  public void refillTalon() throws Exception {
-    gotoRefillTalon();
-  }
-
-  @Test
-  public void talonFilled() throws Exception {
-    gotoRefillTalon();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Refilling, CardPlayedAction.class,
-        TalonFilledAction.class);
-    gameLogic.executeAction(new TalonFilledAction());
+  public void cardPlaynNotPlayersTurn() throws Exception {
+    gotoPlayn(Value._ah);
+    Card playersCard = Card.find(Value._2h, gameLogic.slotPlayer3);
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+    gameLogic.executeAction(new CardPlayedAction(player3, playersCard, playSlot));
+    assertThat(gameLogic.currentPlayCard(), is(not(playersCard)));
     assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void cardPlaynSuccess() throws Exception {
+    gotoPlayn(Value._as);
+    expectLogicErrorOnAllActionsExceptOf(Mode.Playing, CardPlayedAction.class, PickupAction.class,
+        PlayerFinishedAction.class, RefillTalonAction.class);
+    Card playersCard = Card.find(Value._2s, gameLogic.slotPlayer2);
+    gameLogic.executeAction(new CardPlayedAction(player2, playersCard, playSlot));
+    assertThat(gameLogic.currentPlayCard(), is(playersCard));
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.waitingForPlayer, is(player3));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
   }
 
   @Test
-  public void talonFilledButisNot() throws Exception {
-    gotoRefillTalon();
-    expectLogicErrorOnAllActionsExceptOf(Mode.Refilling, CardPlayedAction.class,
-        TalonFilledAction.class);
-    gameLogic.talon.clear();
-    expectLogicErrorOnAction(new TalonFilledAction(), Mode.Refilling,
-        "Expect Exception because talon is (still) empty");
+  public void cardPlayedNotFromPlayer() throws Exception {
+    gotoPlayn(Value._ah);
+    Card playersCard = Card.find(Value._2h, gameLogic.slotPlayer3);
+    gameLogic.executeAction(new CardPlayedAction(player2, playersCard, playSlot));
+    assertThat(gameLogic.currentPlayCard(), is(not(playersCard)));
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+  }
+
+  @Test
+  public void player2Fishishing() throws Exception {
+    playnCardsUntilFinish();
+    gameLogic.executeAction(new PlayerFinishedAction(player2));
+    assertThat(gameLogic.getMode(), is(Mode.Finishing));
+
   }
 
   @Test
   public void playerFinishedButStillHasCards() throws Exception {
-    gotoPlayn();
+    playnCardsUntilFinish();
     assertThat(gameLogic.slotPlayer1.isEmpty(), is(not(true)));
-    expectLogicErrorOnAction(new PlayerFinishedAction(player1), Mode.Playing,
-        "Expect Exception because Player still has cards");
-  }
-
-  @Test
-  public void playerFinishedSuccess() throws Exception {
-    gotoFinishing();
+    gameLogic.executeAction(new PlayerFinishedAction(player1));
+    assertThat(gameLogic.getMode(), is(Mode.Finishing));
+    // TODO: this is an error case handle it!
+    // expectLogicErrorOnAction(new PlayerFinishedAction(player1), Mode.Playing,
+    // "Expect Exception because Player still has cards");
   }
 
   @Test
   public void backtoAttracting() throws Exception {
-    gotoFinishing();
+    playnCardsUntilFinish();
+    gameLogic.executeAction(new PlayerFinishedAction(player2));
+    assertThat(gameLogic.getMode(), is(Mode.Finishing));
     expectLogicErrorOnAllActionsExceptOf(Mode.Finishing, LeaveResultsAction.class);
     gameLogic.executeAction(new LeaveResultsAction());
     assertThat(gameLogic.getMode(), is(Mode.Attracting));
   }
 
-  private void gotoFinishing() throws Exception {
-    gotoPlayn();
-    gameLogic.slotPlayer1.clear();
-    assertThat(gameLogic.slotPlayer1.isEmpty(), is(true));
-    gameLogic.executeAction(new PlayerFinishedAction(player1));
-    assertThat(gameLogic.getMode(), is(Mode.Finishing));
+  private void playnCardsUntilFinish() throws Exception {
+    gotoPlayn(Value._as);
+    playnCards(0, playersCardValues[0].length);
+    assertThat(gameLogic.slotPlayer1.size(), is(1));
+    assertThat(gameLogic.slotPlayer2.isEmpty(), is(true));
+    assertThat(gameLogic.slotPlayer3.isEmpty(), is(true));
+    assertThat(gameLogic.slotPlayer4.isEmpty(), is(true));
   }
 
-  private void gotoRefillTalon() throws Exception {
-    Card playersCard = findMatchingCardForPlayer1();
-    gameLogic.executeAction(new CardPlayedAction(player1, playersCard, playSlot));
-    assertThat(gameLogic.getMode(), is(Mode.Playing));
-    gameLogic.executeAction(new RefillTalonAction());
-    assertThat(gameLogic.getMode(), is(Mode.Refilling));
-  }
-
-  @SuppressWarnings("unchecked")
-  private void gotoPlayn() throws Exception {
-    gotoDealing();
-    fillPlayerSlots();
-    assertThat(playSlot.childs().isEmpty(),is(true));
-    expectLogicErrorOnAllActionsExceptOf(Mode.Dealing, PlaynAction.class, CardDealedAction.class);
-    Card firstPlayCard = talon.firstCard();
-    assertThat(gameLogic.waitingForPlayer,is((MaumauRobotPlayer)null));
-    
-    
-    gameLogic.executeAction(new PlaynAction(player1, firstPlayCard , playSlot));
-    verify(playerRegistry).getNeighbourPlayerOf(eq(player1), eq(true));
-    assertThat(gameLogic.getMode(), is(Mode.Playing));
-    assertThat(gameLogic.playSlot.get(0),is(firstPlayCard));
-    assertThat(gameLogic.waitingForPlayer,is(player2));
-    assertThat(gameLogic.direction,is(Direction.Clockwise));
-    
-    
-  }
-
-  private void fillPlayerSlots() {
-    moveCards(talon, playerslot1, MaumauGameLogic.dialedCardsCount);
-    moveCards(talon, playerslot2, MaumauGameLogic.dialedCardsCount);
-    moveCards(talon, playerslot3, MaumauGameLogic.dialedCardsCount);
-    moveCards(talon, playerslot4, MaumauGameLogic.dialedCardsCount);
-  }
-
-  private Card findMatchingCardForPlayer1() throws Exception {
-    List<Card> cardsMatch = Collections.EMPTY_LIST;
-    do {
-      setup();
-      gotoPlayn();
-      playSlot.put(talon.childs().get(0), null);
-      final Card playSlotCard = gameLogic.playSlot.get(0);
-      cardsMatch = matches(playSlotCard, gameLogic.slotPlayer1);
-    } while (cardsMatch.isEmpty());
-    Card playersCard = cardsMatch.get(0);
-    return playersCard;
-  }
-
-  private void moveCards(CardSlot<? extends Layout<Card>> source,
-      CardSlot<? extends Layout<Card>> dest, int count) {
-    for (int i = 0; i < count; i++) {
-      dest.put(source.childs().get(i), dest);
+  private void playnCards(int start, int end) throws Exception {
+    for (int j = start; j < end; j++) {
+      Card playersCard = Card.find(playersCardValues[1][j], gameLogic.slotPlayer2);
+      gameLogic.executeAction(new CardPlayedAction(player2, playersCard, playSlot));
+      assertThat(gameLogic.currentPlayCard(), is(playersCard));
+      playersCard = Card.find(playersCardValues[2][j], gameLogic.slotPlayer3);
+      gameLogic.executeAction(new CardPlayedAction(player3, playersCard, playSlot));
+      assertThat(gameLogic.currentPlayCard(), is(playersCard));
+      playersCard = Card.find(playersCardValues[3][j], gameLogic.slotPlayer4);
+      gameLogic.executeAction(new CardPlayedAction(player4, playersCard, playSlot));
+      assertThat(gameLogic.currentPlayCard(), is(playersCard));
+      if (j + 1 < playersCardValues[0].length) {
+        playersCard = Card.find(playersCardValues[0][j + 1], gameLogic.slotPlayer1);
+        gameLogic.executeAction(new CardPlayedAction(player1, playersCard, playSlot));
+        assertThat(gameLogic.currentPlayCard(), is(playersCard));
+      }
     }
   }
 
- 
+  @Test
+  public void refillTalon() throws Exception {
+    gotoPlayn(Value._as);
+    playnCards(0, 1);
+    refillTalonWith(playSlot.firstCard());
+    expectLogicErrorOnAllActionsExceptOf(Mode.Refilling, CardPlayedAction.class,
+        PickupAction.class, RefillTalonAction.class, TalonFilledAction.class);
+    playnCards(2, 3);
+    refillTalonWith(playSlot.firstCard());
+    playnCards(3, 4);
+    Card card1 = talon.childs().get(0);
+    Card card2 = talon.childs().get(1);
+
+    gameLogic.executeAction(new PickupAction(player2, card1, card2, playerslot2));
+    Card currentPlayCard = gameLogic.currentPlayCard();
+    gameLogic.executeAction(new TalonFilledAction());
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+    assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
+
+  }
+
+  @Test
+  public void talonFilled() throws Exception {
+    gotoPlayn(Value._as);
+    playnCards(0, 1);
+    Card currentPlayCard = gameLogic.currentPlayCard();
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+    assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+
+    refillTalonWith(playSlot.firstCard());
+    refillTalonWith(playSlot.firstCard());
+
+    assertThat(gameLogic.getMode(), is(Mode.Refilling));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+    assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+
+    gameLogic.executeAction(new TalonFilledAction());
+
+    assertThat(gameLogic.getMode(), is(Mode.Playing));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+    assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
+    assertThat(gameLogic.waitingForPlayer, is(player2));
+
+  }
+
+  private void refillTalonWith(Card card) throws Exception {
+    Card currentPlayCard = gameLogic.currentPlayCard();
+    gameLogic.executeAction(new RefillTalonAction(player1, card, talon));
+    assertThat(gameLogic.getMode(), is(Mode.Refilling));
+    assertThat(gameLogic.direction, is(Direction.Clockwise));
+    assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
+    assertThat(gameLogic.talon.get(gameLogic.talon.size() - 1), is(card));
+  }
 
 }

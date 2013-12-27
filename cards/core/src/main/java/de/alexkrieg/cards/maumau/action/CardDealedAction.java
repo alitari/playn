@@ -28,4 +28,9 @@ public class CardDealedAction extends CardMoveAction2<TiledCardsRotatedLayout> {
     return player;
   }
 
+  @Override
+  protected void recalcLayout(TiledCardsRotatedLayout layout) {
+    layout.recalc(layerEntity, null);
+  }
+
 }

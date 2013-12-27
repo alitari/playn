@@ -13,6 +13,7 @@ import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.CardTable;
+import de.alexkrieg.cards.core.layout.HeapLayout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.StackLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
@@ -26,7 +27,7 @@ public class MaumauCardtable extends CardTable<NESWLayout,MaumauRobotPlayer,Maum
   public CardSlot<TiledCardsRotatedLayout> slotPlayer3;
   public CardSlot<TiledCardsRotatedLayout> slotPlayer4;
   public CardSlot<StackLayout> talon;
-  public CardSlot<StackLayout> playSlot;
+  public CardSlot<HeapLayout> playSlot;
 
 
 
@@ -61,7 +62,7 @@ public class MaumauCardtable extends CardTable<NESWLayout,MaumauRobotPlayer,Maum
         "Player4", new TiledCardsRotatedLayout(0, 10));
     talon = new CardSlot<StackLayout>("talon", new StackLayout(2, 2));
     
-    playSlot = new CardSlot<StackLayout>("playSlot", new StackLayout(2, 2));
+    playSlot = new CardSlot<HeapLayout>("playSlot", new HeapLayout(20, 20));
     
     put(slotPlayer1, NESWLayout.NESW.N);
     put(slotPlayer2, NESWLayout.NESW.E);

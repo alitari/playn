@@ -40,6 +40,12 @@ public class PickupAction extends GameAction.Merge {
       card.setSide(Card.Side.Image);
     }
 
+    @Override
+    protected void recalcLayout(TiledCardsRotatedLayout layout) {
+      layout.recalc(layerEntity, null);
+      
+    }
+
   }
  
 

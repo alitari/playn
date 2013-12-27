@@ -35,6 +35,10 @@ public abstract class Layout<T extends LayerEntity> {
 	public float scale(T child) {
 		return scale;
 	}
+	
+	public boolean needsRecalcWhenRemove() {
+	  return false;
+	}
 
 	public abstract void recalc(T child, Object param );
 
