@@ -15,5 +15,7 @@ public interface LayerEntity {
   void setInUseOfAction(GameAction action);
 
   GameAction getInUseAction();
+  
+  
 
 }

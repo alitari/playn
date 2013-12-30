@@ -345,8 +345,14 @@ public class MaumauGameLogicTest {
   @Test
   public void player2Fishishing() throws Exception {
     playnCardsUntilFinish();
-    gameLogic.executeAction(new PlayerFinishedAction(player2));
+    assertThat(gameLogic.winner, is((MaumauRobotPlayer)null));
+    gameLogic.executeAction(new PlayerFinishedAction(player2,null));
     assertThat(gameLogic.getMode(), is(Mode.Finishing));
+    assertThat(gameLogic.winner, is(player2));
+    
+    gameLogic.executeAction(new PlayerFinishedAction(player3,null));
+    assertThat(gameLogic.getMode(), is(Mode.Finishing));
+    assertThat(gameLogic.winner, is(player2));
 
   }
 
@@ -354,8 +360,9 @@ public class MaumauGameLogicTest {
   public void playerFinishedButStillHasCards() throws Exception {
     playnCardsUntilFinish();
     assertThat(gameLogic.slotPlayer1.isEmpty(), is(not(true)));
-    gameLogic.executeAction(new PlayerFinishedAction(player1));
+    gameLogic.executeAction(new PlayerFinishedAction(player1,null));
     assertThat(gameLogic.getMode(), is(Mode.Finishing));
+    
     // TODO: this is an error case handle it!
     // expectLogicErrorOnAction(new PlayerFinishedAction(player1), Mode.Playing,
     // "Expect Exception because Player still has cards");
@@ -364,9 +371,9 @@ public class MaumauGameLogicTest {
   @Test
   public void backtoAttracting() throws Exception {
     playnCardsUntilFinish();
-    gameLogic.executeAction(new PlayerFinishedAction(player2));
+    gameLogic.executeAction(new PlayerFinishedAction(player2,null));
     assertThat(gameLogic.getMode(), is(Mode.Finishing));
-    expectLogicErrorOnAllActionsExceptOf(Mode.Finishing, LeaveResultsAction.class);
+    expectLogicErrorOnAllActionsExceptOf(Mode.Finishing, LeaveResultsAction.class,PlayerFinishedAction.class);
     gameLogic.executeAction(new LeaveResultsAction());
     assertThat(gameLogic.getMode(), is(Mode.Attracting));
   }

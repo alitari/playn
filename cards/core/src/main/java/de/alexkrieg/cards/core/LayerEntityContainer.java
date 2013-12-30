@@ -20,4 +20,9 @@ public interface LayerEntityContainer<T extends LayerEntity, L extends Layout<T>
 	
 	List<T> getLastUnusedChilds(int count);
 
+  List<T> getFirstUnusedChilds(int count);
+  
+  void removeAll();
+  
+
 }

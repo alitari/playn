@@ -14,8 +14,11 @@ import de.alexkrieg.cards.maumau.MaumauGameLogic.Mode;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
 import de.alexkrieg.cards.maumau.action.PickupAction;
+import de.alexkrieg.cards.maumau.action.PlayerFinishedAction;
 import de.alexkrieg.cards.maumau.action.PlaynAction;
+import de.alexkrieg.cards.maumau.action.RefillTalonAction;
 import de.alexkrieg.cards.maumau.action.SystemReadyAction;
+import de.alexkrieg.cards.maumau.action.TalonFilledAction;
 
 public class MaumauRobotPlayer extends
     AbstractPlayer<NESWLayout, MaumauRobotPlayer, MaumauGameLogic> {
@@ -29,15 +32,11 @@ public class MaumauRobotPlayer extends
   public MaumauRobotPlayer(String name) {
     super(name);
   }
-  
-  
 
   @Override
   public void paint(Source _clock) {
-// nothing tzo paint yet    
+    // nothing tzo paint yet
   }
-
-
 
   @Override
   public void update(int delta, CardGame<NESWLayout, MaumauRobotPlayer, MaumauGameLogic> game) {
@@ -75,15 +74,25 @@ public class MaumauRobotPlayer extends
         // do nothing
       }
     } else if (game.gameLogic.getMode() == Mode.Playing) {
+      if (ownCardList.isEmpty()) {
+        shedule(game.actionManager, new PlayerFinishedAction(this, table));
+      }
       if (game.gameLogic.waitingForPlayer == this) {
         if (!cardPlayed) {
+
           List<Card> matches = Card.matches(game.gameLogic.currentPlayCard(), ownCardList);
           if (matches.isEmpty()) {
             List<Card> cards = table.talon.getLastUnusedChilds(2);
-            shedule( game.actionManager, new PickupAction(this, cards.get(0),cards.get(1), ownedSlot));
+            shedule(game.actionManager, new PickupAction(this, cards.get(0), cards.get(1),
+                ownedSlot));
+            if (table.talon.childs().size() < 8) {
+              shedule(game.actionManager, new RefillTalonAction(this,
+                  table.playSlot.getFirstUnusedChilds(1).get(0), table.talon));
+              table.playSlot.layout().reset();
+            }
           } else {
             Card card = matches.get(0);
-            shedule(game.actionManager,new CardPlayedAction(this, card, table.playSlot));
+            shedule(game.actionManager, new CardPlayedAction(this, card, table.playSlot));
           }
           cardPlayed = true;
         } else {
@@ -94,6 +103,14 @@ public class MaumauRobotPlayer extends
         cardPlayed = false;
       }
 
+    } else if (game.gameLogic.getMode() == Mode.Refilling) {
+      if (table.playSlot.getFirstUnusedChilds(4).size() < 4) {
+        shedule(game.actionManager, new TalonFilledAction());
+      } else {
+        shedule(game.actionManager, new RefillTalonAction(this,
+            table.playSlot.getFirstUnusedChilds(1).get(0), table.talon));
+
+      }
     }
 
   }
@@ -108,7 +125,7 @@ public class MaumauRobotPlayer extends
     } else if (id == MaumauPlayerRegistry.ID_PLAYER4) {
       return table.slotPlayer4;
     } else {
-      throw new RuntimeException("Unknown id:"+id);
+      throw new RuntimeException("Unknown id:" + id);
     }
   }
 

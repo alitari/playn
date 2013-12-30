@@ -68,6 +68,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
   MaumauRobotPlayer waitingForPlayer;
   Direction direction;
+  MaumauRobotPlayer winner;
 
   List<Card> slotPlayer1;
   List<Card> slotPlayer2;
@@ -85,6 +86,9 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
   public MaumauGameLogic(MaumauPlayerRegistry playerRegistry) {
     super();
     this.playerRegistry = playerRegistry;
+    this.waitingForPlayer = null;
+    this.direction = null;
+    this.winner = null;
   }
 
   private class ReadyForPlayn implements Func<Boolean> {
@@ -167,6 +171,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
     public void doIt(PlaynAction playnAction) {
       playnAction.execute();
       direction = Direction.Clockwise;
+      winner = null;
       nextPlayer(playnAction.player());
     }
 
@@ -216,7 +221,12 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
       MaumauRobotPlayer finishedPlayer = finishedAction.player();
       boolean playerHasNoCards = playersCards(finishedPlayer).isEmpty();
       if (playerHasNoCards) {
-        finishedAction.execute();
+        if (winner == null) {
+          winner = finishedAction.player();
+          finishedAction.execute();
+        } else {
+          log().info("Player finished too late, " + winner + " already has it !");
+        }
       } else {
         log().error("Player " + finishedPlayer + " still has cards, finish is wrong!");
       }
@@ -313,20 +323,23 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
       stateMachine.Configure(Mode.Playing).OnEntryFrom(pickupTrigger, pickupModeEntry,
           PickupAction.class);
 
+      stateMachine.Configure(Mode.Refilling).PermitReentry(CardPlayedAction.class).PermitReentry(
+          RefillTalonAction.class).PermitReentry(PickupAction.class).PermitIf(
+          TalonFilledAction.class, Mode.Playing, readyForContinuePlaying);
+      stateMachine.Configure(Mode.Refilling).OnEntryFrom(cardPlayedTrigger, cardPlayedModeEntry,
+          CardPlayedAction.class);
+
       playerFinishedTrigger = new TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameAction>>(
           PlayerFinishedAction.class, PlayerFinishedAction.class);
       stateMachine.SetTriggerParameters(PlayerFinishedAction.class, PlayerFinishedAction.class);
-      stateMachine.Configure(Mode.Playing).PermitIf(
-          PlayerFinishedAction.class, Mode.Finishing, readyForFinishing);
+      stateMachine.Configure(Mode.Playing).PermitIf(PlayerFinishedAction.class, Mode.Finishing,
+          readyForFinishing);
       stateMachine.Configure(Mode.Finishing).OnEntryFrom(playerFinishedTrigger,
           playerFinishedModeEntry, PlayerFinishedAction.class);
 
       stateMachine.Configure(Mode.Finishing).Permit(LeaveResultsAction.class, Mode.Attracting);
-      stateMachine.Configure(Mode.Refilling).PermitReentry(CardPlayedAction.class).PermitReentry(RefillTalonAction.class).PermitReentry(PickupAction.class).PermitIf(
-          TalonFilledAction.class, Mode.Playing, readyForContinuePlaying);
-      stateMachine.Configure(Mode.Refilling).OnEntryFrom(cardPlayedTrigger, cardPlayedModeEntry,
-          CardPlayedAction.class);
-        
+
+      stateMachine.Configure(Mode.Finishing).PermitReentry(PlayerFinishedAction.class);
 
     } catch (Exception e) {
       throw new Error("Problem during configuration of gamelogic", e);
@@ -345,7 +358,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
   @Override
   public void executeAction(GameAction action) throws Exception {
-    log().info("want to execute " + action+"...");
+    log().info("want to execute " + action + "...");
     if (action instanceof CardPlayedAction) {
       stateMachine.Fire(cardPlayedTrigger, (CardPlayedAction) action);
     } else if (action instanceof PlaynAction) {

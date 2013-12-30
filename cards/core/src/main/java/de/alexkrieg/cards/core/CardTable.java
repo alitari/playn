@@ -78,21 +78,7 @@ public abstract class CardTable<L extends Layout<CardSlot<?>>, P extends Player<
   @Override
   protected void fillWithLayers(List<Layer> layers) {
     layers.add(createTableLayer());
-    layers.add(createHUDLayer());
   }
-
-  protected Layer createHUDLayer() {
-    // create our demo interface
-    final Root root = iface.createRoot(AxisLayout.vertical().gap(15), SimpleStyles.newSheet());
-    root.setSize(width(), height());
-    root.addStyles(Style.BACKGROUND.is(Background.blank().inset(5)));
-
-    fillHUDRoot(root);
-    // root.layer.setDepth(10000);
-    return root.layer;
-  }
-
-  protected abstract void fillHUDRoot(final Root root);
 
   protected Layer createTableLayer() {
     Image image = assets().getImage("images/cardtable.png");
@@ -101,5 +87,9 @@ public abstract class CardTable<L extends Layout<CardSlot<?>>, P extends Player<
     imageLayer.setHeight(height());
     return imageLayer;
   }
+  
+  
+  
+  
   
 }

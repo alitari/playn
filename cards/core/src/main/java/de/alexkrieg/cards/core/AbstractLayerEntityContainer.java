@@ -73,10 +73,27 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
   
   
 
+  
+  
   @Override
   public List<T> getLastUnusedChilds(int count) {
+    return getUnusedChilds(count, true);
+  }
+  
+  
+  
+  @Override
+  public List<T> getFirstUnusedChilds(int count) {
+    return getUnusedChilds(count, false);
+  }
+  
+
+
+
+
+  private List<T> getUnusedChilds(int count,boolean fromTop) {
     List<T> results = new ArrayList<T>();
-    for ( int i = childs.size()-1; i >= 0;i--) {
+    for ( int i = fromTop ? childs.size()-1:0; fromTop? i>=0:i<childs.size();i = fromTop? i-1:i+1) {
       T child = childs.get(i); 
       if ( child.getInUseAction() == null) {
         results.add(child);
@@ -156,5 +173,19 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
     t.setUniformScale(scale);
 
   }
+  
+
+//  @Override
+//  public GroupLayer layer() {
+//    return layer;
+//  }
+
+
+  @Override
+  public void removeAll() {
+    childs.clear();
+    ((GroupLayer) layer()).clear();
+  }
+
 
 }
