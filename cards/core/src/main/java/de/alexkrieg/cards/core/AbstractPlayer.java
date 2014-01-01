@@ -1,8 +1,12 @@
 package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.invokeLater;
+
+import java.util.List;
+
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.Layout;
+import de.alexkrieg.cards.core.util.Filter;
 
 public abstract class AbstractPlayer<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G extends GameLogic<L,P,G>>implements
     Player<L,P,G> {
@@ -19,6 +23,13 @@ public abstract class AbstractPlayer<L extends Layout<CardSlot<?>>, P extends Pl
     this.id = id;
   }
 
+  protected void sheduleOnce(final ActionManager actionManager, final GameAction action) {
+    if ( findMyScheduledFromType(actionManager, (Class<? super GameAction>) action.getClass()).isEmpty()) {
+      shedule(actionManager, action);
+    }
+  }
+  
+  
   protected void shedule(final ActionManager actionManager, final GameAction action) {
     invokeLater(new Runnable() {
       @Override
@@ -26,6 +37,10 @@ public abstract class AbstractPlayer<L extends Layout<CardSlot<?>>, P extends Pl
         actionManager.schedule(action);
       }
     });
+  }
+  
+  protected List<GameAction> findMyScheduledFromType(ActionManager actionManager,Class<? super GameAction> type) {
+    return actionManager.findScheduled(new Filter.And<GameAction>(new GameAction.TypeFilter(type), new GameAction.PlayerFilter(this), true));
   }
 
   @Override

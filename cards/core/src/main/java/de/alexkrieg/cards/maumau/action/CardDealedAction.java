@@ -9,23 +9,19 @@ import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 public class CardDealedAction extends CardMoveAction2<TiledCardsRotatedLayout> {
   
   
-  private final MaumauRobotPlayer player;
-  
-  
   public CardDealedAction() {
     // default constructor needed for framework
-    super(null,null);
-    this.player = null;
+    super(null,null,null);
   }
 
   public CardDealedAction(MaumauRobotPlayer player, Card card, CardSlot<TiledCardsRotatedLayout> playerSlot) {
-    super(card, playerSlot);
-    this.player = player;
+    super(card, playerSlot,player);
     card.setSide(Card.Side.Image);
   }
 
+  @Override
   public MaumauRobotPlayer player() {
-    return player;
+    return (MaumauRobotPlayer) player;
   }
 
   @Override

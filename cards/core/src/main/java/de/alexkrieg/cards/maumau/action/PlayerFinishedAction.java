@@ -6,7 +6,6 @@ import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
 public class PlayerFinishedAction extends ActionAdapter {
   
-  final MaumauRobotPlayer player;
   final MaumauCardtable cardTable;
 
   public PlayerFinishedAction() {
@@ -14,12 +13,12 @@ public class PlayerFinishedAction extends ActionAdapter {
   }
   
   public PlayerFinishedAction(MaumauRobotPlayer player, MaumauCardtable cardTable) {
-    this.player = player;
+    super(player);
     this.cardTable = cardTable;
   }
 
   public MaumauRobotPlayer player() {
-    return player;
+    return (MaumauRobotPlayer) player;
   }
 
   @Override

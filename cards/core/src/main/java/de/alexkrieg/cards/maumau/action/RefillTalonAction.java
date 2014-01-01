@@ -9,23 +9,21 @@ import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 public class RefillTalonAction extends CardMoveAction2<StackLayout> {
   
   
-  private final MaumauRobotPlayer player;
   
   
   public RefillTalonAction() {
     // default constructor needed for framework
-    super(null,null);
-    this.player = null;
+    super(null,null,null);
   }
 
   public RefillTalonAction(MaumauRobotPlayer player, Card card, CardSlot<StackLayout> playerSlot) {
-    super(card, playerSlot);
-    this.player = player;
+    super(card, playerSlot,player);
     card.setSide(Card.Side.Image);
   }
 
+  @Override
   public MaumauRobotPlayer player() {
-    return player;
+    return (MaumauRobotPlayer) player;
   }
 
   @Override

@@ -8,45 +8,41 @@ import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
 public class PickupAction extends GameAction.Merge {
-  
-  
-  private final MaumauRobotPlayer player;
-  
-  
+
   public PickupAction() {
     // default constructor needed for framework
-    super(null,null);
-    this.player = null;
+    super(null, null);
   }
 
-  public PickupAction(MaumauRobotPlayer player, Card card1,Card card2 , CardSlot<TiledCardsRotatedLayout> playerSlot) {
-    super(new PickupCardAction( card1, playerSlot) ,  new PickupCardAction(card2, playerSlot));
-    this.player = player;
+  public PickupAction(MaumauRobotPlayer player, Card card1, Card card2,
+      CardSlot<TiledCardsRotatedLayout> playerSlot) {
+    super(new PickupCardAction(card1, playerSlot, player), new PickupCardAction(card2, playerSlot,
+        player));
   }
 
+  @Override
   public MaumauRobotPlayer player() {
-    return player;
+    return (MaumauRobotPlayer) super.player();
   }
-  
-  
+
   public static class PickupCardAction extends CardMoveAction2<TiledCardsRotatedLayout> {
-    
-    public PickupCardAction( ) {
-      super(null,null);
+
+    public PickupCardAction() {
+      super(null, null, null);
     }
-    
-    public PickupCardAction( Card card, CardSlot<TiledCardsRotatedLayout> playerSlot) {
-      super(card,  playerSlot);
+
+    public PickupCardAction(Card card, CardSlot<TiledCardsRotatedLayout> playerSlot,
+        MaumauRobotPlayer player) {
+      super(card, playerSlot, player);
       card.setSide(Card.Side.Image);
     }
 
     @Override
     protected void recalcLayout(TiledCardsRotatedLayout layout) {
       layout.recalc(layerEntity, null);
-      
+
     }
 
   }
- 
 
 }

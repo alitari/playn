@@ -1,12 +1,54 @@
 package de.alexkrieg.cards.core.action;
 
+import java.util.List;
+
+import de.alexkrieg.cards.core.Player;
+import de.alexkrieg.cards.core.util.Filter;
+
 public interface GameAction {
+  
+  Player<?,?,?> player();
 
   void execute();
 
   int getDuration();
 
   void paint(int tick, float alpha);
+
+  public static class TypeFilter extends Filter<GameAction> {
+
+    final Class<? super GameAction> type;
+
+    public TypeFilter(Class<? super GameAction> type) {
+      super();
+      this.type = type;
+    }
+
+    @Override
+    public boolean apply(GameAction candidate, List<GameAction> cardSet) {
+      return type.isAssignableFrom(candidate.getClass());
+    }
+
+  }
+  
+  public static class PlayerFilter extends Filter<GameAction> {
+
+
+    private final  Player<?, ?, ?> player;
+
+    public PlayerFilter(Player<?,?,?> player) {
+      super();
+      this.player = player;
+    }
+
+    @Override
+    public boolean apply(GameAction candidate, List<GameAction> cardSet) {
+      return this.player == candidate.player();
+    }
+
+  }
+
+  
 
   public static class Merge implements GameAction {
 
@@ -34,6 +76,11 @@ public interface GameAction {
     public void paint(int tick, float alpha) {
       action1.paint(tick, alpha);
       action2.paint(tick, alpha);
+    }
+
+    @Override
+    public Player<?, ?, ?> player() {
+      return action1.player();
     }
 
   }

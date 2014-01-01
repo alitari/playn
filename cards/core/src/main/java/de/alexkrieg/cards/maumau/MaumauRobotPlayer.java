@@ -24,10 +24,7 @@ public class MaumauRobotPlayer extends
     AbstractPlayer<NESWLayout, MaumauRobotPlayer, MaumauGameLogic> {
 
   private boolean dealer = false;
-  private boolean systemReadySent = false;
-  private boolean playnSent = false;
   private LinkedList<Card> cardsDealt = new LinkedList<Card>();
-  private boolean cardPlayed = false;
 
   public MaumauRobotPlayer(String name) {
     super(name);
@@ -43,15 +40,14 @@ public class MaumauRobotPlayer extends
     MaumauCardtable table = (MaumauCardtable) game.cardTable;
     CardSlot<TiledCardsRotatedLayout> ownedSlot = ownedSlot(table);
     List<Card> ownCardList = ownedSlot.childs();
-    if (game.gameLogic.getMode() == Mode.Init && !systemReadySent) {
+    if (game.gameLogic.getMode() == Mode.Init ) {
       if (isDealer()) {
-        systemReadySent = true;
-        shedule(game.actionManager, new SystemReadyAction());
+        sheduleOnce(game.actionManager, new SystemReadyAction(this));
       } else {
         // do nothing
       }
 
-    } else if (game.gameLogic.getMode() == Mode.Dealing && !playnSent) {
+    } else if (game.gameLogic.getMode() == Mode.Dealing ) {
       if (isDealer()) {
         List<Card> talon = game.gameLogic.talon;
         if (cardsDealt.isEmpty()) {
@@ -67,47 +63,40 @@ public class MaumauRobotPlayer extends
           shedule(game.actionManager, new CardDealedAction(this, card, playerSlot));
         } else {
           Card card = cardsDealt.removeLast();
-          shedule(game.actionManager, new PlaynAction(this, card, table.playSlot));
-          playnSent = true;
+          sheduleOnce(game.actionManager, new PlaynAction(this, card, table.playSlot));
         }
       } else {
         // do nothing
       }
     } else if (game.gameLogic.getMode() == Mode.Playing) {
       if (ownCardList.isEmpty()) {
-        shedule(game.actionManager, new PlayerFinishedAction(this, table));
+        sheduleOnce(game.actionManager, new PlayerFinishedAction(this, table));
       }
       if (game.gameLogic.waitingForPlayer == this) {
-        if (!cardPlayed) {
 
           List<Card> matches = Card.matches(game.gameLogic.currentPlayCard(), ownCardList);
           if (matches.isEmpty()) {
             List<Card> cards = table.talon.getLastUnusedChilds(2);
-            shedule(game.actionManager, new PickupAction(this, cards.get(0), cards.get(1),
+            sheduleOnce(game.actionManager, new PickupAction(this, cards.get(0), cards.get(1),
                 ownedSlot));
             if (table.talon.childs().size() < 8) {
-              shedule(game.actionManager, new RefillTalonAction(this,
+              sheduleOnce(game.actionManager, new RefillTalonAction(this,
                   table.playSlot.getFirstUnusedChilds(1).get(0), table.talon));
               table.playSlot.layout().reset();
             }
           } else {
             Card card = matches.get(0);
-            shedule(game.actionManager, new CardPlayedAction(this, card, table.playSlot));
+            sheduleOnce(game.actionManager, new CardPlayedAction(this, card, table.playSlot));
           }
-          cardPlayed = true;
-        } else {
-          // do nothing already acted
-        }
       } else {
         // other player
-        cardPlayed = false;
       }
 
     } else if (game.gameLogic.getMode() == Mode.Refilling) {
       if (table.playSlot.getFirstUnusedChilds(4).size() < 4) {
-        shedule(game.actionManager, new TalonFilledAction());
+        sheduleOnce(game.actionManager, new TalonFilledAction(this));
       } else {
-        shedule(game.actionManager, new RefillTalonAction(this,
+        sheduleOnce(game.actionManager, new RefillTalonAction(this,
             table.playSlot.getFirstUnusedChilds(1).get(0), table.talon));
 
       }

@@ -2,9 +2,11 @@ package de.alexkrieg.cards.core;
 
 import static playn.core.PlayN.log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,6 +14,8 @@ import javax.inject.Inject;
 
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.layout.Layout;
+import de.alexkrieg.cards.core.util.Filter;
+import static de.alexkrieg.cards.core.util.Filter.*;
 
 public class DefaultActionManager<L extends Layout<CardSlot<?>>, P extends Player<L, P, G>, G extends GameLogic<L, P, G>>
     implements ActionManager {
@@ -27,6 +31,21 @@ public class DefaultActionManager<L extends Layout<CardSlot<?>>, P extends Playe
   }
 
   Map<Integer, LinkedList<GameAction>> actions = new HashMap<Integer, LinkedList<GameAction>>();
+
+  public List<GameAction> allScheduled() {
+    List<GameAction> result = new ArrayList<GameAction>();
+    for (List<GameAction> al : actions.values()) {
+      if (al != null) {
+        result.addAll(al);
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public List<GameAction> findScheduled(Filter<GameAction> filter) {
+    return applyFilter(filter, allScheduled(), new ArrayList<GameAction>());
+  }
 
   @Override
   public void schedule(GameAction action) {

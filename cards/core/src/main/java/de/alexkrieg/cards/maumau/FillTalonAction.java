@@ -6,13 +6,20 @@ import de.alexkrieg.cards.core.layout.StackLayout;
 
 public class FillTalonAction extends CardMoveAction2<StackLayout> {
 
-  final MaumauRobotPlayer player;
 
   public FillTalonAction(MaumauRobotPlayer player, Card card, MaumauCardtable table) {
-    super(card,  table.talon);
+    super(card,  table.talon,player);
     card.setSide(Card.Side.Back);
-    this.player = player;
   }
+  
+  
+
+  @Override
+  public MaumauRobotPlayer  player() {
+    return (MaumauRobotPlayer) player; 
+  }
+
+
 
   @Override
   public void execute() {

@@ -1,88 +1,47 @@
 package de.alexkrieg.cards.core;
 
-import static de.alexkrieg.cards.core.Card.applyFilter;
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
+import de.alexkrieg.cards.core.util.Filter;
 import playn.core.GroupLayer;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 import playn.core.Layer.HasSize;
+import static de.alexkrieg.cards.core.util.Filter.*;
 
 public class Card extends AbstractLayerEntity implements HasSizeEntity {
 
   static private String DIR_CARDS = "images/cs2/";
 
-  public final Value value;
-
-  public static interface Filter {
-    boolean apply(Card candidate, List<Card> cardSet);
-  }
-
-  public static class SuitFilter implements Filter {
-
+public static class Suit extends Filter<Card> {
+    
     final char suit;
-
-    public SuitFilter(char suit) {
+    
+    public Suit(char suit) {
       super();
       this.suit = suit;
     }
-
+    
     @Override
     public boolean apply(Card candidate, List<Card> cardSet) {
       return candidate.value.suit() == this.suit;
     }
-
+    
   }
-
-  public static class AndFilter implements Filter {
-    final Filter f1;
-    final Filter f2;
-    final boolean and;
-
-    public AndFilter(Filter f1, Filter f2, boolean and) {
-      super();
-      this.f1 = f1;
-      this.f2 = f2;
-      this.and = and;
-    }
-
-    @Override
-    public boolean apply(Card candidate, List<Card> cardSet) {
-      boolean apply1 = f1.apply(candidate, cardSet);
-      boolean apply2 = f2.apply(candidate, cardSet);
-      return (!and && (apply1 || apply2)) || (and && apply1 && apply2);
+  
+  public static class Match extends And<Card>{
+    public Match(Card card, boolean and) {
+      super(new Suit(card.value.suit()), new RankFilter(card.value.rank()), and);
     }
   }
 
-  public static class NotFilter implements Filter {
-    final Filter f;
-
-    public NotFilter(Filter f) {
-      super();
-      this.f = f;
-    }
-
-    @Override
-    public boolean apply(Card candidate, List<Card> cardSet) {
-      return !f.apply(candidate, cardSet);
-    }
-  }
-
-  public static class MatchFilter extends AndFilter {
-    public MatchFilter(Card card, boolean and) {
-      super(new SuitFilter(card.value.suit()), new RankFilter(card.value.rank()), and);
-    }
-  }
-
-  public static class RankFilter implements Filter {
+  public static class RankFilter extends Filter<Card> {
 
     final int rank;
 
@@ -95,19 +54,32 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
     public boolean apply(Card candidate, List<Card> cardSet) {
       return candidate.value.rank() == this.rank;
     }
-
   }
 
-  public static List<Card> applyFilter(Filter f, List<Card> cards) {
-    List<Card> result = new ArrayList<Card>();
+  public static boolean matches(Card card1, Card card2) {
+    return !matches(card1, Arrays.asList(new Card[] {card2})).isEmpty();
+  }
+  
+  public static List<Card> matches(Card matchCard, List<Card> cards) {
+    return applyFilter(new Match(matchCard, false), cards, new ArrayList<Card>());
+  }
+  
+  
+  public static List<Card> matchesNot(Card matchCard, List<Card> cards) {
+    return applyFilter(new Filter.Not<Card>(new Match(matchCard, false)), cards, new ArrayList<Card>());
+  }
+  
+  
+  public static Card find(Value cardValue, List<Card> cards) {
     for (Card c : cards) {
-      if (f.apply(c, result)) {
-        result.add(c);
-      }
+      if (c.value == cardValue)
+        return c;
     }
-    return result;
+    return null;
+    
   }
-
+  
+  
   public static List<Card> createSet() {
     List<Card> result = new ArrayList<Card>();
     for (Value v : Value.values()) {
@@ -115,27 +87,17 @@ public class Card extends AbstractLayerEntity implements HasSizeEntity {
     };
     return result;
   }
+  
+  
+  
+  
+  
+  public final Value value;
 
-  public static boolean matches(Card card1, Card card2) {
-    return !matches(card1, Arrays.asList(new Card[] {card2})).isEmpty();
-  }
 
-  public static List<Card> matches(Card matchCard, List<Card> cards) {
-    return applyFilter(new MatchFilter(matchCard, false), cards);
-  }
 
-  public static Card find(Value cardValue, List<Card> cards) {
-    for (Card c : cards) {
-      if (c.value == cardValue)
-        return c;
-    }
-    return null;
+ 
 
-  }
-
-  public static List<Card> matchesNot(Card matchCard, List<Card> cards) {
-    return applyFilter(new NotFilter(new MatchFilter(matchCard, false)), cards);
-  }
 
   public static enum Side {
     Image, Back;

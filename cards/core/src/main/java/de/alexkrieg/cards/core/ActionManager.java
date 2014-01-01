@@ -6,14 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.util.Filter;
 
 public interface ActionManager {
 
   void schedule(GameAction action);
-
+  
+  public List<GameAction> findScheduled(Filter<GameAction> filter);
+  
   void executeActions();
 
   void paintActions(float alpha);
+  
+  
+  
 
   public static class Util {
     public static List<Class<?>> allActionsClasses(String pckgname) {

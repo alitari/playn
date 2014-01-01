@@ -129,7 +129,7 @@ public class MaumauGameLogicTest {
   private void gotoAttracting() throws Exception {
     assertThat(gameLogic.talon.isEmpty(), is(true));
     expectLogicErrorOnAllActionsExceptOf(Mode.Init, SystemReadyAction.class);
-    gameLogic.executeAction(new SystemReadyAction());
+    gameLogic.executeAction(new SystemReadyAction(null));
     assertThat(gameLogic.getMode(), is(Mode.Attracting));
   }
 
@@ -184,7 +184,7 @@ public class MaumauGameLogicTest {
   private void gotoDealing() throws Exception {
     gotoAttracting();
     expectLogicErrorOnAllActionsExceptOf(Mode.Attracting, StartGameAction.class);
-    gameLogic.executeAction(new StartGameAction(talon));
+    gameLogic.executeAction(new StartGameAction(talon,null));
     assertThat(gameLogic.getMode(), is(Mode.Dealing));
     assertThat(gameLogic.talon, is(not((List<Card>) null)));
     assertThat(gameLogic.talon.size(), is(52));
@@ -421,7 +421,7 @@ public class MaumauGameLogicTest {
 
     gameLogic.executeAction(new PickupAction(player2, card1, card2, playerslot2));
     Card currentPlayCard = gameLogic.currentPlayCard();
-    gameLogic.executeAction(new TalonFilledAction());
+    gameLogic.executeAction(new TalonFilledAction(player1));
     assertThat(gameLogic.getMode(), is(Mode.Playing));
     assertThat(gameLogic.direction, is(Direction.Clockwise));
     assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
@@ -446,7 +446,7 @@ public class MaumauGameLogicTest {
     assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
     assertThat(gameLogic.waitingForPlayer, is(player2));
 
-    gameLogic.executeAction(new TalonFilledAction());
+    gameLogic.executeAction(new TalonFilledAction(player1));
 
     assertThat(gameLogic.getMode(), is(Mode.Playing));
     assertThat(gameLogic.direction, is(Direction.Clockwise));
