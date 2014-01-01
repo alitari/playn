@@ -5,11 +5,11 @@ import de.alexkrieg.cards.core.Player;
 public class SystemReadyAction extends ActionAdapter {
   
   public SystemReadyAction() {
-    this(null);
+    this(null,0);
   }
 
-  public SystemReadyAction(Player<?, ?, ?> player) {
-    super(player);
+  public SystemReadyAction(Player<?, ?, ?> player, int duration) {
+    super(player,duration);
   }
 
   @Override

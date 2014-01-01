@@ -17,9 +17,9 @@ public interface GameAction {
 
   public static class TypeFilter extends Filter<GameAction> {
 
-    final Class<? super GameAction> type;
+    final Class<?> type;
 
-    public TypeFilter(Class<? super GameAction> type) {
+    public TypeFilter(Class<?> type) {
       super();
       this.type = type;
     }
@@ -52,35 +52,36 @@ public interface GameAction {
 
   public static class Merge implements GameAction {
 
-    private final GameAction action1;
-    private final GameAction action2;
+    private final GameAction[] actions;
 
-    public Merge(GameAction action1, GameAction action2) {
+    public Merge(GameAction... actions) {
       super();
-      this.action1 = action1;
-      this.action2 = action2;
+      this.actions = actions;
     }
 
     @Override
     public void execute() {
-      action1.execute();
-      action2.execute();
+      for ( GameAction a: actions) {
+        a.execute();
+      }
+      
     }
 
     @Override
     public int getDuration() {
-      return Math.max(action1.getDuration(), action2.getDuration());
+      return actions[0].getDuration();
     }
 
     @Override
     public void paint(int tick, float alpha) {
-      action1.paint(tick, alpha);
-      action2.paint(tick, alpha);
+      for ( GameAction a: actions) {
+        a.paint(tick, alpha);
+      }
     }
 
     @Override
     public Player<?, ?, ?> player() {
-      return action1.player();
+      return actions[0].player();
     }
 
   }

@@ -11,11 +11,11 @@ public class CardDealedAction extends CardMoveAction2<TiledCardsRotatedLayout> {
   
   public CardDealedAction() {
     // default constructor needed for framework
-    super(null,null,null);
+    super(null,null,null,0);
   }
 
-  public CardDealedAction(MaumauRobotPlayer player, Card card, CardSlot<TiledCardsRotatedLayout> playerSlot) {
-    super(card, playerSlot,player);
+  public CardDealedAction(MaumauRobotPlayer player, Card card, CardSlot<TiledCardsRotatedLayout> playerSlot,int duration) {
+    super(card, playerSlot,player,duration);
     card.setSide(Card.Side.Image);
   }
 

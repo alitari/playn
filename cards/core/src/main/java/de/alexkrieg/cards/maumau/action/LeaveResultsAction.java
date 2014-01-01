@@ -8,11 +8,11 @@ public class LeaveResultsAction extends ActionAdapter {
   final MaumauCardtable cardTable;
 
   public LeaveResultsAction() {
-    this(null,null);
+    this(null,null,0);
   }
 
-  public LeaveResultsAction(MaumauCardtable cardTable, Player<?, ?, ?> player) {
-    super(player);
+  public LeaveResultsAction(MaumauCardtable cardTable, Player<?, ?, ?> player,int duration) {
+    super(player,duration);
     this.cardTable = cardTable;
   }
 

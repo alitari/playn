@@ -7,10 +7,9 @@ import de.alexkrieg.cards.core.layout.Layout;
 
 public abstract class CardMoveAction2<L extends Layout<Card>> extends MoveAction<Card, L > {
 
-  public static int DURATION = 20;
   
-  public CardMoveAction2(Card card,  CardSlot<L> destination,Player<?,?,?> player) {
-    super(card, DURATION, destination,player);
+  public CardMoveAction2(Card card,  CardSlot<L> destination,Player<?,?,?> player,int duration) {
+    super(card, duration, destination,player);
   }
 
   @Override

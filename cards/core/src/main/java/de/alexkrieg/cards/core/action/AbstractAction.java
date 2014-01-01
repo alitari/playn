@@ -43,6 +43,14 @@ public abstract class AbstractAction implements GameAction {
 	public GameAction merge(GameAction action) {
 	  return new Merge(this, action); 
 	}
+
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()+"[layer=" + layer + ", duration=" + duration + ", player=" + player + "]";
+  }
+	
+	
 	
 	
 		

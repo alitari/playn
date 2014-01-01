@@ -15,9 +15,9 @@ public class PickupAction extends GameAction.Merge {
   }
 
   public PickupAction(MaumauRobotPlayer player, Card card1, Card card2,
-      CardSlot<TiledCardsRotatedLayout> playerSlot) {
-    super(new PickupCardAction(card1, playerSlot, player), new PickupCardAction(card2, playerSlot,
-        player));
+      CardSlot<TiledCardsRotatedLayout> playerSlot,int duration) {
+    super(new PickupCardAction(card1, playerSlot, player,duration), new PickupCardAction(card2, playerSlot,
+        player,duration));
   }
 
   @Override
@@ -28,12 +28,12 @@ public class PickupAction extends GameAction.Merge {
   public static class PickupCardAction extends CardMoveAction2<TiledCardsRotatedLayout> {
 
     public PickupCardAction() {
-      super(null, null, null);
+      super(null, null, null,0);
     }
 
     public PickupCardAction(Card card, CardSlot<TiledCardsRotatedLayout> playerSlot,
-        MaumauRobotPlayer player) {
-      super(card, playerSlot, player);
+        MaumauRobotPlayer player,int duration) {
+      super(card, playerSlot, player,duration);
       card.setSide(Card.Side.Image);
     }
 

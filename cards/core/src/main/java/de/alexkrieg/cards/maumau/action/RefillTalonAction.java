@@ -13,11 +13,11 @@ public class RefillTalonAction extends CardMoveAction2<StackLayout> {
   
   public RefillTalonAction() {
     // default constructor needed for framework
-    super(null,null,null);
+    super(null,null,null,0);
   }
 
-  public RefillTalonAction(MaumauRobotPlayer player, Card card, CardSlot<StackLayout> playerSlot) {
-    super(card, playerSlot,player);
+  public RefillTalonAction(MaumauRobotPlayer player, Card card, CardSlot<StackLayout> playerSlot,int duration) {
+    super(card, playerSlot,player,duration);
     card.setSide(Card.Side.Image);
   }
 

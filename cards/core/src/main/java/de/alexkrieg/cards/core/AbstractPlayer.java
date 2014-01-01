@@ -24,7 +24,7 @@ public abstract class AbstractPlayer<L extends Layout<CardSlot<?>>, P extends Pl
   }
 
   protected void sheduleOnce(final ActionManager actionManager, final GameAction action) {
-    if ( findMyScheduledFromType(actionManager, (Class<? super GameAction>) action.getClass()).isEmpty()) {
+    if ( findMyScheduledFromType(actionManager, action.getClass()).isEmpty()) {
       shedule(actionManager, action);
     }
   }
@@ -39,9 +39,23 @@ public abstract class AbstractPlayer<L extends Layout<CardSlot<?>>, P extends Pl
     });
   }
   
-  protected List<GameAction> findMyScheduledFromType(ActionManager actionManager,Class<? super GameAction> type) {
+  protected List<GameAction> findMyScheduledFromType(ActionManager actionManager,Class<?> type) {
     return actionManager.findScheduled(new Filter.And<GameAction>(new GameAction.TypeFilter(type), new GameAction.PlayerFilter(this), true));
   }
+  
+  protected List<GameAction> findScheduledFromType(ActionManager actionManager,Class<?> type) {
+    return actionManager.findScheduled(new GameAction.TypeFilter(type));
+  }
+  
+  protected boolean noActionScheduled(ActionManager actionManager,Class<?> type) {
+    return findScheduledFromType(actionManager, type).isEmpty();
+  }
+  
+  
+  
+  
+
+  
 
   @Override
   public String toString() {

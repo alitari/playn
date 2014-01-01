@@ -74,7 +74,7 @@ public class ActionManagerTest {
   @Test
   public void findSystemReady() throws Exception {
     Player<?,?,?> player = mock(MaumauRobotPlayer.class);
-    GameAction action = new SystemReadyAction(player);
+    GameAction action = new SystemReadyAction(player,1);
     actionManager.schedule(action);
     
     List<GameAction> findScheduled = actionManager.findScheduled(new Filter.And<GameAction>(new GameAction.TypeFilter((Class<? super GameAction>)action.getClass()), new GameAction.PlayerFilter(player), true));

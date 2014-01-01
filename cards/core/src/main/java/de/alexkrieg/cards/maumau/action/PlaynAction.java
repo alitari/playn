@@ -10,11 +10,11 @@ public class PlaynAction extends CardMoveAction2<HeapLayout> {
 
 
   public PlaynAction() {
-    this(null, null, null);
+    this(null, null, null,0);
   }
 
-  public PlaynAction(MaumauRobotPlayer player, Card card, CardSlot<HeapLayout> playSlot) {
-    super(card, playSlot,player);
+  public PlaynAction(MaumauRobotPlayer player, Card card, CardSlot<HeapLayout> playSlot,int duration) {
+    super(card, playSlot,player,duration);
     if (card != null) {
       card.setSide(Card.Side.Image);
     }

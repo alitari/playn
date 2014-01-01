@@ -7,8 +7,8 @@ import de.alexkrieg.cards.core.layout.StackLayout;
 public class FillTalonAction extends CardMoveAction2<StackLayout> {
 
 
-  public FillTalonAction(MaumauRobotPlayer player, Card card, MaumauCardtable table) {
-    super(card,  table.talon,player);
+  public FillTalonAction(MaumauRobotPlayer player, Card card, MaumauCardtable table,int duration) {
+    super(card,  table.talon,player,duration);
     card.setSide(Card.Side.Back);
   }
   

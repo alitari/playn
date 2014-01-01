@@ -121,7 +121,7 @@ public class MaumauCardtable extends CardTable<NESWLayout, MaumauRobotPlayer, Ma
     button.clicked().connect(new UnitSlot() {
       @Override
       public void onEmit() {
-        actionManager.schedule(new StartGameAction(talon,null));
+        actionManager.schedule(new StartGameAction(talon,null,1));
       }
     });
 
@@ -139,7 +139,7 @@ public class MaumauCardtable extends CardTable<NESWLayout, MaumauRobotPlayer, Ma
     button.clicked().connect(new UnitSlot() {
       @Override
       public void onEmit() {
-        actionManager.schedule(new LeaveResultsAction(MaumauCardtable.this,null));
+        actionManager.schedule(new LeaveResultsAction(MaumauCardtable.this,null,5));
       }
     });
     // finishRoot.layer.setDepth(Float.MAX_VALUE);

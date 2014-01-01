@@ -5,7 +5,6 @@ import static playn.core.PlayN.log;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.print.attribute.standard.Finishings;
 
 import com.googlecode.stateless4j.StateMachine;
 import com.googlecode.stateless4j.delegates.Action;

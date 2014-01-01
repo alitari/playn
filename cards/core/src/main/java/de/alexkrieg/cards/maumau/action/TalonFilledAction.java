@@ -5,11 +5,11 @@ import de.alexkrieg.cards.core.Player;
 public class TalonFilledAction extends ActionAdapter {
   
   public TalonFilledAction() {
-    this(null);
+    this(null,0);
   }
 
-  public TalonFilledAction(Player<?, ?, ?> player) {
-    super(player);
+  public TalonFilledAction(Player<?, ?, ?> player,int duration) {
+    super(player,duration);
   }
   
   

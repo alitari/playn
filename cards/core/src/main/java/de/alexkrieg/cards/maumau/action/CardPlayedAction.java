@@ -13,11 +13,11 @@ public class CardPlayedAction extends CardMoveAction2<HeapLayout> {
   
   public CardPlayedAction() {
     // default constructor needed for framework
-    super(null,null,null);
+    super(null,null,null,0);
   }
 
-  public CardPlayedAction(MaumauRobotPlayer player, Card card, CardSlot<HeapLayout> playSlot) {
-    super(card,  playSlot,player);
+  public CardPlayedAction(MaumauRobotPlayer player, Card card, CardSlot<HeapLayout> playSlot,int duration) {
+    super(card,  playSlot,player,duration);
     card.setSide(Card.Side.Image);
   }
 

@@ -6,11 +6,13 @@ import de.alexkrieg.cards.core.action.GameAction;
 class ActionAdapter implements GameAction {
   
   final Player<?, ?, ?> player;
+  final int duration; 
   
 
-  public ActionAdapter(Player<?, ?, ?> player) {
+  public ActionAdapter(Player<?, ?, ?> player, int duration) {
     super();
     this.player = player;
+    this.duration = duration;
   }
 
   @Override
@@ -25,7 +27,7 @@ class ActionAdapter implements GameAction {
 
   @Override
   public int getDuration() {
-    return 0;
+    return duration;
   }
 
   @Override

@@ -9,11 +9,11 @@ public class PlayerFinishedAction extends ActionAdapter {
   final MaumauCardtable cardTable;
 
   public PlayerFinishedAction() {
-    this(null,null);
+    this(null,null,0);
   }
   
-  public PlayerFinishedAction(MaumauRobotPlayer player, MaumauCardtable cardTable) {
-    super(player);
+  public PlayerFinishedAction(MaumauRobotPlayer player, MaumauCardtable cardTable, int duration) {
+    super(player,duration);
     this.cardTable = cardTable;
   }
 

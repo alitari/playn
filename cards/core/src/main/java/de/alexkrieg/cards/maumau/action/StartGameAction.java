@@ -14,16 +14,16 @@ public class StartGameAction extends ActionAdapter {
   final boolean shuffle;
 
   public StartGameAction() {
-    this(null,null);
+    this(null,null,0);
 
   }
 
-  public StartGameAction(CardSlot<? extends Layout<Card>> talon,Player<?,?,?> player) {
-    this(talon, true,player);
+  public StartGameAction(CardSlot<? extends Layout<Card>> talon,Player<?,?,?> player,int duration) {
+    this(talon, true,player,duration);
   }
 
-  public StartGameAction(CardSlot<? extends Layout<Card>> talon, boolean shuffle,Player<?,?,?> player) {
-    super(player);
+  public StartGameAction(CardSlot<? extends Layout<Card>> talon, boolean shuffle,Player<?,?,?> player,int duration) {
+    super(player,duration);
     this.talon = talon;
     this.shuffle = shuffle;
   }
