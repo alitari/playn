@@ -2,12 +2,13 @@ package de.alexkrieg.cards.maumau.action;
 
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
+import de.alexkrieg.cards.core.Player;
 import de.alexkrieg.cards.core.action.CardMoveAction2;
-import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
-public class PickupAction extends GameAction.Merge {
+public class PickupAction extends GameLogicAction.Merge {
 
   public PickupAction() {
     // default constructor needed for framework
@@ -25,22 +26,30 @@ public class PickupAction extends GameAction.Merge {
     return (MaumauRobotPlayer) super.player();
   }
 
-  public static class PickupCardAction extends CardMoveAction2<TiledCardsRotatedLayout> {
+  public static class PickupCardAction extends CardMoveAction2<TiledCardsRotatedLayout> implements GameLogicAction {
+
+    private final MaumauRobotPlayer player;
 
     public PickupCardAction() {
-      super(null, null, null,0);
+      this(null, null, null,0);
     }
 
     public PickupCardAction(Card card, CardSlot<TiledCardsRotatedLayout> playerSlot,
         MaumauRobotPlayer player,int duration) {
-      super(card, playerSlot, player,duration);
+      super(card, playerSlot,duration);
       card.setSide(Card.Side.Image);
+      this.player = player;
     }
 
     @Override
     protected void recalcLayout(TiledCardsRotatedLayout layout) {
       layout.recalc(layerEntity, null);
 
+    }
+
+    @Override
+    public Player<?, ?, ?> player() {
+      return this.player;
     }
 
   }

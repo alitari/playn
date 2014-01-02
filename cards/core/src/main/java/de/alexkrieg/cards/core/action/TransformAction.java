@@ -9,8 +9,8 @@ public abstract class TransformAction extends AbstractAction {
 	protected final Transform origTransform;
 	protected Transform destTransform;
 
-	public TransformAction(Layer layer, int duration,Player<?,?,?> player) {
-		super(layer, duration,player);
+	public TransformAction(Layer layer, int duration) {
+		super(layer, duration);
 		origTransform = layer != null ?layer.transform(): null;
 	}
 	

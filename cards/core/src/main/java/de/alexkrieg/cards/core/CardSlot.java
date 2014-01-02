@@ -23,11 +23,9 @@ import de.alexkrieg.cards.core.layout.Layout;
 
 public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContainer<Card, L> {
 
-  String name;
   
-  public CardSlot(String name, L layout) {
-    super(layout,100,100);
-    this.name = name;
+  public CardSlot(String id, L layout) {
+    super(id,layout,100,100);
   }
 
   @Override
@@ -43,7 +41,7 @@ public class CardSlot<L extends Layout<Card>> extends AbstractLayerEntityContain
 
   @Override
   public String toString() {
-    return getClass().getSimpleName()+"(name="+name+","+super.toString()+")";
+    return getClass().getSimpleName()+"(id="+id()+","+super.toString()+")";
   }
   
   public Card firstCard() {

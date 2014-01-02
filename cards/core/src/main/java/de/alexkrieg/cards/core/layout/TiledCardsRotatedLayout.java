@@ -14,7 +14,7 @@ public class TiledCardsRotatedLayout extends TiledCardsLayout {
 	public void recalc(Card child, Object p) {
 		super.recalc(child, p);
 		List<?> childs = container.childs();
-		int index = childs.contains(child) ? childs.indexOf(child): childs.size() - 1;
+		int index = childs.contains(child) ? childs.indexOf(child): childs.size();
 //		child.layer().setOrigin(container.width()/2, container.height());
 		x = container.width()/2;
 		rot = calcRotation(index);

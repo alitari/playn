@@ -22,7 +22,7 @@ import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.Card.Value;
 import de.alexkrieg.cards.core.CardSlot;
-import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.HeapLayout;
 import de.alexkrieg.cards.core.layout.StackLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
@@ -54,7 +54,7 @@ public class MaumauGameLogicTest {
   private MaumauGameLogic gameLogic;
   private MaumauPlayerRegistry playerRegistry;
 
-  private GameAction[] allActions;
+  private GameLogicAction[] allActions;
   private CardSlot<StackLayout> talon;
   private CardSlot<HeapLayout> playSlot;
   private CardSlot<TiledCardsRotatedLayout> playerslot1;
@@ -129,14 +129,14 @@ public class MaumauGameLogicTest {
   private void gotoAttracting() throws Exception {
     assertThat(gameLogic.talon.isEmpty(), is(true));
     expectLogicErrorOnAllActionsExceptOf(Mode.Init, SystemReadyAction.class);
-    gameLogic.executeAction(new SystemReadyAction(null,0));
+    gameLogic.executeAction(new SystemReadyAction(null,null,null,0,null));
     assertThat(gameLogic.getMode(), is(Mode.Attracting));
   }
 
-  private GameAction instatiate(Class<?> actionClass) {
-    GameAction action;
+  private GameLogicAction instatiate(Class<?> actionClass) {
+    GameLogicAction action;
     try {
-      action = (GameAction) actionClass.newInstance();
+      action = (GameLogicAction) actionClass.newInstance();
     } catch (InstantiationException e) {
       throw new RuntimeException(e);
     } catch (IllegalAccessException e) {
@@ -150,18 +150,18 @@ public class MaumauGameLogicTest {
   }
 
   private void expectLogicErrorOnAllActionsExceptOf(Mode expectedMode,
-      Class<? extends GameAction>... validActions) {
+      Class<? extends GameLogicAction>... validActions) {
     List<Class<?>> allActionClasses = allActionClasses();
     for (Class<?> actionClass : allActionClasses) {
       if (!Arrays.asList(validActions).contains(actionClass)) {
-        GameAction action = instatiate(actionClass);
+        GameLogicAction action = instatiate(actionClass);
         expectLogicErrorOnAction(action, expectedMode, action
             + "should not be allowed!, Only allow:  " + validActions);
       }
     }
   }
 
-  private void expectLogicErrorOnAction(GameAction trigger, Mode expectedMode, String failMessage) {
+  private void expectLogicErrorOnAction(GameLogicAction trigger, Mode expectedMode, String failMessage) {
     try {
       gameLogic.executeAction(trigger);
       fail(failMessage);
@@ -421,7 +421,7 @@ public class MaumauGameLogicTest {
 
     gameLogic.executeAction(new PickupAction(player2, card1, card2, playerslot2,0));
     Card currentPlayCard = gameLogic.currentPlayCard();
-    gameLogic.executeAction(new TalonFilledAction(player1,0));
+    gameLogic.executeAction(new TalonFilledAction(null,null,null,0,player1));
     assertThat(gameLogic.getMode(), is(Mode.Playing));
     assertThat(gameLogic.direction, is(Direction.Clockwise));
     assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
@@ -446,7 +446,7 @@ public class MaumauGameLogicTest {
     assertThat(gameLogic.currentPlayCard(), is(currentPlayCard));
     assertThat(gameLogic.waitingForPlayer, is(player2));
 
-    gameLogic.executeAction(new TalonFilledAction(player1,0));
+    gameLogic.executeAction(new TalonFilledAction(null,null,null,0,player1));
 
     assertThat(gameLogic.getMode(), is(Mode.Playing));
     assertThat(gameLogic.direction, is(Direction.Clockwise));

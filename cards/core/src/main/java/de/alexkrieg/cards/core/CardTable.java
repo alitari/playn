@@ -23,12 +23,7 @@ import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Layer;
 import playn.core.util.Clock;
-import tripleplay.ui.Background;
 import tripleplay.ui.Interface;
-import tripleplay.ui.Root;
-import tripleplay.ui.SimpleStyles;
-import tripleplay.ui.Style;
-import tripleplay.ui.layout.AxisLayout;
 import de.alexkrieg.cards.core.layout.Layout;
 
 public abstract class CardTable<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G extends GameLogic<L,P,G>> extends
@@ -41,8 +36,8 @@ public abstract class CardTable<L extends Layout<CardSlot<?>>, P extends Player<
   
   protected final ActionManager actionManager;
 
-  public CardTable( ActionManager actionManager, L layout) {
-    super(layout, graphics().width(), graphics().height());
+  public CardTable( String id,ActionManager actionManager, L layout) {
+    super(id,layout, graphics().width(), graphics().height());
     this.actionManager = actionManager;
   }
 

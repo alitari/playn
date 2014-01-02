@@ -118,7 +118,7 @@ public static class Suit extends Filter<Card> {
   }
 
   public Card(Value val) {
-    super();
+    super(val.toString());
     this.value = val;
   }
 

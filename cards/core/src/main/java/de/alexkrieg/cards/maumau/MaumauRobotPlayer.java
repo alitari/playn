@@ -2,6 +2,7 @@ package de.alexkrieg.cards.maumau;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
 
 import playn.core.util.Clock.Source;
 import de.alexkrieg.cards.core.AbstractPlayer;
@@ -9,9 +10,14 @@ import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
+import de.alexkrieg.cards.core.Word;
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
+import de.alexkrieg.cards.core.action.MoveSimpleAction;
+import de.alexkrieg.cards.core.layout.AbsolutLayout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
+import de.alexkrieg.cards.core.layout.WordLayout;
 import de.alexkrieg.cards.maumau.MaumauGameLogic.Mode;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
@@ -29,7 +35,6 @@ public class MaumauRobotPlayer extends
 
   private boolean dealer = false;
   private LinkedList<Card> cardsDealt = new LinkedList<Card>();
-  private MaumauRobotPlayer oldWaitingForPlayer;
 
   public MaumauRobotPlayer(String name) {
     super(name);
@@ -45,7 +50,7 @@ public class MaumauRobotPlayer extends
 
     switch (game.gameLogic.getMode()) {
       case Init:
-        handleInit(game.actionManager);
+        handleInit(game.actionManager, (MaumauCardGame) game);
         break;
       case Attracting:
         handleAttracting();
@@ -59,8 +64,8 @@ public class MaumauRobotPlayer extends
             game.gameLogic.waitingForPlayer);
         break;
       case Refilling:
-        handleRefilling(game.actionManager, (MaumauCardtable) game.cardTable,
-            game.gameLogic.waitingForPlayer);
+        handleRefilling(game.actionManager, (MaumauCardGame) game,
+            (MaumauCardtable) game.cardTable, game.gameLogic.waitingForPlayer);
         break;
       case Finishing:
         handleFinishing();
@@ -82,12 +87,15 @@ public class MaumauRobotPlayer extends
 
   }
 
-  private void handleRefilling(ActionManager actionManager, MaumauCardtable cardTable,
-      MaumauRobotPlayer waitingForPlayer) {
+  private void handleRefilling(ActionManager actionManager, MaumauCardGame game,
+      MaumauCardtable cardTable, MaumauRobotPlayer waitingForPlayer) {
     if (waitingForPlayer == this) {
       if (cardTable.playSlot.getFirstUnusedChilds(4).size() < 4
           && noActionScheduled(actionManager, TalonFilledAction.class)) {
-        shedule(actionManager, new TalonFilledAction(this, actionDuration));
+        shedule(actionManager,
+            new TalonFilledAction(game.textLayer.findChild(MaumauCardGame.Words.Refilled.name()),
+                game.textLayer.layout(), new AbsolutLayout.Attr(300, 150, 0, 0.5F), actionDuration,
+                this));
       } else {
         if (noActionScheduled(actionManager, TalonFilledAction.class)) {
           shedule(actionManager, new RefillTalonAction(this,
@@ -108,9 +116,12 @@ public class MaumauRobotPlayer extends
         if (matches.isEmpty()) {
           pickupCards(actionManager, cardTable, ownedSlot);
           if (cardTable.talon.childs().size() < 8) {
-            shedule(actionManager, new RefillTalonAction(this,
-                cardTable.playSlot.getFirstUnusedChilds(1).get(0), cardTable.talon, actionDuration));
-            cardTable.playSlot.layout().reset();
+            List<Card> unusedChilds = cardTable.playSlot.getFirstUnusedChilds(1);
+            if (!unusedChilds.isEmpty()) {
+              shedule(actionManager, new RefillTalonAction(this, unusedChilds.get(0),
+                  cardTable.talon, 2));
+              cardTable.playSlot.layout().reset();
+            }
           }
         } else {
           Card card = matches.get(0);
@@ -132,7 +143,8 @@ public class MaumauRobotPlayer extends
       CardSlot<TiledCardsRotatedLayout> ownedSlot) {
     if (findMyScheduledFromType(actionManager, PickupAction.class).isEmpty()) {
       List<Card> cards = cardTable.talon.getLastUnusedChilds(2);
-      shedule(actionManager, new PickupAction(this, cards.get(0), cards.get(1), ownedSlot, actionDuration));
+      shedule(actionManager, new PickupAction(this, cards.get(0), cards.get(1), ownedSlot,
+          actionDuration));
     }
   }
 
@@ -140,7 +152,7 @@ public class MaumauRobotPlayer extends
     if (isDealer()) {
       List<Card> talon = cardTable.talon.childs();
       if (cardsDealt.isEmpty()
-          && actionManager.findScheduled(new GameAction.PlayerFilter(this)).isEmpty()) {
+          && actionManager.findScheduled(new GameLogicAction.PlayerFilter(this)).isEmpty()) {
         cardsDealt.addAll(talon.subList(talon.size() - 4 * MaumauGameLogic.dialedCardsCount - 1,
             talon.size()));
       }
@@ -160,9 +172,19 @@ public class MaumauRobotPlayer extends
     }
   }
 
-  private void handleInit(ActionManager actionManager) {
+  private void handleInit(ActionManager actionManager, MaumauCardGame game) {
     if (isDealer()) {
-      sheduleOnce(actionManager, new SystemReadyAction(this, 1));
+      sheduleOnce(actionManager,
+          new SystemReadyAction(game.textLayer.findChild(MaumauCardGame.Words.MauMauTitle.name()),
+              game.textLayer.layout(), new AbsolutLayout.Attr(220, 150, 0, 1), 30, this));
+
+      sheduleOnce(
+          actionManager,
+          new MoveSimpleAction<Word, AbsolutLayout<Word>>(
+              game.textLayer.findChild(MaumauCardGame.Words.ArcadeTitle.name()),
+              game.textLayer.layout(), new AbsolutLayout.Attr(300, 300, 0, 0.5F), 30).with(new GameAction.Animation.Rotate(
+              1)));
+
     }
 
   }

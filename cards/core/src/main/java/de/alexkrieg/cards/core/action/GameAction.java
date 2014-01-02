@@ -2,18 +2,49 @@ package de.alexkrieg.cards.core.action;
 
 import java.util.List;
 
-import de.alexkrieg.cards.core.Player;
+import playn.core.Layer;
 import de.alexkrieg.cards.core.util.Filter;
 
 public interface GameAction {
   
-  Player<?,?,?> player();
 
   void execute();
 
   int getDuration();
 
   void paint(int tick, float alpha);
+  
+  GameAction with(Animation...animations );
+  
+  
+  public static interface Animation {
+    public void paint(int duration,int tick,float alpha, Layer layer);
+    
+    
+    public static class Rotate implements Animation {
+      
+      final float speed;
+
+      public Rotate(float speed) {
+        super();
+        this.speed = speed;
+      }
+
+      @Override
+      public void paint(int duration, int tick, float alpha, Layer layer) {
+        layer.transform().setRotation((float) ((float)Math.PI*2*speed*((float)tick/duration)));
+      }
+      
+    }
+    
+  }
+  
+  
+  
+  
+  
+  
+  
 
   public static class TypeFilter extends Filter<GameAction> {
 
@@ -31,28 +62,12 @@ public interface GameAction {
 
   }
   
-  public static class PlayerFilter extends Filter<GameAction> {
-
-
-    private final  Player<?, ?, ?> player;
-
-    public PlayerFilter(Player<?,?,?> player) {
-      super();
-      this.player = player;
-    }
-
-    @Override
-    public boolean apply(GameAction candidate, List<GameAction> cardSet) {
-      return this.player == candidate.player();
-    }
-
-  }
-
+  
   
 
   public static class Merge implements GameAction {
 
-    private final GameAction[] actions;
+    protected final GameAction[] actions;
 
     public Merge(GameAction... actions) {
       super();
@@ -80,9 +95,14 @@ public interface GameAction {
     }
 
     @Override
-    public Player<?, ?, ?> player() {
-      return actions[0].player();
+    public GameAction with(Animation... animations) {
+      for ( GameAction a: actions) {
+        a.with(animations);
+      }
+      return this;
     }
+
+  
 
   }
 

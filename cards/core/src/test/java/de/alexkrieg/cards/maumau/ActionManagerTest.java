@@ -21,6 +21,7 @@ import org.junit.Test;
 import playn.java.JavaPlatform;
 import de.alexkrieg.cards.core.Player;
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.util.Filter;
 import de.alexkrieg.cards.maumau.action.SystemReadyAction;
 
@@ -73,17 +74,17 @@ public class ActionManagerTest {
   @SuppressWarnings("unchecked")
   @Test
   public void findSystemReady() throws Exception {
-    Player<?,?,?> player = mock(MaumauRobotPlayer.class);
-    GameAction action = new SystemReadyAction(player,1);
+    MaumauRobotPlayer player = mock(MaumauRobotPlayer.class);
+    GameAction action = new SystemReadyAction(null,null,null,1,player);
     actionManager.schedule(action);
     
-    List<GameAction> findScheduled = actionManager.findScheduled(new Filter.And<GameAction>(new GameAction.TypeFilter((Class<? super GameAction>)action.getClass()), new GameAction.PlayerFilter(player), true));
+    List<GameAction> findScheduled = actionManager.findScheduled(new Filter.And<GameAction>(new GameAction.TypeFilter((Class<? super GameLogicAction>)action.getClass()), new GameLogicAction.PlayerFilter(player), true));
     assertThat(findScheduled.get(0),is(action)); 
   }
   
 
   private void checkSheduleDuration(int duration) throws Exception {
-    GameAction sheduleAction = sheduleAction(duration);
+    GameLogicAction sheduleAction = sheduleAction(duration);
     for (int i = 0; i < duration; i++) {
       actionManager.executeActions();
       verify(gameLogic, times(0)).executeAction(eq(sheduleAction));
@@ -93,8 +94,8 @@ public class ActionManagerTest {
     verify(gameLogic, times(1)).executeAction(eq(sheduleAction));
   }
 
-  private GameAction sheduleAction(int duration) {
-    GameAction action = mock(GameAction.class);
+  private GameLogicAction sheduleAction(int duration) {
+    GameLogicAction action = mock(GameLogicAction.class);
     when(action.getDuration()).thenReturn(duration);
 
     actionManager.schedule(action);

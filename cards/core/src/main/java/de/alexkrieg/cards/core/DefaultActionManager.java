@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.Layout;
 import de.alexkrieg.cards.core.util.Filter;
 import static de.alexkrieg.cards.core.util.Filter.*;
@@ -26,7 +27,7 @@ public class DefaultActionManager<L extends Layout<CardSlot<?>>, P extends Playe
 
   @Inject
   public DefaultActionManager(GameLogic<L, P, G> gameLogic) {
-    this.capacity = 50;
+    this.capacity = 51;
     this.gameLogic = gameLogic;
   }
 
@@ -88,10 +89,14 @@ public class DefaultActionManager<L extends Layout<CardSlot<?>>, P extends Playe
   }
 
   private void execute(GameAction action) {
-    try {
-      gameLogic.executeAction(action);
-    } catch (Exception e) {
-      log().error("Exception during execution of  " + action, e);
+    if (action instanceof GameLogicAction) {
+      try {
+        gameLogic.executeAction((GameLogicAction) action);
+      } catch (Exception e) {
+        log().error("Exception during execution of  " + action, e);
+      }
+    } else {
+      action.execute();
     }
   }
 

@@ -1,9 +1,12 @@
 package de.alexkrieg.cards.core;
 
-import de.alexkrieg.cards.core.action.GameAction;
 import playn.core.Layer;
+import de.alexkrieg.cards.core.action.GameAction;
 
 public interface LayerEntity {
+  
+  String id();
+  
   Layer layer();
 
   void init();

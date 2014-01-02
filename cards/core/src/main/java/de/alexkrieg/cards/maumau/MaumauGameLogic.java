@@ -16,7 +16,7 @@ import com.googlecode.stateless4j.triggers.TriggerWithParameters1;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.GameLogic;
 import de.alexkrieg.cards.core.LogUtil;
-import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
@@ -37,9 +37,9 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
   public static class Error extends RuntimeException {
 
     final Mode mode;
-    final Class<? extends GameAction> action;
+    final Class<? extends GameLogicAction> action;
 
-    public Error(String message, Mode mode, Class<? extends GameAction> action) {
+    public Error(String message, Mode mode, Class<? extends GameLogicAction> action) {
       super(message);
       this.mode = mode;
       this.action = action;
@@ -53,7 +53,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
   }
 
-  static abstract class ModeEntry<A extends GameAction> implements Action1<A> {
+  static abstract class ModeEntry<A extends GameLogicAction> implements Action1<A> {
 
   }
 
@@ -78,7 +78,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
   List<Card> playSlot;
 
-  private StateMachine<Mode, Class<? extends GameAction>> stateMachine;
+  private StateMachine<Mode, Class<? extends GameLogicAction>> stateMachine;
   final private MaumauPlayerRegistry playerRegistry;
 
   @Inject
@@ -247,10 +247,10 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
     return playSlot.get(playSlot.size() - 1);
   }
 
-  private TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameAction>> cardPlayedTrigger;
-  private TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameAction>> playerFinishedTrigger;
-  private TriggerWithParameters1<PlaynAction, Mode, Class<? extends GameAction>> playnTrigger;
-  private TriggerWithParameters1<PickupAction, Mode, Class<? extends GameAction>> pickupTrigger;
+  private TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameLogicAction>> cardPlayedTrigger;
+  private TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameLogicAction>> playerFinishedTrigger;
+  private TriggerWithParameters1<PlaynAction, Mode, Class<? extends GameLogicAction>> playnTrigger;
+  private TriggerWithParameters1<PickupAction, Mode, Class<? extends GameLogicAction>> pickupTrigger;
 
   private List<Card> playersCards(MaumauRobotPlayer finishedPlayer) {
     if (finishedPlayer.id() == MaumauPlayerRegistry.ID_PLAYER1) {
@@ -272,10 +272,10 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
   @Override
   public void configure() {
-    stateMachine = new StateMachine<Mode, Class<? extends GameAction>>(Mode.Init);
-    Action2<Mode, Class<? extends GameAction>> unhandledTriggerAction = new Action2<Mode, Class<? extends GameAction>>() {
+    stateMachine = new StateMachine<Mode, Class<? extends GameLogicAction>>(Mode.Init);
+    Action2<Mode, Class<? extends GameLogicAction>> unhandledTriggerAction = new Action2<Mode, Class<? extends GameLogicAction>>() {
       @Override
-      public void doIt(Mode mode, Class<? extends GameAction> actionClass) throws Exception {
+      public void doIt(Mode mode, Class<? extends GameLogicAction> actionClass) throws Exception {
         throw new Error("mode:\"" + mode + "\", trigger \"" + actionClass.getSimpleName()
             + "\" is not allowed", mode, actionClass);
       }
@@ -292,7 +292,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
           new ReadyForPlayn(false));
 
       // Dealing->Playing
-      playnTrigger = new TriggerWithParameters1<PlaynAction, Mode, Class<? extends GameAction>>(
+      playnTrigger = new TriggerWithParameters1<PlaynAction, Mode, Class<? extends GameLogicAction>>(
           PlaynAction.class, PlaynAction.class);
       stateMachine.SetTriggerParameters(PlaynAction.class, PlaynAction.class);
       stateMachine.Configure(Mode.Dealing).PermitIf(PlaynAction.class, Mode.Playing,
@@ -302,7 +302,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
 
       stateMachine.Configure(Mode.Playing).Permit(RefillTalonAction.class, Mode.Refilling);
 
-      cardPlayedTrigger = new TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameAction>>(
+      cardPlayedTrigger = new TriggerWithParameters1<CardPlayedAction, Mode, Class<? extends GameLogicAction>>(
           CardPlayedAction.class, CardPlayedAction.class);
       stateMachine.SetTriggerParameters(CardPlayedAction.class, CardPlayedAction.class);
       stateMachine.Configure(Mode.Playing).PermitReentryIf(CardPlayedAction.class,
@@ -316,7 +316,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
       stateMachine.Configure(Mode.Playing).OnEntryFrom(PlaynAction.class, playnEntry);
 
       // PickupTrigger
-      pickupTrigger = new TriggerWithParameters1<PickupAction, Mode, Class<? extends GameAction>>(
+      pickupTrigger = new TriggerWithParameters1<PickupAction, Mode, Class<? extends GameLogicAction>>(
           PickupAction.class, PickupAction.class);
       stateMachine.SetTriggerParameters(PickupAction.class, PickupAction.class);
       stateMachine.Configure(Mode.Playing).OnEntryFrom(pickupTrigger, pickupModeEntry,
@@ -328,7 +328,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
       stateMachine.Configure(Mode.Refilling).OnEntryFrom(cardPlayedTrigger, cardPlayedModeEntry,
           CardPlayedAction.class);
 
-      playerFinishedTrigger = new TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameAction>>(
+      playerFinishedTrigger = new TriggerWithParameters1<PlayerFinishedAction, Mode, Class<? extends GameLogicAction>>(
           PlayerFinishedAction.class, PlayerFinishedAction.class);
       stateMachine.SetTriggerParameters(PlayerFinishedAction.class, PlayerFinishedAction.class);
       stateMachine.Configure(Mode.Playing).PermitIf(PlayerFinishedAction.class, Mode.Finishing,
@@ -356,7 +356,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
   }
 
   @Override
-  public void executeAction(GameAction action) throws Exception {
+  public void executeAction(GameLogicAction action) throws Exception {
     log().info("want to execute " + action + "...");
     if (action instanceof CardPlayedAction) {
       stateMachine.Fire(cardPlayedTrigger, (CardPlayedAction) action);
@@ -367,7 +367,7 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
     } else if (action instanceof PlayerFinishedAction) {
       stateMachine.Fire(playerFinishedTrigger, (PlayerFinishedAction) action);
     } else {
-      stateMachine.Fire((Class<? extends GameAction>) action.getClass());
+      stateMachine.Fire((Class<? extends GameLogicAction>) action.getClass());
       log().info("execute " + action);
       action.execute();
     }

@@ -13,8 +13,8 @@ public abstract class MoveAction<T extends LayerEntity, L extends Layout<T>> ext
   protected final T layerEntity;
   protected final LayerEntityContainer<T, L> destination;
 
-  public MoveAction(T layerEntity, int duration, LayerEntityContainer<T, L> destination,Player<?,?,?> player) {
-    super(layerEntity == null ? null : layerEntity.layer(), duration,player);
+  public MoveAction(T layerEntity, int duration, LayerEntityContainer<T, L> destination) {
+    super(layerEntity == null ? null : layerEntity.layer(), duration);
     this.layerEntity = layerEntity;
     this.destination = destination;
     if (layerEntity != null && destination != null) {

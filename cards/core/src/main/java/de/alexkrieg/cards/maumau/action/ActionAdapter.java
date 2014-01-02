@@ -2,8 +2,10 @@ package de.alexkrieg.cards.maumau.action;
 
 import de.alexkrieg.cards.core.Player;
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 
-class ActionAdapter implements GameAction {
+@Deprecated
+class ActionAdapter implements GameLogicAction {
   
   final Player<?, ?, ?> player;
   final int duration; 
@@ -32,5 +34,11 @@ class ActionAdapter implements GameAction {
 
   @Override
   public void paint(int tick, float alpha) {
+  }
+
+  @Override
+  public GameAction with(Animation... animations) {
+    return this;
+    
   }
 }

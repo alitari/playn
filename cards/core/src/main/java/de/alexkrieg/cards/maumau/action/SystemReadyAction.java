@@ -1,21 +1,33 @@
 package de.alexkrieg.cards.maumau.action;
 
-import de.alexkrieg.cards.core.Player;
+import de.alexkrieg.cards.core.Word;
+import de.alexkrieg.cards.core.action.GameLogicAction;
+import de.alexkrieg.cards.core.action.MoveSimpleAction;
+import de.alexkrieg.cards.core.layout.AbsolutLayout;
+import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
-public class SystemReadyAction extends ActionAdapter {
+public class SystemReadyAction extends MoveSimpleAction<Word, AbsolutLayout<Word>> implements GameLogicAction {
+
   
+  private final MaumauRobotPlayer player;
+
   public SystemReadyAction() {
-    this(null,0);
+    this(null, null, null,0,null);
   }
 
-  public SystemReadyAction(Player<?, ?, ?> player, int duration) {
-    super(player,duration);
+  public SystemReadyAction(Word word, AbsolutLayout<Word> layout, AbsolutLayout.Attr dest , int duration, MaumauRobotPlayer player) {
+    super(word,layout,dest,duration);
+    this.player = player;
   }
 
   @Override
-  public int getDuration() {
-    return 5;
+  public MaumauRobotPlayer player() {
+    return this.player;
   }
+
+  
+  
+  
   
 
 }

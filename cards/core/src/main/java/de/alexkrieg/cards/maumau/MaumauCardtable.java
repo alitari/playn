@@ -41,7 +41,7 @@ public class MaumauCardtable extends CardTable<NESWLayout, MaumauRobotPlayer, Ma
 
   @Inject
   public MaumauCardtable(ActionManager actionManager, NESWLayout layout) {
-    super(actionManager, layout);
+    super("MaumauCardtable",actionManager, layout);
   }
 
   @Override

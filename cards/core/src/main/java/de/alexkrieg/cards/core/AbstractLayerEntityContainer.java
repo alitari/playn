@@ -13,6 +13,7 @@
  */
 package de.alexkrieg.cards.core;
 
+import static de.alexkrieg.cards.core.util.Filter.applyFilter;
 import static playn.core.PlayN.graphics;
 
 import java.util.ArrayList;
@@ -21,7 +22,9 @@ import java.util.List;
 import playn.core.GroupLayer;
 import playn.core.Layer;
 import pythagoras.f.Transform;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.Layout;
+import de.alexkrieg.cards.core.util.Filter;
 
 public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L extends Layout<T>>
     extends AbstractLayerEntity implements LayerEntityContainer<T, L> {
@@ -33,25 +36,19 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
   protected List<T> childs;
 
-  protected AbstractLayerEntityContainer(L layout, float width, float height) {
-    super();
+  protected AbstractLayerEntityContainer(String id, L layout, float width, float height) {
+    super(id);
     childs = new ArrayList<T>();
     this.layout = layout;
     this.layout.setContainer(this);
     this.width = width;
     this.height = height;
   }
-  
-  
-  
 
   @Override
   public String toString() {
-    return "(layout="+layout+","+super.toString()+")";
+    return "(layout=" + layout + "," + super.toString() + ")";
   }
-
-
-
 
   @Override
   public float height() {
@@ -63,41 +60,43 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
     return width;
   }
 
-  
-
   @Override
   public List<T> childs() {
     return childs;
   }
-  
-  
-  
 
-  
-  
+  public List<T> filterChilds(Filter<T> filter) {
+    return applyFilter(filter, childs, new ArrayList<T>());
+  }
+
+  public T findChild(final String id) {
+    List<T> result = filterChilds(new Filter<T>() {
+      @Override
+      public boolean apply(T candidate, List<T> cardSet) {
+        return candidate.id().equals(id);
+      }
+    });
+    return result.isEmpty() ? null : result.get(0);
+  }
+
   @Override
   public List<T> getLastUnusedChilds(int count) {
     return getUnusedChilds(count, true);
   }
-  
-  
-  
+
   @Override
   public List<T> getFirstUnusedChilds(int count) {
     return getUnusedChilds(count, false);
   }
-  
 
-
-
-
-  private List<T> getUnusedChilds(int count,boolean fromTop) {
+  private List<T> getUnusedChilds(int count, boolean fromTop) {
     List<T> results = new ArrayList<T>();
-    for ( int i = fromTop ? childs.size()-1:0; fromTop? i>=0:i<childs.size();i = fromTop? i-1:i+1) {
-      T child = childs.get(i); 
-      if ( child.getInUseAction() == null) {
+    for (int i = fromTop ? childs.size() - 1 : 0; fromTop ? i >= 0 : i < childs.size(); i = fromTop
+        ? i - 1 : i + 1) {
+      T child = childs.get(i);
+      if (child.getInUseAction() == null) {
         results.add(child);
-        if ( results.size()>=count) {
+        if (results.size() >= count) {
           return results;
         }
       }
@@ -105,17 +104,15 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
     return results;
   }
 
-
-
-
   @Override
   public L layout() {
-     return this.layout;
+    return this.layout;
   }
 
   @Override
   public void init() {
-    if (isInitialized()) return;
+    if (isInitialized())
+      return;
     super.init();
     List<Layer> layers = new ArrayList<Layer>();
     fillWithLayers(layers);
@@ -124,7 +121,6 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
       groupLayer.add(l);
     }
     groupLayer.setOrigin(width / 2, height / 2);
-    
 
   }
 
@@ -139,8 +135,8 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
   public void remove(T child) {
     child.setContainer(null);
     childs.remove(child);
-    if ( layout.needsRecalcWhenRemove()) {
-      for ( T c:childs) {
+    if (layout.needsRecalcWhenRemove()) {
+      for (T c : childs) {
         layout.recalc(c, null);
         Layer l = c.layer();
         transform(l, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
@@ -152,16 +148,17 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
   public void put(T child, Object param) {
     child.init();
     LayerEntityContainer<T, ?> childContainer = (LayerEntityContainer<T, ?>) child.getContainer();
-    if (childContainer != null) {
+    if (childContainer != null && childContainer!= this) {
       childContainer.remove(child);
     }
     child.setContainer(this);
 
     layout.recalc(child, param);
-    
+
     Layer l = child.layer();
     transform(l, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
     ((GroupLayer) layer()).add(l);
+    
     childs.add(child);
   }
 
@@ -173,19 +170,16 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
     t.setUniformScale(scale);
 
   }
-  
 
-//  @Override
-//  public GroupLayer layer() {
-//    return layer;
-//  }
-
+  // @Override
+  // public GroupLayer layer() {
+  // return layer;
+  // }
 
   @Override
   public void removeAll() {
     childs.clear();
     ((GroupLayer) layer()).clear();
   }
-
 
 }

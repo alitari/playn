@@ -16,6 +16,7 @@
 package de.alexkrieg.cards.core;
 
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import playn.core.Layer;
 
 public abstract class AbstractLayerEntity implements LayerEntity {
@@ -25,19 +26,26 @@ public abstract class AbstractLayerEntity implements LayerEntity {
 	LayerEntityContainer<?, ?> container;
 
   private GameAction inUseAction;
+  
+  private final String id;
 
-	protected AbstractLayerEntity() {
+	protected AbstractLayerEntity(String id) {
+	  this.id = id;
 	}
 	
 	
 	
-	
 	@Override
-  public String toString() {
-    return String.valueOf(System.identityHashCode(this));
+  public String id() {
+    return this.id;
   }
 
 
+
+  @Override
+  public String toString() {
+    return String.valueOf(System.identityHashCode(this));
+  }
 
 
   @Override

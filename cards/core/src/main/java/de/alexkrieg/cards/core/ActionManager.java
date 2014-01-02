@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.util.Filter;
 
 public interface ActionManager {
@@ -31,7 +32,7 @@ public interface ActionManager {
       path = path.replace('.', '/');
 
       List<Class<?>> actionClasses = new ArrayList<Class<?>>();
-      URL url = GameAction.class.getResource(path);
+      URL url = GameLogicAction.class.getResource(path);
       File directory = new File(url.getFile());
 
       if (directory.exists()) {

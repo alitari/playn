@@ -7,7 +7,9 @@ import javax.inject.Inject;
 import playn.core.Game;
 import playn.core.GroupLayer;
 import playn.core.util.Clock;
+import de.alexkrieg.cards.core.layout.AbsolutLayout;
 import de.alexkrieg.cards.core.layout.Layout;
+import de.alexkrieg.cards.core.layout.WordLayout;
 
 public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G extends GameLogic<L,P,G>>
     extends Game.Default {
@@ -20,6 +22,7 @@ public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G 
   final public CardTable<L,P,G> cardTable;
   final public  PlayerRegistry<L,P,G> playerRegistry;
   final public G gameLogic;
+  final public TextLayer<AbsolutLayout<Word>>  textLayer;
 
 
   @Inject
@@ -30,6 +33,7 @@ public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G 
     this.cardTable = cardTable;
     this.playerRegistry = playerRegistry;
     this.gameLogic = gamelogic;
+    this.textLayer = new TextLayer<AbsolutLayout<Word>>("TextLayer",new AbsolutLayout<Word>());
   }
 
   // for other platforms which are already not supported
@@ -44,9 +48,11 @@ public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G 
   @Override
   public void init() {
     cardTable.init();
+    textLayer.init();
     gameLogic.configure();
     GroupLayer rootLayer = graphics().rootLayer();
     rootLayer.add(cardTable.layer());
+    rootLayer.add(textLayer.layer());
   }
 
   @Override
