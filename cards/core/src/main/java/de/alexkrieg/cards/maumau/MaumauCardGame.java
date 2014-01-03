@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.CardGame;
+import de.alexkrieg.cards.core.Thing;
 import de.alexkrieg.cards.core.Word;
 import de.alexkrieg.cards.core.layout.AbsolutLayout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
@@ -48,6 +49,10 @@ public class MaumauCardGame extends CardGame<NESWLayout,MaumauRobotPlayer,Maumau
     this.textLayer.put(createWord(Words.MauMauTitle), new AbsolutLayout.Attr(220,-100,0,0.1F));
     this.textLayer.put(createWord(Words.ArcadeTitle), new AbsolutLayout.Attr(220,100,0,0.1F));
     this.textLayer.put(createWord(Words.Refilled), new AbsolutLayout.Attr(120,-300,0,0.5F));
+    this.thingLayer.put(new Thing("bubbleun","bubblun",64,64,1 )  , new AbsolutLayout.Attr(120,300,0,2F));
+    this.thingLayer.put(new Thing.TomTom("TomTom" ) , new AbsolutLayout.Attr(320,500,0,1F));
+    
+    
   }
   
   

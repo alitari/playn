@@ -7,7 +7,7 @@ import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.HeapLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
-public class CardPlayedAction extends CardMoveAction2<HeapLayout> implements GameLogicAction {
+public class CardPlayedAction extends CardMoveAction2<HeapLayout> implements GameLogicAction<Card> {
   
   private final MaumauRobotPlayer player;
 

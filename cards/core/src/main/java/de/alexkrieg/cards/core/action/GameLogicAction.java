@@ -2,46 +2,44 @@ package de.alexkrieg.cards.core.action;
 
 import java.util.List;
 
+import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.Player;
 import de.alexkrieg.cards.core.util.Filter;
 
-public interface GameLogicAction extends GameAction {
-  
-  Player<?,?,?> player();
+public interface GameLogicAction<T extends LayerEntity> extends GameAction<T> {
 
-    
-  public static class PlayerFilter extends Filter<GameAction> {
+  Player<?, ?, ?> player();
 
+  public static class PlayerFilter extends Filter<GameAction<?>> {
 
-    private final  Player<?, ?, ?> player;
+    private final Player<?, ?, ?> player;
 
-    public PlayerFilter(Player<?,?,?> player) {
+    public PlayerFilter(Player<?, ?, ?> player) {
       super();
       this.player = player;
     }
 
     @Override
-    public boolean apply(GameAction candidate, List<GameAction> cardSet) {
-      return candidate instanceof GameLogicAction &&  this.player == ((GameLogicAction)candidate).player();
+    public boolean apply(GameAction<?> candidate, List<GameAction<?>> cardSet) {
+      return candidate instanceof GameLogicAction<?>
+          && this.player == ((GameLogicAction<?>) candidate).player();
     }
 
   }
 
-  
+  public static class Merge<T extends LayerEntity> extends GameAction.Merge<T> implements
+      GameLogicAction<T> {
 
-  public static class Merge extends GameAction.Merge implements GameLogicAction{
-
-
-    public Merge(GameLogicAction... actions) {
+    public Merge(GameLogicAction<T>... actions) {
       super(actions);
     }
 
     @Override
     public void execute() {
-      for ( GameAction a: actions) {
+      for (GameAction<T> a : actions) {
         a.execute();
       }
-      
+
     }
 
     @Override
@@ -51,14 +49,14 @@ public interface GameLogicAction extends GameAction {
 
     @Override
     public void paint(int tick, float alpha) {
-      for ( GameAction a: actions) {
+      for (GameAction<T> a : actions) {
         a.paint(tick, alpha);
       }
     }
 
     @Override
     public Player<?, ?, ?> player() {
-      return ((GameLogicAction) actions[0]).player();
+      return ((GameLogicAction<T>) actions[0]).player();
     }
 
   }

@@ -8,7 +8,7 @@ import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
-public class PickupAction extends GameLogicAction.Merge {
+public class PickupAction extends GameLogicAction.Merge<Card> {
 
   public PickupAction() {
     // default constructor needed for framework
@@ -26,7 +26,7 @@ public class PickupAction extends GameLogicAction.Merge {
     return (MaumauRobotPlayer) super.player();
   }
 
-  public static class PickupCardAction extends CardMoveAction2<TiledCardsRotatedLayout> implements GameLogicAction {
+  public static class PickupCardAction extends CardMoveAction2<TiledCardsRotatedLayout> implements GameLogicAction<Card> {
 
     private final MaumauRobotPlayer player;
 

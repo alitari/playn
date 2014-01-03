@@ -7,7 +7,7 @@ import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
-public class CardDealedAction extends CardMoveAction2<TiledCardsRotatedLayout> implements GameLogicAction {
+public class CardDealedAction extends CardMoveAction2<TiledCardsRotatedLayout> implements GameLogicAction<Card> {
   
   
   private MaumauRobotPlayer player;

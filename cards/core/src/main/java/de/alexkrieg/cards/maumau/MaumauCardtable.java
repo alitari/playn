@@ -18,6 +18,9 @@ import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.CardTable;
+import de.alexkrieg.cards.core.Word;
+import de.alexkrieg.cards.core.action.GameAction;
+import de.alexkrieg.cards.core.action.VisibiltyAction;
 import de.alexkrieg.cards.core.layout.HeapLayout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.StackLayout;
@@ -38,6 +41,8 @@ public class MaumauCardtable extends CardTable<NESWLayout, MaumauRobotPlayer, Ma
   public Root playnRoot;
   public Root finishRoot;
   private Label winnerLabel = new Label("");
+  
+  private MaumauCardGame game;
 
   @Inject
   public MaumauCardtable(ActionManager actionManager, NESWLayout layout) {
@@ -46,6 +51,9 @@ public class MaumauCardtable extends CardTable<NESWLayout, MaumauRobotPlayer, Ma
 
   @Override
   public void update(int delta, CardGame<NESWLayout, MaumauRobotPlayer, MaumauGameLogic> game) {
+    if ( this.game==null) {
+      this.game = (MaumauCardGame) game;
+    }
     if (game.gameLogic.talon == null) {
       connect(game.gameLogic);
     }
@@ -122,6 +130,10 @@ public class MaumauCardtable extends CardTable<NESWLayout, MaumauRobotPlayer, Ma
       @Override
       public void onEmit() {
         actionManager.schedule(new StartGameAction(talon,null,1));
+        
+        Word arcadeTitle = game.textLayer.findChild(MaumauCardGame.Words.ArcadeTitle.name());
+        actionManager.schedule(new VisibiltyAction<Word>(arcadeTitle, 30, false).with(new GameAction.Animation.Blend<Word>(false, 1)));
+        
       }
     });
 

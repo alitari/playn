@@ -2,27 +2,23 @@ package de.alexkrieg.cards.core.action;
 
 import java.util.List;
 
-import playn.core.Layer;
+import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.util.Filter;
 
-public interface GameAction {
-  
+public interface GameAction<T extends LayerEntity> {
 
   void execute();
 
   int getDuration();
 
   void paint(int tick, float alpha);
-  
-  GameAction with(Animation...animations );
-  
-  
-  public static interface Animation {
-    public void paint(int duration,int tick,float alpha, Layer layer);
-    
-    
-    public static class Rotate implements Animation {
-      
+
+  GameAction<T> with(Animation<T>... animations);
+
+  public static interface Animation<T extends LayerEntity> {
+    public void paint(int duration, int tick, float alpha, T layerEntity);
+
+    public static class Rotate<T extends LayerEntity> implements Animation<T> {
       final float speed;
 
       public Rotate(float speed) {
@@ -31,22 +27,32 @@ public interface GameAction {
       }
 
       @Override
-      public void paint(int duration, int tick, float alpha, Layer layer) {
-        layer.transform().setRotation((float) ((float)Math.PI*2*speed*((float)tick/duration)));
+      public void paint(int duration, int tick, float alpha, T layerEntity) {
+        layerEntity.layer().transform().setRotation(
+            (float) ((float) Math.PI * 2 * speed * ((float) tick / duration)));
       }
-      
     }
-    
-  }
-  
-  
-  
-  
-  
-  
-  
 
-  public static class TypeFilter extends Filter<GameAction> {
+    public static class Blend<T extends LayerEntity> implements Animation<T> {
+      final float speed;
+      final boolean on;
+
+      public Blend(boolean on, float speed) {
+        super();
+        this.speed = speed;
+        this.on = on;
+      }
+
+      @Override
+      public void paint(int duration, int tick, float alpha, T layerEntity) {
+        float value = Math.min(1, (float) speed * ((float) tick / (float) duration));
+        layerEntity.layer().setAlpha(on ? value : 1 - value);
+      }
+    }
+
+  }
+
+  public static class TypeFilter extends Filter<GameAction<?>> {
 
     final Class<?> type;
 
@@ -56,30 +62,26 @@ public interface GameAction {
     }
 
     @Override
-    public boolean apply(GameAction candidate, List<GameAction> cardSet) {
+    public boolean apply(GameAction<?> candidate, List<GameAction<?>> cardSet) {
       return type.isAssignableFrom(candidate.getClass());
     }
 
   }
-  
-  
-  
 
-  public static class Merge implements GameAction {
+  public static class Merge<T extends LayerEntity> implements GameAction<T> {
 
-    protected final GameAction[] actions;
+    protected final GameAction<T>[] actions;
 
-    public Merge(GameAction... actions) {
+    public Merge(GameAction<T>... actions) {
       super();
       this.actions = actions;
     }
 
     @Override
     public void execute() {
-      for ( GameAction a: actions) {
+      for (GameAction<T> a : actions) {
         a.execute();
       }
-      
     }
 
     @Override
@@ -89,20 +91,18 @@ public interface GameAction {
 
     @Override
     public void paint(int tick, float alpha) {
-      for ( GameAction a: actions) {
+      for (GameAction<T> a : actions) {
         a.paint(tick, alpha);
       }
     }
 
     @Override
-    public GameAction with(Animation... animations) {
-      for ( GameAction a: actions) {
+    public GameAction<T> with(Animation<T>... animations) {
+      for (GameAction<T> a : actions) {
         a.with(animations);
       }
       return this;
     }
-
-  
 
   }
 

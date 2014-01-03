@@ -7,7 +7,7 @@ import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.layout.StackLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
-public class RefillTalonAction extends CardMoveAction2<StackLayout> implements GameLogicAction{
+public class RefillTalonAction extends CardMoveAction2<StackLayout> implements GameLogicAction<Card>{
   
   private final MaumauRobotPlayer player;
 

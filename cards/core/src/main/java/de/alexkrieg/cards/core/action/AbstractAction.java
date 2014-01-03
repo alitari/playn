@@ -1,22 +1,22 @@
 package de.alexkrieg.cards.core.action;
 
-import playn.core.Layer;
+import de.alexkrieg.cards.core.LayerEntity;
 
-public abstract class AbstractAction implements GameAction {
+public abstract class AbstractAction<T extends LayerEntity> implements GameAction<T> {
 
-  protected final Layer layer;
+  protected final T layerEntity;
   protected final int duration;
-  private Animation[] animations;
+  private Animation<T>[] animations;
 
-  public AbstractAction(Layer layer, int duration) {
+  public AbstractAction(T layerEntity, int duration) {
     super();
-    this.layer = layer;
+    this.layerEntity = layerEntity;
     this.duration = duration;
     
   }
 
   @Override
-  public GameAction with(Animation... animations) {
+  public GameAction<T> with(Animation<T>... animations) {
     this.animations = animations;
     return this;
 
@@ -29,8 +29,8 @@ public abstract class AbstractAction implements GameAction {
         + (float) ((float) alpha / (duration + 1));
     paintWithActionAlpha(actionAlpha);
     if (this.animations != null) {
-      for (Animation anim : this.animations) {
-        anim.paint( duration, tick, alpha, this.layer);
+      for (Animation<T> anim : this.animations) {
+        anim.paint( duration, tick, alpha, this.layerEntity);
       }
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractAction implements GameAction {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "[layer=" + layer + ", duration=" + duration + "]";
+    return getClass().getSimpleName() + "[layerEntity=" + layerEntity + ", duration=" + duration + "]";
   }
 
 }

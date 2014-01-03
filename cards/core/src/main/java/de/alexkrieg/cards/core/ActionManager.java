@@ -11,9 +11,14 @@ import de.alexkrieg.cards.core.util.Filter;
 
 public interface ActionManager {
 
-  void schedule(GameAction action);
+  void schedule(GameAction<?> action);
   
-  public List<GameAction> findScheduled(Filter<GameAction> filter);
+  void scheduleFuture(int millis, GameAction<?> action);
+  
+  public List<GameAction<?>> findScheduled(Filter<GameAction<?>> filter);
+  
+  List<GameAction<?>> findOnWait(Filter<GameAction<?>> filter);
+  
   
   void executeActions();
 
@@ -52,5 +57,13 @@ public interface ActionManager {
       return actionClasses;
     }
   }
+
+
+
+
+
+
+
+
 
 }

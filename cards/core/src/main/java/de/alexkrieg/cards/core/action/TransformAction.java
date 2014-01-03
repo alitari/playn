@@ -1,17 +1,16 @@
 package de.alexkrieg.cards.core.action;
 
-import de.alexkrieg.cards.core.Player;
-import playn.core.Layer;
 import pythagoras.f.Transform;
+import de.alexkrieg.cards.core.LayerEntity;
 
-public abstract class TransformAction extends AbstractAction {
+public abstract class TransformAction<T extends LayerEntity> extends AbstractAction<T> {
 
 	protected final Transform origTransform;
 	protected Transform destTransform;
 
-	public TransformAction(Layer layer, int duration) {
-		super(layer, duration);
-		origTransform = layer != null ?layer.transform(): null;
+	public TransformAction(T layerEntity, int duration) {
+		super(layerEntity, duration);
+		origTransform = layerEntity != null ?layerEntity.layer().transform(): null;
 	}
 	
 	public Transform getDestTransform() {
@@ -29,7 +28,7 @@ public abstract class TransformAction extends AbstractAction {
 		Transform transform = origTransform.lerp(destTransform, actionAlpha);
 		float[] matrix = new float[6];
 		transform.get(matrix);
-		layer.transform().setTransform(matrix[0], matrix[1], matrix[2],
+		layerEntity.layer().transform().setTransform(matrix[0], matrix[1], matrix[2],
 				matrix[3], matrix[4], matrix[5]);
 
 	}

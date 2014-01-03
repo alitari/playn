@@ -6,7 +6,7 @@ import de.alexkrieg.cards.core.action.MoveSimpleAction;
 import de.alexkrieg.cards.core.layout.AbsolutLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
-public class TalonFilledAction extends MoveSimpleAction<Word, AbsolutLayout<Word>> implements GameLogicAction {
+public class TalonFilledAction extends MoveSimpleAction<Word, AbsolutLayout<Word>> implements GameLogicAction<Word> {
 
   private final MaumauRobotPlayer player;
 

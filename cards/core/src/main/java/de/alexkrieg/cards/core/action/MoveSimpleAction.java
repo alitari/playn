@@ -5,15 +5,13 @@ import pythagoras.f.Transform;
 import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.layout.AbsolutLayout;
 
-public class MoveSimpleAction<T extends LayerEntity, L extends AbsolutLayout<T>> extends TransformAction {
+public class MoveSimpleAction<T extends LayerEntity, L extends AbsolutLayout<T>> extends TransformAction<T> {
 
-  protected final T layerEntity;
   protected final L absolutLayout;
   protected final AbsolutLayout.Attr dest;
 
   public MoveSimpleAction(T layerEntity, L absolutLayout, AbsolutLayout.Attr dest  , int duration) {
-    super(layerEntity == null ? null : layerEntity.layer(), duration);
-    this.layerEntity = layerEntity;
+    super(layerEntity, duration);
     this.absolutLayout = absolutLayout;
     this.dest = dest;
     if (layerEntity != null ) {

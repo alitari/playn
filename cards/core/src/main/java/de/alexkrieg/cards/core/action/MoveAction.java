@@ -5,17 +5,14 @@ import pythagoras.f.Point;
 import pythagoras.f.Transform;
 import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.LayerEntityContainer;
-import de.alexkrieg.cards.core.Player;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public abstract class MoveAction<T extends LayerEntity, L extends Layout<T>> extends TransformAction {
+public abstract class MoveAction<T extends LayerEntity, L extends Layout<T>> extends TransformAction<T> {
 
-  protected final T layerEntity;
   protected final LayerEntityContainer<T, L> destination;
 
   public MoveAction(T layerEntity, int duration, LayerEntityContainer<T, L> destination) {
-    super(layerEntity == null ? null : layerEntity.layer(), duration);
-    this.layerEntity = layerEntity;
+    super(layerEntity, duration);
     this.destination = destination;
     if (layerEntity != null && destination != null) {
       layerEntity.setInUseOfAction(this);

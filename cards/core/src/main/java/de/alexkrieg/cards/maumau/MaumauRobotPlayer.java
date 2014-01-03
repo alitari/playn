@@ -2,7 +2,6 @@ package de.alexkrieg.cards.maumau;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
 
 import playn.core.util.Clock.Source;
 import de.alexkrieg.cards.core.AbstractPlayer;
@@ -14,11 +13,10 @@ import de.alexkrieg.cards.core.Word;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.action.MoveSimpleAction;
+import de.alexkrieg.cards.core.action.VisibiltyAction;
 import de.alexkrieg.cards.core.layout.AbsolutLayout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
-import de.alexkrieg.cards.core.layout.WordLayout;
-import de.alexkrieg.cards.maumau.MaumauGameLogic.Mode;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
 import de.alexkrieg.cards.maumau.action.PickupAction;
@@ -92,10 +90,12 @@ public class MaumauRobotPlayer extends
     if (waitingForPlayer == this) {
       if (cardTable.playSlot.getFirstUnusedChilds(4).size() < 4
           && noActionScheduled(actionManager, TalonFilledAction.class)) {
+        Word refilled = game.textLayer.findChild(MaumauCardGame.Words.Refilled.name());
         shedule(actionManager,
-            new TalonFilledAction(game.textLayer.findChild(MaumauCardGame.Words.Refilled.name()),
+            new TalonFilledAction(refilled,
                 game.textLayer.layout(), new AbsolutLayout.Attr(300, 150, 0, 0.5F), actionDuration,
                 this));
+        sheduleOnce(2000,actionManager, new VisibiltyAction<Word>(refilled, 30, false));
       } else {
         if (noActionScheduled(actionManager, TalonFilledAction.class)) {
           shedule(actionManager, new RefillTalonAction(this,
@@ -178,13 +178,13 @@ public class MaumauRobotPlayer extends
           new SystemReadyAction(game.textLayer.findChild(MaumauCardGame.Words.MauMauTitle.name()),
               game.textLayer.layout(), new AbsolutLayout.Attr(220, 150, 0, 1), 30, this));
 
+      Word arcadeTitle = game.textLayer.findChild(MaumauCardGame.Words.ArcadeTitle.name());
       sheduleOnce(
           actionManager,
           new MoveSimpleAction<Word, AbsolutLayout<Word>>(
-              game.textLayer.findChild(MaumauCardGame.Words.ArcadeTitle.name()),
+              arcadeTitle,
               game.textLayer.layout(), new AbsolutLayout.Attr(300, 300, 0, 0.5F), 30).with(new GameAction.Animation.Rotate(
               1)));
-
     }
 
   }

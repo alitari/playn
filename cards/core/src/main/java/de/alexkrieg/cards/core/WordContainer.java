@@ -21,10 +21,10 @@ import playn.core.ImageLayer;
 import playn.core.Layer;
 import de.alexkrieg.cards.core.layout.Layout;
 
-public class TextLayer<L extends Layout<Word>> extends AbstractLayerEntityContainer<Word, L> {
+public class WordContainer<L extends Layout<Word>> extends AbstractLayerEntityContainer<Word, L> {
 
 
-  public TextLayer( String id,  L layout) {
+  public WordContainer( String id,  L layout) {
     super(id, layout, graphics().width(), graphics().height());
   }
 

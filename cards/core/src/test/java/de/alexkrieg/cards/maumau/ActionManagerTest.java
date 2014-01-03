@@ -10,16 +10,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static playn.core.PlayN.log;
+import static playn.core.PlayN.tick;
 
 import java.util.List;
 
 import javax.sound.midi.SysexMessage;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import playn.java.JavaPlatform;
 import de.alexkrieg.cards.core.Player;
+import de.alexkrieg.cards.core.Word;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.action.GameLogicAction;
 import de.alexkrieg.cards.core.util.Filter;
@@ -31,17 +35,17 @@ public class ActionManagerTest {
     JavaPlatform.register();
   }
 
-  static class IdentityFilter extends Filter<GameAction> {
+  static class IdentityFilter extends Filter<GameAction<?>> {
 
-    final GameAction action;
+    final GameAction<?> action;
 
-    public IdentityFilter(GameAction action) {
+    public IdentityFilter(GameAction<?> action) {
       super();
       this.action = action;
     }
 
     @Override
-    public boolean apply(GameAction candidate, List<GameAction> cardSet) {
+    public boolean apply(GameAction<?> candidate, List<GameAction<?>> cardSet) {
       return candidate == this.action;
     }
 
@@ -60,31 +64,62 @@ public class ActionManagerTest {
   public void schedule1() throws Exception {
     checkSheduleDuration(1);
   }
-  
+
   @Test
   public void schedule0() throws Exception {
     checkSheduleDuration(0);
   }
-  
+
   @Test
   public void schedule30() throws Exception {
     checkSheduleDuration(30);
   }
-  
-  @SuppressWarnings("unchecked")
+
   @Test
-  public void findSystemReady() throws Exception {
-    MaumauRobotPlayer player = mock(MaumauRobotPlayer.class);
-    GameAction action = new SystemReadyAction(null,null,null,1,player);
-    actionManager.schedule(action);
-    
-    List<GameAction> findScheduled = actionManager.findScheduled(new Filter.And<GameAction>(new GameAction.TypeFilter((Class<? super GameLogicAction>)action.getClass()), new GameLogicAction.PlayerFilter(player), true));
-    assertThat(findScheduled.get(0),is(action)); 
+  public void scheduleOnFuture500() throws Exception {
+    checkSheduleFuture(500);
   }
   
+  @Test
+  public void scheduleOnFuture100() throws Exception {
+    checkSheduleFuture(100);
+  }
+  
+  @Ignore
+  public void scheduleOnFuture2000() throws Exception {
+    checkSheduleFuture(2000);
+  }
+
+  
+  @Test
+  public void findSystemReadyScheduled() throws Exception {
+    MaumauRobotPlayer player = mock(MaumauRobotPlayer.class);
+    GameAction<Word> action = new SystemReadyAction(null, null, null, 1, player);
+    actionManager.schedule(action);
+
+    List<GameAction<?>> findScheduled = actionManager.findScheduled(new Filter.And<GameAction<?>>(
+        new GameAction.TypeFilter((Class<? super GameLogicAction<?>>) action.getClass()),
+        new GameLogicAction.PlayerFilter(player), true));
+    GameAction<Word> found = (GameAction<Word>) findScheduled.get(0);
+    assertThat(found, is(action));
+  }
+
+  @Test
+  public void findSystemReadyOnWait() throws Exception {
+    MaumauRobotPlayer player = mock(MaumauRobotPlayer.class);
+    GameAction<Word> action = new SystemReadyAction(null, null, null, 1, player);
+    actionManager.scheduleFuture(10, action);
+
+    List<GameAction<?>> findScheduled = actionManager.findOnWait(new Filter.And<GameAction<?>>(
+        new GameAction.TypeFilter((Class<? super GameLogicAction<?>>) action.getClass()),
+        new GameLogicAction.PlayerFilter(player), true));
+    GameAction<Word> found = (GameAction<Word>) findScheduled.get(0);
+    assertThat(found, is(action));
+    
+  }
 
   private void checkSheduleDuration(int duration) throws Exception {
-    GameLogicAction sheduleAction = sheduleAction(duration);
+    GameLogicAction<?> sheduleAction = sheduleAction(duration);
     for (int i = 0; i < duration; i++) {
       actionManager.executeActions();
       verify(gameLogic, times(0)).executeAction(eq(sheduleAction));
@@ -94,12 +129,33 @@ public class ActionManagerTest {
     verify(gameLogic, times(1)).executeAction(eq(sheduleAction));
   }
 
-  private GameLogicAction sheduleAction(int duration) {
-    GameLogicAction action = mock(GameLogicAction.class);
+  private GameLogicAction<?> sheduleAction(int duration) {
+    GameLogicAction<?> action = mock(GameLogicAction.class);
     when(action.getDuration()).thenReturn(duration);
 
     actionManager.schedule(action);
-    List<GameAction> findScheduled = actionManager.findScheduled(new IdentityFilter(action));
+    List<GameAction<?>> findScheduled = actionManager.findScheduled(new IdentityFilter(action));
+    assertThat(findScheduled.size(), is(1));
+    assertThat(findScheduled, hasItem(action));
+    return action;
+  }
+
+  private void checkSheduleFuture(int millis) throws Exception {
+    GameAction<?> sheduleAction = sheduleFutureAction(millis);
+    int current= tick();
+    while ( tick()-millis < current ) {
+      Thread.sleep(100);
+    }
+    actionManager.executeActions();
+    List<GameAction<?>> findScheduled = actionManager.findOnWait(new IdentityFilter(sheduleAction));
+    assertThat(findScheduled.size(), is(0));
+    
+   }
+
+  private GameAction<?> sheduleFutureAction(int millis) {
+    GameAction<?> action = mock(GameAction.class);
+    actionManager.scheduleFuture(millis, action);
+    List<GameAction<?>> findScheduled = actionManager.findOnWait(new IdentityFilter(action));
     assertThat(findScheduled.size(), is(1));
     assertThat(findScheduled, hasItem(action));
     return action;

@@ -22,7 +22,8 @@ public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G 
   final public CardTable<L,P,G> cardTable;
   final public  PlayerRegistry<L,P,G> playerRegistry;
   final public G gameLogic;
-  final public TextLayer<AbsolutLayout<Word>>  textLayer;
+  final public WordContainer<AbsolutLayout<Word>>  textLayer;
+  final public ThingContainer<AbsolutLayout<Thing>>  thingLayer;
 
 
   @Inject
@@ -33,7 +34,9 @@ public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G 
     this.cardTable = cardTable;
     this.playerRegistry = playerRegistry;
     this.gameLogic = gamelogic;
-    this.textLayer = new TextLayer<AbsolutLayout<Word>>("TextLayer",new AbsolutLayout<Word>());
+    this.textLayer = new WordContainer<AbsolutLayout<Word>>("WordContainer",new AbsolutLayout<Word>());
+    this.thingLayer = new ThingContainer<AbsolutLayout<Thing>>("ThingContainer",new AbsolutLayout<Thing>());
+    
   }
 
   // for other platforms which are already not supported
@@ -49,10 +52,12 @@ public class CardGame<L extends Layout<CardSlot<?>>, P extends Player<L,P,G>, G 
   public void init() {
     cardTable.init();
     textLayer.init();
+    thingLayer.init();
     gameLogic.configure();
     GroupLayer rootLayer = graphics().rootLayer();
     rootLayer.add(cardTable.layer());
     rootLayer.add(textLayer.layer());
+    rootLayer.add(thingLayer.layer());
   }
 
   @Override
