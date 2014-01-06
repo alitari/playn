@@ -8,8 +8,16 @@ import de.alexkrieg.cards.core.action.GameLogicAction;
 class ActionAdapter implements GameLogicAction {
   
   final Player<?, ?, ?> player;
-  final int duration; 
+  final int duration;
   
+  
+  
+  
+
+  @Override
+  public boolean reschedule() {
+    return false;
+  }
 
   public ActionAdapter(Player<?, ?, ?> player, int duration) {
     super();

@@ -2,27 +2,21 @@ package de.alexkrieg.cards.maumau;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static playn.core.PlayN.log;
 import static playn.core.PlayN.tick;
 
 import java.util.List;
-
-import javax.sound.midi.SysexMessage;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import playn.java.JavaPlatform;
-import de.alexkrieg.cards.core.Player;
 import de.alexkrieg.cards.core.Word;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.action.GameLogicAction;

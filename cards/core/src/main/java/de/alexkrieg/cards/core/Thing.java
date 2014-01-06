@@ -11,7 +11,6 @@ import playn.core.Layer.HasSize;
 public class Thing extends AbstractLayerEntity implements HasSizeEntity {
 
   static private String DIR = "images/objects/";
-
   
   public final String name;
 
@@ -22,7 +21,6 @@ public class Thing extends AbstractLayerEntity implements HasSizeEntity {
   final private int animationSteps;
   
   private int currentAnimationStep;
-  
   
   ImageLayer[] imageLayer;
 
@@ -42,20 +40,24 @@ public class Thing extends AbstractLayerEntity implements HasSizeEntity {
   @Override
   public void init() {
     if (isInitialized()) return;
-    imageLayer = new ImageLayer[this.animationSteps];
+    imageLayer = new ImageLayer[this.animationSteps()];
     super.init();
+  }
+  
+  public int currentAnimationStep() {
+    return currentAnimationStep;
   }
   
   public void nextAnimationStep() {
     imageLayer[currentAnimationStep].setVisible(false);
-    currentAnimationStep = currentAnimationStep == animationSteps ? 0: currentAnimationStep +1; 
+    currentAnimationStep = currentAnimationStep == animationSteps() ? 0: currentAnimationStep +1; 
     imageLayer[currentAnimationStep].setVisible(true);
   }
 
   @Override
   protected Layer createLayer() {
     GroupLayer groupLayer = graphics().createGroupLayer();
-    for ( int i = 0; i< animationSteps;i++) {
+    for ( int i = 0; i< animationSteps();i++) {
       ImageLayer imageLayer = createImageLayer(createImage(name,i));
       groupLayer.add(imageLayer);
     }
@@ -80,6 +82,10 @@ public class Thing extends AbstractLayerEntity implements HasSizeEntity {
     return getClass().getSimpleName() + "(value=" + id() + ",name="+name+")";
   }
   
+  public int animationSteps() {
+    return animationSteps;
+  }
+
   public static class TomTom extends Thing {
 
     public TomTom(String id) {

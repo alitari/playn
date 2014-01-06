@@ -1,5 +1,6 @@
 package de.alexkrieg.cards.core;
 
+import static playn.core.PlayN.invokeLater;
 import static playn.core.PlayN.log;
 import static playn.core.PlayN.tick;
 
@@ -60,21 +61,32 @@ public class DefaultActionManager<L extends Layout<CardSlot<?>>, P extends Playe
     }
     return result;
   }
+  
+  @Override
+  public void schedule(GameAction<?> action) {
+    shedule(-1,  action);
+    
+  }
+  
+  @Override
+  public void scheduleFuture(int millis, GameAction<?> action) {
+    shedule(millis,  action);
+  }
 
   @Override
   public List<GameAction<?>> findScheduled(Filter<GameAction<?>> filter) {
     return applyFilter(filter, allScheduled(), new ArrayList<GameAction<?>>());
   }
 
-  @Override
-  public void scheduleFuture(int millis, GameAction<?> action) {
+  
+  void scheduleFutureDirect(int millis, GameAction<?> action) {
     int currentTime = tick();
     ScheduleTask scheduleTask = new ScheduleTask(action, currentTime + millis);
     actionsOnWait.add(scheduleTask);
   }
 
-  @Override
-  public void schedule(GameAction<?> action) {
+  
+  void scheduleDirect(GameAction<?> action) {
     int duration = action.getDuration();
     LinkedList<GameAction<?>> linkedList = actions.get(duration);
     if (linkedList == null) {
@@ -83,6 +95,33 @@ public class DefaultActionManager<L extends Layout<CardSlot<?>>, P extends Playe
     }
     linkedList.add(action);
   }
+  
+  
+  private void shedule(final int millis,
+      final GameAction<?> action) {
+    invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if ( millis == -1) {
+          scheduleDirect(action);
+        } else {
+          scheduleFutureDirect(millis, action);
+        }
+      }
+    });
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   @Override
   public void executeActions() {

@@ -14,6 +14,15 @@ public abstract class AbstractAction<T extends LayerEntity> implements GameActio
     this.duration = duration;
     
   }
+  
+  
+
+  @Override
+  public boolean reschedule() {
+    return false;
+  }
+
+
 
   @Override
   public GameAction<T> with(Animation<T>... animations) {

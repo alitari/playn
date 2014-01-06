@@ -3,6 +3,7 @@ package de.alexkrieg.cards.core.action;
 import java.util.List;
 
 import de.alexkrieg.cards.core.LayerEntity;
+import de.alexkrieg.cards.core.Thing;
 import de.alexkrieg.cards.core.util.Filter;
 
 public interface GameAction<T extends LayerEntity> {
@@ -10,6 +11,8 @@ public interface GameAction<T extends LayerEntity> {
   void execute();
 
   int getDuration();
+  
+  boolean reschedule();
 
   void paint(int tick, float alpha);
 
@@ -49,7 +52,24 @@ public interface GameAction<T extends LayerEntity> {
         layerEntity.layer().setAlpha(on ? value : 1 - value);
       }
     }
+    
+    public static class Animate<T extends Thing> implements Animation<T> {
+      final float speed;
 
+      public Animate( float speed) {
+        super();
+        this.speed = speed;
+      }
+
+      @Override
+      public void paint(int duration, int tick, float alpha, T layerEntity) {
+        int stepCount = (int) (speed *tick ) % layerEntity.animationSteps();
+        if ( stepCount != layerEntity.currentAnimationStep()) {
+          layerEntity.nextAnimationStep();
+        };
+      }
+    }
+    
   }
 
   public static class TypeFilter extends Filter<GameAction<?>> {
@@ -102,6 +122,11 @@ public interface GameAction<T extends LayerEntity> {
         a.with(animations);
       }
       return this;
+    }
+
+    @Override
+    public boolean reschedule() {
+      return false;
     }
 
   }
