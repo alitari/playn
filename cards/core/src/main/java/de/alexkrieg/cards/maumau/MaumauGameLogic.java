@@ -195,10 +195,10 @@ public class MaumauGameLogic implements GameLogic<NESWLayout, MaumauRobotPlayer,
         log().error(
             "its not  " + player + " who were waiting for, we wait for  " + waitingForPlayer);
       } else {
-        Card card = cardPlaydAction.card();
+        Card card = cardPlaydAction.layerEntity();
         Card currenPlayCard = currentPlayCard();
         if (!Card.matches(card, currenPlayCard)) {
-          log().error("can't play card " + cardPlaydAction.card() + " on " + currenPlayCard);
+          log().error("can't play card " + cardPlaydAction.layerEntity() + " on " + currenPlayCard);
         } else {
           if (!playersCards(player).contains(card)) {
             log().error("played card " + card + " does not belong to player " + player);

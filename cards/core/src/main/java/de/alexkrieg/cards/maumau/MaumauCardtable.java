@@ -122,7 +122,7 @@ public class MaumauCardtable extends CardTable<NESWLayout, MaumauRobotPlayer, Ma
     attractingRoot.setSize(width(), height());
     attractingRoot.addStyles(Style.BACKGROUND.is(Background.blank().inset(5)));
     Group buttons = new Group(AxisLayout.vertical().offStretch());
-    attractingRoot.add(new Label("Card Table"), buttons).addStyles(Style.TEXT_WRAP.is(true));
+    attractingRoot.add( buttons).addStyles(Style.TEXT_WRAP.is(true));
 
     Button button = new Button("Start");
     buttons.add(button);

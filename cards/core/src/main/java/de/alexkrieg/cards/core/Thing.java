@@ -50,7 +50,7 @@ public class Thing extends AbstractLayerEntity implements HasSizeEntity {
   
   public void nextAnimationStep() {
     imageLayer[currentAnimationStep].setVisible(false);
-    currentAnimationStep = currentAnimationStep == animationSteps() ? 0: currentAnimationStep +1; 
+    currentAnimationStep = currentAnimationStep == animationSteps()-1 ? 0:currentAnimationStep +1; 
     imageLayer[currentAnimationStep].setVisible(true);
   }
 
@@ -59,6 +59,7 @@ public class Thing extends AbstractLayerEntity implements HasSizeEntity {
     GroupLayer groupLayer = graphics().createGroupLayer();
     for ( int i = 0; i< animationSteps();i++) {
       ImageLayer imageLayer = createImageLayer(createImage(name,i));
+      this.imageLayer[i] = imageLayer;
       groupLayer.add(imageLayer);
     }
     groupLayer.setOrigin( width / 2, height / 2);
@@ -84,14 +85,6 @@ public class Thing extends AbstractLayerEntity implements HasSizeEntity {
   
   public int animationSteps() {
     return animationSteps;
-  }
-
-  public static class TomTom extends Thing {
-
-    public TomTom(String id) {
-      super(id, "TomTom", 32, 32, 4);
-    }
-    
   }
 
   

@@ -140,6 +140,8 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
         layout.recalc(c, null);
         Layer l = c.layer();
         transform(l, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
+        l.setDepth(layout.depth(child));
+        l.setAlpha(layout.alpha(child));
       }
     }
   }
@@ -157,6 +159,9 @@ public abstract class AbstractLayerEntityContainer<T extends LayerEntity, L exte
 
     Layer l = child.layer();
     transform(l, layout.x(child), layout.y(child), layout.rot(child), layout.scale(child));
+    l.setDepth(layout.depth(child));
+    l.setAlpha(layout.alpha(child));
+    
     ((GroupLayer) layer()).add(l);
     
     childs.add(child);

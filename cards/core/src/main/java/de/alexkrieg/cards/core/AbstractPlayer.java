@@ -29,9 +29,16 @@ public abstract class AbstractPlayer<L extends Layout<CardSlot<?>>, P extends Pl
       actionManager.scheduleFuture(millis, action);
     }
   }
+  
+  protected void sheduleOnce( final ActionManager actionManager,
+      final GameLogicAction<?> action) {
+    if (findMyScheduledFromType(actionManager, action.getClass()).isEmpty()) {
+      actionManager.schedule( action);
+    }
+  }
 
   protected void sheduleOnce(final ActionManager actionManager, final GameAction<?> action) {
-    if (findMyScheduledFromType(actionManager, action.getClass()).isEmpty()) {
+    if (findScheduledFromType(actionManager, action.getClass()).isEmpty()) {
       actionManager.schedule( action);
     }
   }

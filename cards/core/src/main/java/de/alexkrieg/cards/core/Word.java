@@ -55,8 +55,12 @@ public class Word extends AbstractLayerEntityContainer<Letter, WordLayout> {
     return getClass().getSimpleName() + "(id=" + id() + "," + super.toString() + ")";
   }
 
-  public void setText(String text) {
-    Attr attr = new WordLayout.Attr(1, 0, 1);
+  public void setText(String text ) {
+    setText(text,new Attr(1,0,1,255));
+  }
+    
+  
+  public void setText(String text,Attr attr ) {
     for (int i = 0; i < text.length(); i++) {
       put(new Letter(text.charAt(i),this.fontName), attr);
     }

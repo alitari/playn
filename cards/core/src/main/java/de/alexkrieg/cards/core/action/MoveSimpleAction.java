@@ -3,16 +3,16 @@ package de.alexkrieg.cards.core.action;
 import playn.core.Layer;
 import pythagoras.f.Transform;
 import de.alexkrieg.cards.core.LayerEntity;
-import de.alexkrieg.cards.core.layout.AbsolutLayout;
+import de.alexkrieg.cards.core.layout.Layout;
 
-public class MoveSimpleAction<T extends LayerEntity, L extends AbsolutLayout<T>> extends TransformAction<T> {
+public class MoveSimpleAction<T extends LayerEntity, L extends Layout<T>> extends TransformAction<T> {
 
-  protected final L absolutLayout;
-  protected final AbsolutLayout.Attr dest;
+  protected final L layout;
+  protected final Object dest;
 
-  public MoveSimpleAction(T layerEntity, L absolutLayout, AbsolutLayout.Attr dest  , int duration) {
+  public MoveSimpleAction(T layerEntity, L absolutLayout, Object dest  , int duration) {
     super(layerEntity, duration);
-    this.absolutLayout = absolutLayout;
+    this.layout = absolutLayout;
     this.dest = dest;
     if (layerEntity != null ) {
       layerEntity.setInUseOfAction(this);
@@ -21,13 +21,13 @@ public class MoveSimpleAction<T extends LayerEntity, L extends AbsolutLayout<T>>
   }
 
   private Transform calcTransform() {
-    absolutLayout.recalc(layerEntity, dest);
-    Layer sourceLayer = layerEntity.layer();
+    layout.recalc(layerEntity(), dest);
+    Layer sourceLayer = layerEntity().layer();
     
     Transform transform = sourceLayer.transform().copy();
-    transform.setTranslation(absolutLayout.x(layerEntity), absolutLayout.y(layerEntity));
-    transform.setRotation(absolutLayout.rot(layerEntity));    
-    transform.setUniformScale(absolutLayout.scale(layerEntity));
+    transform.setTranslation(layout.x(layerEntity()), layout.y(layerEntity()));
+    transform.setRotation(layout.rot(layerEntity()));    
+    transform.setUniformScale(layout.scale(layerEntity()));
     
     return transform;
   }
@@ -35,8 +35,8 @@ public class MoveSimpleAction<T extends LayerEntity, L extends AbsolutLayout<T>>
   
   @Override
   public void execute() {
-    if (layerEntity != null ) {
-      layerEntity.setInUseOfAction(null);
+    if (layerEntity() != null ) {
+      layerEntity().setInUseOfAction(null);
     }
     
   }

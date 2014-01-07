@@ -3,8 +3,8 @@ package de.alexkrieg.cards.maumau.action;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.Player;
-import de.alexkrieg.cards.core.action.CardMoveAction2;
 import de.alexkrieg.cards.core.action.GameLogicAction;
+import de.alexkrieg.cards.core.action.MoveAction;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
 import de.alexkrieg.cards.maumau.MaumauRobotPlayer;
 
@@ -26,7 +26,7 @@ public class PickupAction extends GameLogicAction.Merge<Card> {
     return (MaumauRobotPlayer) super.player();
   }
 
-  public static class PickupCardAction extends CardMoveAction2<TiledCardsRotatedLayout> implements GameLogicAction<Card> {
+  public static class PickupCardAction extends MoveAction<Card,TiledCardsRotatedLayout> implements GameLogicAction<Card> {
 
     private final MaumauRobotPlayer player;
 
@@ -36,14 +36,14 @@ public class PickupAction extends GameLogicAction.Merge<Card> {
 
     public PickupCardAction(Card card, CardSlot<TiledCardsRotatedLayout> playerSlot,
         MaumauRobotPlayer player,int duration) {
-      super(card, playerSlot,duration);
+      super(card, duration,playerSlot);
       card.setSide(Card.Side.Image);
       this.player = player;
     }
 
     @Override
     protected void recalcLayout(TiledCardsRotatedLayout layout) {
-      layout.recalc(layerEntity, null);
+      layout.recalc(layerEntity(), null);
 
     }
 

@@ -3,6 +3,8 @@ package de.alexkrieg.cards.core.action;
 import playn.core.Layer;
 import pythagoras.f.Point;
 import pythagoras.f.Transform;
+import de.alexkrieg.cards.core.Card;
+import de.alexkrieg.cards.core.CardSlot;
 import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.LayerEntityContainer;
 import de.alexkrieg.cards.core.layout.Layout;
@@ -23,15 +25,15 @@ public abstract class MoveAction<T extends LayerEntity, L extends Layout<T>> ext
 
   private Transform calcTransform() {
     Layer destLayer = destination.layer();
-    Layer sourceLayer = layerEntity.layer();
-    Layer containerLayer = layerEntity.getContainer().layer();
+    Layer sourceLayer = layerEntity().layer();
+    Layer containerLayer = layerEntity().getContainer().layer();
     float sourceRot = containerLayer.transform().rotation();//+sourceLayer.transform().rotation();
     L layout = destination.layout();
     recalcLayout(layout);
-    float destRot = destLayer.transform().rotation()-layout.rot(layerEntity);
+    float destRot = destLayer.transform().rotation()-layout.rot(layerEntity());
  
-    Point destScreen = Layer.Util.layerToScreen(destLayer, layout.x(layerEntity),
-        layout.y(layerEntity));
+    Point destScreen = Layer.Util.layerToScreen(destLayer, layout.x(layerEntity()),
+        layout.y(layerEntity()));
     Point destPoint = new Point();
     Layer.Util.screenToLayer(containerLayer, destScreen, destPoint);
     Transform transform = sourceLayer.transform().copy();
@@ -39,7 +41,7 @@ public abstract class MoveAction<T extends LayerEntity, L extends Layout<T>> ext
     // rotation diff
     transform.setRotation(sourceRot-destRot);    
     // scale
-    transform.setUniformScale(layout.scale(layerEntity));
+    transform.setUniformScale(layout.scale(layerEntity()));
     
     return transform;
   }
@@ -50,10 +52,12 @@ public abstract class MoveAction<T extends LayerEntity, L extends Layout<T>> ext
 
   @Override
   public void execute() {
-    if (destination != null && layerEntity != null) {
-      destination.put(layerEntity, null);
-      layerEntity.setInUseOfAction(null);
+    if (destination != null && layerEntity() != null) {
+      destination.put(layerEntity(), null);
+      layerEntity().setInUseOfAction(null);
     }
   }
+  
+  
 
 }

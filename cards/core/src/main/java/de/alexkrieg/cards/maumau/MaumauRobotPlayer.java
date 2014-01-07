@@ -9,6 +9,8 @@ import de.alexkrieg.cards.core.ActionManager;
 import de.alexkrieg.cards.core.Card;
 import de.alexkrieg.cards.core.CardGame;
 import de.alexkrieg.cards.core.CardSlot;
+import de.alexkrieg.cards.core.Letter;
+import de.alexkrieg.cards.core.Thing;
 import de.alexkrieg.cards.core.Word;
 import de.alexkrieg.cards.core.action.GameAction;
 import de.alexkrieg.cards.core.action.GameLogicAction;
@@ -17,6 +19,8 @@ import de.alexkrieg.cards.core.action.VisibiltyAction;
 import de.alexkrieg.cards.core.layout.AbsolutLayout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
 import de.alexkrieg.cards.core.layout.TiledCardsRotatedLayout;
+import de.alexkrieg.cards.core.layout.WordLayout;
+import de.alexkrieg.cards.core.layout.WordLayout.Attr;
 import de.alexkrieg.cards.maumau.action.CardDealedAction;
 import de.alexkrieg.cards.maumau.action.CardPlayedAction;
 import de.alexkrieg.cards.maumau.action.PickupAction;
@@ -51,7 +55,7 @@ public class MaumauRobotPlayer extends
         handleInit(game.actionManager, (MaumauCardGame) game);
         break;
       case Attracting:
-        handleAttracting();
+        handleAttracting((MaumauCardGame) game);
         break;
       case Dealing:
         handleDealing(game.actionManager, (MaumauCardtable) game.cardTable);
@@ -75,8 +79,73 @@ public class MaumauRobotPlayer extends
 
   }
 
-  private void handleAttracting() {
-    // do nothing
+  private void handleAttracting(MaumauCardGame game) {
+    if (isDealer()) {
+      Thing thing = game.thingLayer.findChild(MaumauThing.Woolen.ID);
+      Word word = game.textLayer.findChild(MaumauCardGame.Words.Woolen.name());
+      sheduleOnce(1000,
+          game.actionManager,
+          new MoveSimpleAction<Thing, AbsolutLayout<Thing>>(thing, game.thingLayer.layout(),
+              new AbsolutLayout.Attr(300, 400, 0, 1F), 50));
+      
+      sheduleOnce(1000,
+          game.actionManager,
+          new MoveSimpleAction<Word, AbsolutLayout<Word>>(word, game.textLayer.layout(),
+              new AbsolutLayout.Attr(450, 360, 0, 0.3F), 30));
+      
+      
+      thing = game.thingLayer.findChild(MaumauThing.Mighta.ID);
+      word = game.textLayer.findChild(MaumauCardGame.Words.Mighta.name());
+      sheduleOnce(2000,
+          game.actionManager,
+          new MoveSimpleAction<Thing, AbsolutLayout<Thing>>(thing, game.thingLayer.layout(),
+              new AbsolutLayout.Attr(300, 500, 0, 1F), 50));
+      sheduleOnce(2000,
+          game.actionManager,
+          new MoveSimpleAction<Word, AbsolutLayout<Word>>(word, game.textLayer.layout(),
+              new AbsolutLayout.Attr(450, 460, 0, 0.3F), 30));
+      
+      
+      thing = game.thingLayer.findChild(MaumauThing.Packy.ID);
+      word = game.textLayer.findChild(MaumauCardGame.Words.Packy.name());
+      sheduleOnce(3000,
+          game.actionManager,
+          new MoveSimpleAction<Thing, AbsolutLayout<Thing>>(thing, game.thingLayer.layout(),
+              new AbsolutLayout.Attr(300, 600, 0, 1F), 50));
+      
+      sheduleOnce(3000,
+          game.actionManager,
+          new MoveSimpleAction<Word, AbsolutLayout<Word>>(word, game.textLayer.layout(),
+              new AbsolutLayout.Attr(450, 560, 0, 0.3F), 30));
+      
+      
+      
+      
+      String yop = "YOUR OPPONENTS";
+      
+      
+      
+      
+      word = game.textLayer.findChild(MaumauCardGame.Words.PlayAgainst.name());
+      sheduleOnce(500,
+          game.actionManager,
+          new MoveSimpleAction<Word, AbsolutLayout<Word>>(word, game.textLayer.layout(),
+              new AbsolutLayout.Attr(280, 300, 0, 0.25F), 30));
+      
+      for (int i = 0; i < word.childs().size(); i++) {
+        sheduleOnce(
+            1000+(i*200),
+            game.actionManager,
+            new MoveSimpleAction<Letter, WordLayout>(word.childs().get(i), word.layout(), new Attr(1,0,1,1), 30).with(new GameAction.Animation.Blend<Letter>(
+                true, 5F)));
+      }      
+      
+      
+      
+      
+     // Scene.move(word).to().withDuration(30).in(future).blendIn.withSpeed(338)
+      
+    }
 
   }
 
@@ -91,11 +160,9 @@ public class MaumauRobotPlayer extends
       if (cardTable.playSlot.getFirstUnusedChilds(4).size() < 4
           && noActionScheduled(actionManager, TalonFilledAction.class)) {
         Word refilled = game.textLayer.findChild(MaumauCardGame.Words.Refilled.name());
-        shedule(actionManager,
-            new TalonFilledAction(refilled,
-                game.textLayer.layout(), new AbsolutLayout.Attr(300, 150, 0, 0.5F), actionDuration,
-                this));
-        sheduleOnce(2000,actionManager, new VisibiltyAction<Word>(refilled, 30, false));
+        shedule(actionManager, new TalonFilledAction(refilled, game.textLayer.layout(),
+            new AbsolutLayout.Attr(300, 150, 0, 0.5F), actionDuration, this));
+        sheduleOnce(2000, actionManager, new VisibiltyAction<Word>(refilled, 30, false));
       } else {
         if (noActionScheduled(actionManager, TalonFilledAction.class)) {
           shedule(actionManager, new RefillTalonAction(this,
@@ -176,15 +243,16 @@ public class MaumauRobotPlayer extends
     if (isDealer()) {
       sheduleOnce(actionManager,
           new SystemReadyAction(game.textLayer.findChild(MaumauCardGame.Words.MauMauTitle.name()),
-              game.textLayer.layout(), new AbsolutLayout.Attr(220, 150, 0, 1), 30, this));
+              game.textLayer.layout(), new AbsolutLayout.Attr(220, 20, 0, 1), 30, this));
 
-      Word arcadeTitle = game.textLayer.findChild(MaumauCardGame.Words.ArcadeTitle.name());
+      Word word = game.textLayer.findChild(MaumauCardGame.Words.ArcadeTitle.name());
       sheduleOnce(
           actionManager,
-          new MoveSimpleAction<Word, AbsolutLayout<Word>>(
-              arcadeTitle,
-              game.textLayer.layout(), new AbsolutLayout.Attr(300, 300, 0, 0.5F), 30).with(new GameAction.Animation.Rotate(
-              1)));
+          new MoveSimpleAction<Word, AbsolutLayout<Word>>(word, game.textLayer.layout(),
+              new AbsolutLayout.Attr(350, 130, 0, 0.5F), 30).with(new GameAction.Animation.Rotate<Word>(1)));
+      
+      word = game.textLayer.findChild(MaumauCardGame.Words.PlayAgainst.name());
+      
     }
 
   }

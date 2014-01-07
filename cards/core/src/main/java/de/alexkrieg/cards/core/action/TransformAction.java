@@ -28,7 +28,7 @@ public abstract class TransformAction<T extends LayerEntity> extends AbstractAct
 		Transform transform = origTransform.lerp(destTransform, actionAlpha);
 		float[] matrix = new float[6];
 		transform.get(matrix);
-		layerEntity.layer().transform().setTransform(matrix[0], matrix[1], matrix[2],
+		layerEntity().layer().transform().setTransform(matrix[0], matrix[1], matrix[2],
 				matrix[3], matrix[4], matrix[5]);
 
 	}

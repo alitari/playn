@@ -2,6 +2,7 @@ package de.alexkrieg.cards.core.action;
 
 import java.util.List;
 
+import playn.core.PlayN;
 import de.alexkrieg.cards.core.LayerEntity;
 import de.alexkrieg.cards.core.Thing;
 import de.alexkrieg.cards.core.util.Filter;
@@ -54,18 +55,19 @@ public interface GameAction<T extends LayerEntity> {
     }
     
     public static class Animate<T extends Thing> implements Animation<T> {
-      final float speed;
+      final int speed;
+      private int counter =0; 
 
-      public Animate( float speed) {
+      public Animate( int speed) {
         super();
         this.speed = speed;
       }
 
       @Override
       public void paint(int duration, int tick, float alpha, T layerEntity) {
-        int stepCount = (int) (speed *tick ) % layerEntity.animationSteps();
-        if ( stepCount != layerEntity.currentAnimationStep()) {
+        if ( counter++ > (duration -speed )) {
           layerEntity.nextAnimationStep();
+          counter = 0;
         };
       }
     }

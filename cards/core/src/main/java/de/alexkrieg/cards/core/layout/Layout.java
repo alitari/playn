@@ -14,7 +14,6 @@ public abstract class Layout<T extends LayerEntity> {
 	protected float y;
 	protected float rot;
 	protected float scale;
-	protected int depth;
 
 	public void setContainer( LayerEntityContainer<?, ?> container) {
 		this.container = container;
@@ -35,6 +34,16 @@ public abstract class Layout<T extends LayerEntity> {
 	public float scale(T child) {
 		return scale;
 	}
+	
+	public float depth(T child) {
+    return child.layer().depth();
+  }
+	
+	public float alpha(T child) {
+    return child.layer().alpha();
+  }
+	
+	
 	
 	public boolean needsRecalcWhenRemove() {
 	  return false;

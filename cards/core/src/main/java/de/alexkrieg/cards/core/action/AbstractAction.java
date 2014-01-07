@@ -4,7 +4,7 @@ import de.alexkrieg.cards.core.LayerEntity;
 
 public abstract class AbstractAction<T extends LayerEntity> implements GameAction<T> {
 
-  protected final T layerEntity;
+  private final T layerEntity;
   protected final int duration;
   private Animation<T>[] animations;
 
@@ -39,7 +39,7 @@ public abstract class AbstractAction<T extends LayerEntity> implements GameActio
     paintWithActionAlpha(actionAlpha);
     if (this.animations != null) {
       for (Animation<T> anim : this.animations) {
-        anim.paint( duration, tick, alpha, this.layerEntity);
+        anim.paint( duration, tick, alpha, this.layerEntity());
       }
     }
 
@@ -57,7 +57,13 @@ public abstract class AbstractAction<T extends LayerEntity> implements GameActio
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "[layerEntity=" + layerEntity + ", duration=" + duration + "]";
+    return getClass().getSimpleName() + "[layerEntity=" + layerEntity() + ", duration=" + duration + "]";
+  }
+
+
+
+  public T layerEntity() {
+    return layerEntity;
   }
 
 }

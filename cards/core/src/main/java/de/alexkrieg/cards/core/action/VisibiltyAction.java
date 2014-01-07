@@ -14,7 +14,7 @@ public class VisibiltyAction<T extends LayerEntity> extends AbstractAction<T> {
 
   @Override
   public void execute() {
-    layerEntity.layer().setVisible(visibleOn);
+    layerEntity().layer().setVisible(visibleOn);
   }
 
 }

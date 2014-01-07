@@ -8,6 +8,7 @@ import de.alexkrieg.cards.core.Thing;
 import de.alexkrieg.cards.core.Word;
 import de.alexkrieg.cards.core.layout.AbsolutLayout;
 import de.alexkrieg.cards.core.layout.NESWLayout;
+import de.alexkrieg.cards.core.layout.WordLayout.Attr;
 
 public class MaumauCardGame extends CardGame<NESWLayout,MaumauRobotPlayer,MaumauGameLogic>{
 
@@ -25,7 +26,9 @@ public class MaumauCardGame extends CardGame<NESWLayout,MaumauRobotPlayer,Maumau
   }
   
   public static enum Words {
-    MauMauTitle("MauMau",5,"disko"),ArcadeTitle("ARCADE",2,"g7starforce"),Refilled("FILLED",2,"g7starforce");
+    MauMauTitle("MauMau",5,"disko"),ArcadeTitle("ARCADE",2,"g7starforce"),Refilled("FILLED",2,"g7starforce"),PlayAgainst("YOUR OPPONENTS",3,"g7starforce"),
+    Packy("PACKY",3,"g7starforce"),Woolen("WHOOLEN",3,"g7starforce"),Mighta("MIGHTA",3,"g7starforce");
+    
     String text;
     String font;
     int gap;
@@ -37,9 +40,13 @@ public class MaumauCardGame extends CardGame<NESWLayout,MaumauRobotPlayer,Maumau
   }
   
   public static Word createWord(Words word) {
+    return createWord(word,null);
+  }
+  
+  public static Word createWord(Words word, Attr attr) {
     Word maumau = new Word(word.name(),word.gap, word.font);
     maumau.init();
-    maumau.setText(word.text);
+    maumau.setText(word.text,attr);
     return maumau;
   }
 
@@ -49,8 +56,13 @@ public class MaumauCardGame extends CardGame<NESWLayout,MaumauRobotPlayer,Maumau
     this.textLayer.put(createWord(Words.MauMauTitle), new AbsolutLayout.Attr(220,-100,0,0.1F));
     this.textLayer.put(createWord(Words.ArcadeTitle), new AbsolutLayout.Attr(220,100,0,0.1F));
     this.textLayer.put(createWord(Words.Refilled), new AbsolutLayout.Attr(120,-300,0,0.5F));
-    this.thingLayer.put(new Thing("bubbleun","bubblun",64,64,1 )  , new AbsolutLayout.Attr(120,300,0,2F));
-    this.thingLayer.put(new Thing.TomTom("TomTom" ) , new AbsolutLayout.Attr(320,500,0,1F));
+    this.textLayer.put(createWord(Words.PlayAgainst,new Attr(1,0,1,0)), new AbsolutLayout.Attr(120,-300,0,0.5F));
+    this.textLayer.put(createWord(Words.Packy), new AbsolutLayout.Attr(120,-300,0,0.5F));
+    this.textLayer.put(createWord(Words.Woolen), new AbsolutLayout.Attr(120,-300,0,0.5F));
+    this.textLayer.put(createWord(Words.Mighta), new AbsolutLayout.Attr(120,-300,0,0.5F));
+    this.thingLayer.put(new MaumauThing.Packy()  , new AbsolutLayout.Attr(120,-300,0,1F));
+    this.thingLayer.put(new MaumauThing.Woolen()  , new AbsolutLayout.Attr(120,-300,0,1F));
+    this.thingLayer.put(new MaumauThing.Mighta()  , new AbsolutLayout.Attr(120,-300,0,1F));
     
     
   }
